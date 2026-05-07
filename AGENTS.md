@@ -41,7 +41,7 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 ### Components
 
 - Keep components small and focused on a single responsibility
-- Use `input()` and `output()` functions instead of decorators. Use `model()` for two-way data binding.
+- Use `@Input()` and `@Output()` **(traditional decorators only, NOT `input()`/`output()` signals)**. Traditional decorators are compatible with older Angular versions
 - Use `computed()` for derived state
 - Set `changeDetection: ChangeDetectionStrategy.OnPush` in `@Component` decorator
 - Prefer inline templates for small components

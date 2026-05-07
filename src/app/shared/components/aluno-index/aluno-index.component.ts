@@ -12,11 +12,12 @@ import {
   Validators,
 } from '@angular/forms';
 import { SexoEnum } from '../../models/sexo.enum.js';
+import { FormFieldTextComponent } from '../form-field-text.component/form-field-text.component.js';
 
 @Component({
   selector: 'app-aluno-index',
   standalone: true,
-  imports: [TabelaGenerica, Botao, Modal, ReactiveFormsModule],
+  imports: [TabelaGenerica, Botao, Modal, ReactiveFormsModule, FormFieldTextComponent],
   templateUrl: './aluno-index.component.html',
   styleUrl: './aluno-index.component.scss',
 })

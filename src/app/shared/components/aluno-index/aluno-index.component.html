@@ -6,29 +6,47 @@
 
   <app-modal titulo="Cadastro de Aluno" [(visivel)]="isModalAberto">
     <form [formGroup]="alunoForm" (ngSubmit)="AdicionarAluno()" class="formAluno">
-      <label>Nome:</label>
-      <input type="text" formControlName="nome" />
-      @if (alunoForm.get('nome')?.invalid && alunoForm.get('nome')?.touched) {
-        <span class="erro-texto">O nome é obrigatório</span>
-      }
+      <app-form-field-text
+        label="Nome Completo"
+        placeholder="Digite o nome"
+        formControlName="nome"
+        [errorMessage]="
+          alunoForm.get('nome')?.invalid && alunoForm.get('nome')?.touched
+            ? 'O nome é obrigatório'
+            : ''
+        "
+      >
+      </app-form-field-text>
 
-      <label>CPF:</label>
-      <input type="text" formControlName="cpf" />
-      @if (alunoForm.get('cpf')?.invalid && alunoForm.get('cpf')?.touched) {
-        <span class="erro-texto">O CPF é obrigatório</span>
-      }
+      <app-form-field-text
+        label="CPF"
+        placeholder="Digite o CPF"
+        formControlName="cpf"
+        [errorMessage]="
+          alunoForm.get('cpf')?.invalid && alunoForm.get('cpf')?.touched
+            ? 'O CPF é obrigatório'
+            : ''
+        "
+      >
+      </app-form-field-text>
 
-      <label>Email:</label>
-      <input type="email" formControlName="email" />
-      @if (alunoForm.get('email')?.invalid && alunoForm.get('email')?.touched) {
-        <span class="erro-texto">O e-mail é obrigatório</span>
-      }
+      <app-form-field-text
+        label="Email"
+        placeholder="Digite o email"
+        formControlName="email"
+        [errorMessage]="
+          alunoForm.get('email')?.invalid && alunoForm.get('email')?.touched
+            ? 'Email inválido'
+            : ''
+        "
+      >
+      </app-form-field-text>
 
       <label>Data de Nascimento:</label>
       <input type="date" formControlName="dataNascimento" />
-        @if (alunoForm.get('dataNascimento')?.invalid && alunoForm.get('dataNascimento')?.touched) {
-            <span class="erro-texto">A data de nascimento é obrigatória</span>
-        }
+      @if (alunoForm.get('dataNascimento')?.invalid && alunoForm.get('dataNascimento')?.touched) {
+        <span class="erro-texto">A data de nascimento é obrigatória</span>
+      }
 
       <label>Sexo:</label>
       <select formControlName="sexo">
