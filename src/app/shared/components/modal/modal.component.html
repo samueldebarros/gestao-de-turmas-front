@@ -1,0 +1,11 @@
+<dialog #Dialog class="modal-container" (cancel)="fecharModal()">
+  
+  <div class="modal-cabecalho">
+    <h3>{{ titulo }}</h3>
+  </div>
+
+  <div class="modal-corpo">
+    <ng-content></ng-content>
+  </div>
+
+</dialog>

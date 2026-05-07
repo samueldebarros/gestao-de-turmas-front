@@ -39,6 +39,52 @@ testem.log
 /typings
 __screenshots__/
 
+# Environment variables and secrets
+.env
+.env.local
+.env.*.local
+.env.production
+.secrets/
+secrets.json
+*.pem
+*.key
+
+# Build cache and artifacts
+/.parcel-cache
+.cache/
+.turbo/
+*.tsbuildinfo
+.vitest/
+.eslintcache
+.prettierignore.json
+
+# Package manager
+pnpm-lock.yaml
+yarn.lock
+
+# NPM cache
+.npm/
+npm-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
 # System files
 .DS_Store
 Thumbs.db
+.AppleDouble
+.LSOverride
+*.swp
+*.swo
+*~
+
+# VS Code workspace settings (personal)
+.vscode/settings.json
+.vscode/extensions.json
+
+# Testing
+.nyc_output/
+htmlcov/
+
+# Local development
+local.json
+config.local.json

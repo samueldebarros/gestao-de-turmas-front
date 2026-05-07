@@ -1,0 +1,34 @@
+@startuml fluxo-aluno
+title Gestão de Turmas - Fluxo de Alunos
+
+actor "Usuário (Secretaria/Gestão)" as Usuario
+
+package "Frontend (Angular)" {
+  [Componentes de Aluno (UI)]
+  [Serviços Angular (HTTP)]
+}
+
+package "Backend (.NET C#)" {
+  [AlunoController (Endpoints da API)]
+  [AlunoService (Regras de Negócio)]
+  [AlunoRepository (Acesso a Dados)]
+}
+
+database "Banco de Dados" as DB
+
+' Fluxo de Interação do Usuário
+Usuario --> [Componentes de Aluno (UI)] : Preenche dados / Clica
+
+' Fluxo interno do Angular
+[Componentes de Aluno (UI)] --> [Serviços Angular (HTTP)] : Passa os dados via Signals/Observables
+
+' Comunicação Front -> Back
+[Serviços Angular (HTTP)] --> [AlunoController (Endpoints da API)] : Requisição HTTP (JSON)
+
+' Fluxo interno da API (Aplicando SOLID e Injeção de Dependência)
+[AlunoController (Endpoints da API)] --> [AlunoService (Regras de Negócio)] : Envia DTOs
+[AlunoService (Regras de Negócio)] --> [AlunoRepository (Acesso a Dados)] : Chama métodos via IAlunoRepository
+
+' Persistência
+[AlunoRepository (Acesso a Dados)] --> DB : Entity Framework Core (Consultas/Gravação)
+@enduml

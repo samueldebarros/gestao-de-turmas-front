@@ -1,0 +1,48 @@
+<div class="container">
+  <app-tabela-generica [dados]="listaAlunos" [colunas]="colunas"></app-tabela-generica>
+  <div class="botoes">
+    <app-botao variante="secundario" (acaoBotao)="abrirModal()">Adicionar Aluno</app-botao>
+  </div>
+
+  <app-modal titulo="Cadastro de Aluno" [(visivel)]="isModalAberto">
+    <form [formGroup]="alunoForm" (ngSubmit)="AdicionarAluno()" class="formAluno">
+      <label>Nome:</label>
+      <input type="text" formControlName="nome" />
+      @if (alunoForm.get('nome')?.invalid && alunoForm.get('nome')?.touched) {
+        <span class="erro-texto">O nome é obrigatório</span>
+      }
+
+      <label>CPF:</label>
+      <input type="text" formControlName="cpf" />
+      @if (alunoForm.get('cpf')?.invalid && alunoForm.get('cpf')?.touched) {
+        <span class="erro-texto">O CPF é obrigatório</span>
+      }
+
+      <label>Email:</label>
+      <input type="email" formControlName="email" />
+      @if (alunoForm.get('email')?.invalid && alunoForm.get('email')?.touched) {
+        <span class="erro-texto">O e-mail é obrigatório</span>
+      }
+
+      <label>Data de Nascimento:</label>
+      <input type="date" formControlName="dataNascimento" />
+        @if (alunoForm.get('dataNascimento')?.invalid && alunoForm.get('dataNascimento')?.touched) {
+            <span class="erro-texto">A data de nascimento é obrigatória</span>
+        }
+
+      <label>Sexo:</label>
+      <select formControlName="sexo">
+        <option value="" disabled selected>Selecione</option>
+        <option value="Masculino">Masculino</option>
+        <option value="Feminino">Feminino</option>
+        <option value="Outro">Outro</option>
+      </select>
+      @if (alunoForm.get('sexo')?.invalid && alunoForm.get('sexo')?.touched) {
+        <span class="erro-texto">O Sexo é obrigatório</span>
+      }
+
+      <button type="button" (click)="isModalAberto = false">Cancelar</button>
+      <button type="submit" [disabled]="alunoForm.invalid">Adicionar aluno</button>
+    </form>
+  </app-modal>
+</div>

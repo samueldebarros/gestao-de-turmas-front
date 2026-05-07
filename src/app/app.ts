@@ -1,9 +1,9 @@
 import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { AlunoIndex } from "./shared/components/aluno-index/aluno-index.component.js";
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [AlunoIndex],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })

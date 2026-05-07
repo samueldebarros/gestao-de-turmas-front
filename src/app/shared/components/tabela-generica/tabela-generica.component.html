@@ -1,0 +1,20 @@
+<div class="tabela-container">
+    <table class="tabela-customizada">
+        <thead>
+            <tr>
+                @for (coluna of colunas; track coluna) {
+                    <th>{{ coluna.titulo }}</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @for (item of dados; track item.id) {
+                <tr>
+                    @for (coluna of colunas; track coluna.chave) {
+                        <td>{{ $any(item)[coluna.chave] }}</td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
