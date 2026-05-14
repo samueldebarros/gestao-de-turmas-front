@@ -1,0 +1,24 @@
+<div class="form">
+  <label>{{ label }}</label>
+  <select
+    (change)="onSelectChange($event)"
+    (blur)="onTouched()"
+    [disabled]="isDisabled"
+    [value]="valorAtual"
+    [class.select-error]="errorMessage"
+  >
+    <option value="" disabled>
+      {{ placeholder | translate }}
+    </option>
+
+    @for (opcao of options; track opcao.value) {
+      <option [value]="opcao.value">
+        {{ opcao.label | translate }}
+      </option>
+    }
+  </select>
+
+  @if (errorMessage) {
+    <span class="error-message">{{ errorMessage }}</span>
+  }
+</div>

@@ -6,16 +6,18 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
   standalone: true,
   templateUrl: './form-field-text.component.html',
   styleUrls: ['./form-field-text.component.scss'],
-  providers: [{
-    provide: NG_VALUE_ACCESSOR,
-    useExisting: forwardRef(() => FormFieldTextComponent),
-    multi: true
-  }],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => FormFieldTextComponent),
+      multi: true,
+    },
+  ],
 })
 export class FormFieldTextComponent implements ControlValueAccessor {
   @Input() label: string = '';
   @Input() placeholder: string = '';
-  @Input() type: 'text' | 'password' | 'email' = 'text';
+  @Input() type: 'text' | 'password' | 'email' | 'date' = 'text';
   @Input() errorMessage: string = '';
 
   inputAtual: string = '';

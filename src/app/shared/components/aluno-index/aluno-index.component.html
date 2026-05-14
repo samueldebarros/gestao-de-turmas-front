@@ -1,66 +1,94 @@
 <div class="container">
-  <app-tabela-generica [dados]="listaAlunos" [colunas]="colunas"></app-tabela-generica>
-  <div class="botoes">
-    <app-botao variante="secundario" (acaoBotao)="abrirModal()">Adicionar Aluno</app-botao>
+  <div class="botoes-idioma">
+    <app-botao (acaoBotao)="trocarIdioma('pt-BR')" [variante]="'secundario'">
+      {{ 'IDIOMA.PORTUGUES' | translate }}</app-botao
+    >
+    <app-botao (acaoBotao)="trocarIdioma('en')" [variante]="'secundario'">
+      {{ 'IDIOMA.INGLES' | translate }}</app-botao
+    >
   </div>
 
-  <app-modal titulo="Cadastro de Aluno" [(visivel)]="isModalAberto">
+  <app-tabela-generica
+    [dados]="(listaAlunos$ | async) || []"
+    [colunas]="colunas"
+  ></app-tabela-generica>
+
+  <div class="botoes">
+    <app-botao variante="secundario" (acaoBotao)="abrirModal()">{{
+      'ALUNO.BOTOES.ADICIONAR_ALUNO' | translate
+    }}</app-botao>
+  </div>
+
+  <app-modal [titulo]="'ALUNO.MODAL.CADASTRO_TITULO' | translate" [(visivel)]="isModalAberto">
+    <app-mensagem
+      [(visivel)]="mostrarAlerta"
+      [tipo]="tipoAlerta"
+      [texto]="textoAlerta"
+    ></app-mensagem>
+
     <form [formGroup]="alunoForm" (ngSubmit)="AdicionarAluno()" class="formAluno">
       <app-form-field-text
-        label="Nome Completo"
-        placeholder="Digite o nome"
+        [label]="'ALUNO.FORMULARIO.NOME_LABEL' | translate"
+        [placeholder]="'ALUNO.FORMULARIO.NOME_PLACEHOLDER' | translate"
         formControlName="nome"
         [errorMessage]="
           alunoForm.get('nome')?.invalid && alunoForm.get('nome')?.touched
-            ? 'O nome é obrigatório'
+            ? ('VALIDACAO.OBRIGATORIO' | translate)
             : ''
         "
       >
       </app-form-field-text>
 
       <app-form-field-text
-        label="CPF"
-        placeholder="Digite o CPF"
+        [label]="'ALUNO.FORMULARIO.CPF_LABEL' | translate"
+        [placeholder]="'ALUNO.FORMULARIO.CPF_PLACEHOLDER' | translate"
         formControlName="cpf"
-        [errorMessage]="
-          alunoForm.get('cpf')?.invalid && alunoForm.get('cpf')?.touched
-            ? 'O CPF é obrigatório'
-            : ''
-        "
+        [errorMessage]="obterErroCpfCnpj()"
       >
       </app-form-field-text>
 
       <app-form-field-text
-        label="Email"
-        placeholder="Digite o email"
+        [label]="'ALUNO.FORMULARIO.EMAIL_LABEL' | translate"
+        [placeholder]="'ALUNO.FORMULARIO.EMAIL_PLACEHOLDER' | translate"
         formControlName="email"
         [errorMessage]="
           alunoForm.get('email')?.invalid && alunoForm.get('email')?.touched
-            ? 'Email inválido'
+            ? ('ALUNO.FORMULARIO.EMAIL_INVALIDO' | translate)
             : ''
         "
       >
       </app-form-field-text>
 
-      <label>Data de Nascimento:</label>
-      <input type="date" formControlName="dataNascimento" />
-      @if (alunoForm.get('dataNascimento')?.invalid && alunoForm.get('dataNascimento')?.touched) {
-        <span class="erro-texto">A data de nascimento é obrigatória</span>
-      }
+      <app-form-field-text
+        [label]="'ALUNO.FORMULARIO.DATA_NASCIMENTO_LABEL' | translate"
+        [placeholder]="'ALUNO.FORMULARIO.DATA_NASCIMENTO_PLACEHOLDER' | translate"
+        formControlName="dataNascimento"
+        type="date"
+        [errorMessage]="obterErroDataNascimento()"
+      >
+      </app-form-field-text>
 
-      <label>Sexo:</label>
-      <select formControlName="sexo">
-        <option value="" disabled selected>Selecione</option>
-        <option value="Masculino">Masculino</option>
-        <option value="Feminino">Feminino</option>
-        <option value="Outro">Outro</option>
-      </select>
-      @if (alunoForm.get('sexo')?.invalid && alunoForm.get('sexo')?.touched) {
-        <span class="erro-texto">O Sexo é obrigatório</span>
-      }
+      <app-form-field-select
+        [label]="'ALUNO.FORMULARIO.SEXO_LABEL' | translate"
+        [placeholder]="'ALUNO.FORMULARIO.SEXO_SELECIONE' | translate"
+        [formGroup]="alunoForm"
+        [options]="opcoesSexo"
+        formControlName="sexo"
+        [errorMessage]="
+          alunoForm.get('sexo')?.invalid && alunoForm.get('sexo')?.touched
+            ? ('VALIDACAO.OBRIGATORIO' | translate)
+            : ''
+        "
+      >
+      </app-form-field-select>
 
-      <button type="button" (click)="isModalAberto = false">Cancelar</button>
-      <button type="submit" [disabled]="alunoForm.invalid">Adicionar aluno</button>
+      <app-botao [tipo]="'submit'" [variante]="'primario'">
+        {{ 'ALUNO.BOTOES.ADICIONAR_ALUNO' | translate }}
+      </app-botao>
+
+      <app-botao [tipo]="'button'" (acaoBotao)="fecharModal()" [variante]="'perigo'">
+        {{ 'ALUNO.BOTOES.CANCELAR' | translate }}
+      </app-botao>
     </form>
   </app-modal>
 </div>

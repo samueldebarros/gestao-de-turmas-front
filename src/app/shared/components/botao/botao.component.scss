@@ -1,11 +1,12 @@
-$cor-primaria: #b91c1c;
-$cor-perigo: #c53030;
+$cor-primaria: #1c53b9;
+$cor-perigo: #db2626;
 $cor-sucesso: #1a7a45;
 $cor-aviso: #ca8a04;
 $cor-secundaria: #6b7280;
 
 button {
-  padding: 8px 16px;
+  padding: 8px 20px;
+  width: 100%;
   border: none;
   border-radius: 4px;
   font-weight: 500;

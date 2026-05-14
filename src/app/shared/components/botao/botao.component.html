@@ -1,5 +1,5 @@
 <div>
-    <button [class] = "'botao-' + variante" (click)="onClick()">
-        <ng-content>botao padrao</ng-content>
-    </button>
+  <button [type]="tipo" [class]="'botao-' + variante" (click)="onClick()">
+    <ng-content></ng-content>
+  </button>
 </div>

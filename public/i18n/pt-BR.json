@@ -1,0 +1,43 @@
+{
+  "IDIOMA": {
+    "PORTUGUES": "Português",
+    "INGLES": "Inglês"
+  },
+  "ALUNO": {
+    "BOTOES": {
+      "ADICIONAR_ALUNO": "Adicionar Aluno",
+      "CANCELAR": "Cancelar"
+    },
+    "MODAL": {
+      "CADASTRO_TITULO": "Cadastro de Aluno"
+    },
+    "FORMULARIO": {
+      "NOME_LABEL": "Nome Completo",
+      "NOME_PLACEHOLDER": "Digite o nome",
+      "CPF_LABEL": "CPF",
+      "CPF_PLACEHOLDER": "Digite o CPF",
+      "EMAIL_LABEL": "Email",
+      "EMAIL_PLACEHOLDER": "Digite o email",
+      "EMAIL_INVALIDO": "Email inválido",
+      "DATA_NASCIMENTO_LABEL": "Data de Nascimento",
+      "DATA_NASCIMENTO_PLACEHOLDER": "Digite a data de nascimento",
+      "SEXO_LABEL": "Sexo:",
+      "SEXO_SELECIONE": "Selecione",
+      "SEXO_MASCULINO": "Masculino",
+      "SEXO_FEMININO": "Feminino",
+      "SEXO_OUTRO": "Outro"
+    }
+  },
+  "VALIDACAO": {
+    "OBRIGATORIO": "Este campo é obrigatório.",
+    "DATA_FUTURA": "A data não pode ser hoje ou no futuro.",
+    "IDADE_MAXIMA": "A idade não pode ultrapassar 120 anos.",
+    "DOCUMENTO_INVALIDO": "O documento deve ter 11 (CPF) ou 14 (CNPJ) números.",
+    "CPF_INVALIDO": "CPF inválido. Verifique os números digitados.",
+    "CNPJ_INVALIDO": "CNPJ inválido. Verifique os números digitados."
+  },
+  "MENSAGEM": {
+    "FORMULARIO_INVALIDO": "Formulário inválido.",
+    "ERRO_CADASTRO_ALUNO": "Ocorreu um erro ao cadastrar o aluno."
+  }
+}

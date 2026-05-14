@@ -1,0 +1,21 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+
+  select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+
+  .select-error {
+    border: 1px solid red;
+    outline-color: red;
+  }
+
+  .error-message {
+    color: red;
+  }
+}

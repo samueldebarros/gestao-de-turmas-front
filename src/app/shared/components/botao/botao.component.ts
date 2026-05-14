@@ -8,9 +8,9 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   styleUrl: './botao.component.scss',
 })
 export class Botao {
-
   @Input() variante: 'primario' | 'secundario' | 'perigo' = 'primario';
-  
+  @Input() tipo: 'button' | 'submit' | 'reset' = 'button';
+
   @Output() acaoBotao = new EventEmitter<void>();
 
   onClick() {

@@ -13,6 +13,12 @@
   align-items: center;
 }
 
+.botoes-idioma {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
 .erro-texto {
   color: red;
 }
@@ -33,13 +39,6 @@
   select.ng-invalid.ng-touched {
     border: 1px solid red;
     outline-color: red;
-  }
-
-  select {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
   }
 
   button {

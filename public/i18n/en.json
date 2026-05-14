@@ -1,0 +1,43 @@
+{
+  "IDIOMA": {
+    "PORTUGUES": "Portuguese",
+    "INGLES": "English"
+  },
+  "ALUNO": {
+    "BOTOES": {
+      "ADICIONAR_ALUNO": "Add Student",
+      "CANCELAR": "Cancel"
+    },
+    "MODAL": {
+      "CADASTRO_TITULO": "Student Registration"
+    },
+    "FORMULARIO": {
+      "NOME_LABEL": "Full Name",
+      "NOME_PLACEHOLDER": "Enter the name",
+      "CPF_LABEL": "CPF",
+      "CPF_PLACEHOLDER": "Enter the CPF",
+      "EMAIL_LABEL": "Email",
+      "EMAIL_PLACEHOLDER": "Enter the email",
+      "EMAIL_INVALIDO": "Invalid email",
+      "DATA_NASCIMENTO_LABEL": "Date of Birth",
+      "DATA_NASCIMENTO_PLACEHOLDER": "Enter the date of birth",
+      "SEXO_LABEL": "Gender:",
+      "SEXO_SELECIONE": "Select",
+      "SEXO_MASCULINO": "Male",
+      "SEXO_FEMININO": "Female",
+      "SEXO_OUTRO": "Other"
+    }
+  },
+  "VALIDACAO": {
+    "OBRIGATORIO": "This field is required.",
+    "DATA_FUTURA": "The date cannot be today or in the future.",
+    "IDADE_MAXIMA": "Age cannot exceed 120 years.",
+    "DOCUMENTO_INVALIDO": "The document must have 11 (CPF) or 14 (CNPJ) digits.",
+    "CPF_INVALIDO": "Invalid CPF. Please check the digits entered.",
+    "CNPJ_INVALIDO": "Invalid CNPJ. Please check the digits entered."
+  },
+  "MENSAGEM": {
+    "FORMULARIO_INVALIDO": "Invalid Form.",
+    "ERRO_CADASTRO_ALUNO": "An error occurred while registering the student."
+  }
+}

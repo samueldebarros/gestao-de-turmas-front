@@ -1,0 +1,7 @@
+@if (visivel) {
+  <div class="caixa-mensagem" [class]="tipo">
+    <span> {{ texto | translate }} </span>
+
+    <button type="button" class="botao-fechar" (click)="fecharMensagem()">X</button>
+  </div>
+}
