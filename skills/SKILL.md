@@ -1,4 +1,7 @@
-# Projeto: Gestão de Turmas - Skill Guide
+---
+name: gestao-turmas-front-skill-architecture
+description: Guia de arquitetura local e padrões de implementação para o front-end. Detalha regras de smart/dumb components, reatividade com RxJS, tratamento de DTOs e internacionalização (i18n).
+---
 
 ## Objetivo
 
@@ -43,6 +46,6 @@
 
 ## Referências específicas
 
-- Para padrões RxJS e integração HTTP, consulte `project-guidelines/SKILL-rxjs-reactive-patterns.md`
-- Para modelagem de dados, enums e DTOs, consulte `project-guidelines/SKILL-data-modeling-contracts.md`
+- Para padrões RxJS e integração HTTP, consulte `skills/SKILL-rxjs-reactive-patterns.md`
+- Para modelagem de dados, enums e DTOs, consulte `skills/SKILL-data-modeling-contracts.md`
 - Para regras gerais de Angular e acessibilidade, consulte `AGENTS.md`

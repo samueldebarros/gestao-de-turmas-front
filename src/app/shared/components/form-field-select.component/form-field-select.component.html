@@ -5,7 +5,7 @@
     (blur)="onTouched()"
     [disabled]="isDisabled"
     [value]="valorAtual"
-    [class.select-error]="errorMessage"
+    [class.select-error]="exibirErro"
   >
     <option value="" disabled>
       {{ placeholder | translate }}
@@ -18,7 +18,7 @@
     }
   </select>
 
-  @if (errorMessage) {
+  @if (exibirErro) {
     <span class="error-message">{{ errorMessage }}</span>
   }
 </div>

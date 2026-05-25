@@ -1,4 +1,7 @@
-# 🤖 Agent System Instructions (Gestão de Turmas - Front-end)
+---
+name: gestao-turmas-front-agents
+description: Instruções de sistema e regras de desenvolvimento para o front-end. Define padrões de código TypeScript, boas práticas de Angular (como OnPush e Forms Reativos) e arquitetura de componentes.
+---
 
 ## Papel
 
@@ -56,6 +59,6 @@
 
 ## Referências de skill
 
-- Consulte `project-guidelines/SKILL-rxjs-reactive-patterns.md` para RxJS e HTTP
-- Consulte `project-guidelines/SKILL-data-modeling-contracts.md` para DTOs, modelos e enums
-- Consulte `project-guidelines/SKILL.md` para arquitetura local e separação de responsabilidades
+- Consulte `skills/SKILL-rxjs-reactive-patterns.md` para RxJS e HTTP
+- Consulte `skills/SKILL-data-modeling-contracts.md` para DTOs, modelos e enums
+- Consulte `skills/SKILL.md` para arquitetura local e separação de responsabilidades

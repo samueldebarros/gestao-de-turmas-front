@@ -6,16 +6,21 @@
   "ALUNO": {
     "BOTOES": {
       "ADICIONAR_ALUNO": "Add Student",
-      "CANCELAR": "Cancel"
+      "SALVAR_ALTERACOES": "Save Changes",
+      "CANCELAR": "Cancel",
+      "EDITAR": "Edit",
+      "INATIVAR": "Inactivate",
+      "REATIVAR": "Reactivate"
     },
     "MODAL": {
-      "CADASTRO_TITULO": "Student Registration"
+      "CADASTRO_TITULO": "Student Registration",
+      "EDICAO_TITULO": "Edit Student"
     },
     "FORMULARIO": {
       "NOME_LABEL": "Full Name",
       "NOME_PLACEHOLDER": "Enter the name",
-      "CPF_LABEL": "CPF",
-      "CPF_PLACEHOLDER": "Enter the CPF",
+      "CPF_LABEL": "CPF/CNPJ",
+      "CPF_PLACEHOLDER": "Enter the CPF/CNPJ",
       "EMAIL_LABEL": "Email",
       "EMAIL_PLACEHOLDER": "Enter the email",
       "EMAIL_INVALIDO": "Invalid email",
@@ -25,7 +30,25 @@
       "SEXO_SELECIONE": "Select",
       "SEXO_MASCULINO": "Male",
       "SEXO_FEMININO": "Female",
-      "SEXO_OUTRO": "Other"
+      "SEXO_OUTRO": "Other",
+      "STATUS": "Status",
+      "STATUS_ATIVO": "Active",
+      "STATUS_INATIVO": "Inactive"
+    }
+  },
+  "TABELA": {
+    "COLUNAS": {
+      "ALUNO": {
+        "CODIGO": "Code",
+        "MATRICULA": "Registration",
+        "NOME": "Full Name",
+        "CPF_CNPJ": "CPF/CNPJ",
+        "DATA_NASCIMENTO": "Date of Birth",
+        "EMAIL": "E-mail",
+        "SEXO": "Gender",
+        "STATUS": "Status"
+      },
+      "ACOES": "Actions"
     }
   },
   "VALIDACAO": {
@@ -38,6 +61,13 @@
   },
   "MENSAGEM": {
     "FORMULARIO_INVALIDO": "Invalid Form.",
-    "ERRO_CADASTRO_ALUNO": "An error occurred while registering the student."
+    "ERRO_CADASTRO_ALUNO": "An error occurred while registering the student.",
+    "ERRO_EDICAO_ALUNO": "An error occurred while editing the student.",
+    "ERRO_INATIVAR_ALUNO": "An error occurred while deactivating the student.",
+    "ERRO_REATIVAR_ALUNO": "An error occurred while reactivating the student.",
+    "SUCESSO_CADASTRO_ALUNO": "Student registered successfully.",
+    "SUCESSO_EDICAO_ALUNO": "Student updated successfully.",
+    "SUCESSO_INATIVAR_ALUNO": "Student deactivated successfully.",
+    "SUCESSO_REATIVAR_ALUNO": "Student reactivated successfully."
   }
 }

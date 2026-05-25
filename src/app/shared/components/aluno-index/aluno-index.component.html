@@ -1,16 +1,17 @@
-<div class="container">
-  <div class="botoes-idioma">
-    <app-botao (acaoBotao)="trocarIdioma('pt-BR')" [variante]="'secundario'">
-      {{ 'IDIOMA.PORTUGUES' | translate }}</app-botao
-    >
-    <app-botao (acaoBotao)="trocarIdioma('en')" [variante]="'secundario'">
-      {{ 'IDIOMA.INGLES' | translate }}</app-botao
-    >
-  </div>
+<div class="alerta-pagina">
+  <app-mensagem
+    [(visivel)]="mostrarAlertaPagina"
+    [tipo]="tipoAlertaPagina"
+    [texto]="textoAlertaPagina"
+  ></app-mensagem>
+</div>
 
+<div class="container">
   <app-tabela-generica
     [dados]="(listaAlunos$ | async) || []"
     [colunas]="colunas"
+    [acoes]="acoesTabela"
+    (acaoClicada)="definirAcao($event)"
   ></app-tabela-generica>
 
   <div class="botoes">
@@ -19,54 +20,46 @@
     }}</app-botao>
   </div>
 
-  <app-modal [titulo]="'ALUNO.MODAL.CADASTRO_TITULO' | translate" [(visivel)]="isModalAberto">
+  <app-modal [titulo]="tituloModal | translate" [(visivel)]="isModalAberto">
     <app-mensagem
       [(visivel)]="mostrarAlerta"
       [tipo]="tipoAlerta"
       [texto]="textoAlerta"
     ></app-mensagem>
 
-    <form [formGroup]="alunoForm" (ngSubmit)="AdicionarAluno()" class="formAluno">
+    <form [formGroup]="alunoForm" (ngSubmit)="salvarAluno()" class="formAluno">
       <app-form-field-text
         [label]="'ALUNO.FORMULARIO.NOME_LABEL' | translate"
         [placeholder]="'ALUNO.FORMULARIO.NOME_PLACEHOLDER' | translate"
         formControlName="nome"
-        [errorMessage]="
-          alunoForm.get('nome')?.invalid && alunoForm.get('nome')?.touched
-            ? ('VALIDACAO.OBRIGATORIO' | translate)
-            : ''
-        "
-      >
-      </app-form-field-text>
+        [control]="alunoForm.get('nome')"
+        [errorMessage]="'VALIDACAO.OBRIGATORIO' | translate"
+      ></app-form-field-text>
 
       <app-form-field-text
         [label]="'ALUNO.FORMULARIO.CPF_LABEL' | translate"
         [placeholder]="'ALUNO.FORMULARIO.CPF_PLACEHOLDER' | translate"
         formControlName="cpf"
+        [control]="alunoForm.get('cpf')"
         [errorMessage]="obterErroCpfCnpj()"
-      >
-      </app-form-field-text>
+      ></app-form-field-text>
 
       <app-form-field-text
         [label]="'ALUNO.FORMULARIO.EMAIL_LABEL' | translate"
         [placeholder]="'ALUNO.FORMULARIO.EMAIL_PLACEHOLDER' | translate"
         formControlName="email"
-        [errorMessage]="
-          alunoForm.get('email')?.invalid && alunoForm.get('email')?.touched
-            ? ('ALUNO.FORMULARIO.EMAIL_INVALIDO' | translate)
-            : ''
-        "
-      >
-      </app-form-field-text>
+        [control]="alunoForm.get('email')"
+        [errorMessage]="'ALUNO.FORMULARIO.EMAIL_INVALIDO' | translate"
+      ></app-form-field-text>
 
       <app-form-field-text
         [label]="'ALUNO.FORMULARIO.DATA_NASCIMENTO_LABEL' | translate"
         [placeholder]="'ALUNO.FORMULARIO.DATA_NASCIMENTO_PLACEHOLDER' | translate"
         formControlName="dataNascimento"
         type="date"
+        [control]="alunoForm.get('dataNascimento')"
         [errorMessage]="obterErroDataNascimento()"
-      >
-      </app-form-field-text>
+      ></app-form-field-text>
 
       <app-form-field-select
         [label]="'ALUNO.FORMULARIO.SEXO_LABEL' | translate"
@@ -74,16 +67,12 @@
         [formGroup]="alunoForm"
         [options]="opcoesSexo"
         formControlName="sexo"
-        [errorMessage]="
-          alunoForm.get('sexo')?.invalid && alunoForm.get('sexo')?.touched
-            ? ('VALIDACAO.OBRIGATORIO' | translate)
-            : ''
-        "
-      >
-      </app-form-field-select>
+        [control]="alunoForm.get('sexo')"
+        [errorMessage]="'VALIDACAO.OBRIGATORIO' | translate"
+      ></app-form-field-select>
 
       <app-botao [tipo]="'submit'" [variante]="'primario'">
-        {{ 'ALUNO.BOTOES.ADICIONAR_ALUNO' | translate }}
+        {{ rotuloSubmit | translate }}
       </app-botao>
 
       <app-botao [tipo]="'button'" (acaoBotao)="fecharModal()" [variante]="'perigo'">

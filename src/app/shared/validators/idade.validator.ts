@@ -11,9 +11,9 @@ export class IdadeValidator {
             }
 
             const partesData = valorDigitado.split('-');
-            const anoNascimento = parseInt(partesData[0], 10);
-            const mesNascimento = parseInt(partesData[1], 10) - 1;
-            const diaNascimento = parseInt(partesData[2], 10);
+            const anoNascimento = Number.parseInt(partesData[0], 10);
+            const mesNascimento = Number.parseInt(partesData[1], 10) - 1;
+            const diaNascimento = Number.parseInt(partesData[2], 10);
 
             const dataNascimento = new Date(anoNascimento, mesNascimento, diaNascimento);
 

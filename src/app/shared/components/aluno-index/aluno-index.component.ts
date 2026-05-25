@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { TabelaGenerica } from '../tabela-generica/tabela-generica.component.js';
 import { TabelaColuna } from '../../interfaces/tabela-coluna.interface.js';
 import { Botao } from '../botao/botao.component.js';
@@ -17,12 +17,19 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { SelectOptionInterface } from '../../interfaces/select-option.interface.js';
 import { FormFieldSelectComponent } from '../form-field-select.component/form-field-select.component.js';
 import { MensagemComponent } from '../mensagem.component/mensagem.component';
-import { AlunoService } from '../../../core/services/aluno.service.js';
-import { Observable, catchError, map, of, tap } from 'rxjs';
-import { AsyncPipe } from '@angular/common';
+import { AlunoFacadeService } from '../../../core/facades/aluno-facade.service.js';
+import { Observable, catchError, of, tap } from 'rxjs';
+import { AsyncPipe, DatePipe } from '@angular/common';
 import { AlunoModel } from '../../models/aluno.model.js';
 import { SexoEnum } from '../../enums/sexo.enum.js';
-import { AlunoCreateDTO } from '../../interfaces/aluno-create-dto.interface.js';
+import { AlunoAdicionarDTO } from '../../interfaces/aluno-adicionar-dto.interface.js';
+import { AlunoEditarDTO } from '../../interfaces/aluno-editar-dto.interface.js';
+import { AcaoTabela } from '../../interfaces/acao-tabela.interface.js';
+import { EventoAcaoTabela } from '../../interfaces/evento-acao-tabela.interface.js';
+import { AlunoInterface } from '../../interfaces/aluno.interface.js';
+import { formatarCpfCnpj } from '../../utils/cpf-cnpj.utils';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { SexoFormatPipe } from '../../pipes/sexo-format.pipe.js';
 
 @Component({
   selector: 'app-aluno-index',
@@ -40,34 +47,107 @@ import { AlunoCreateDTO } from '../../interfaces/aluno-create-dto.interface.js';
   ],
   templateUrl: './aluno-index.component.html',
   styleUrl: './aluno-index.component.scss',
+  providers: [DatePipe, SexoFormatPipe],
 })
 export class AlunoIndex implements OnInit {
-  listaAlunos$!: Observable<AlunoModel[]>;
+  public listaAlunos$!: Observable<AlunoModel[]>;
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly facade = inject(AlunoFacadeService);
+  private readonly sexoFormatPipe = inject(SexoFormatPipe);
 
   constructor(
     private readonly fb: FormBuilder,
     private readonly translate: TranslateService,
-    private readonly alunoService: AlunoService,
+    private readonly datePipe: DatePipe,
   ) {}
 
-  colunas: TabelaColuna[] = [
-    { chave: 'id', titulo: 'Cód.' },
-    { chave: 'matricula', titulo: 'Matrícula' },
-    { chave: 'nome', titulo: 'Nome Completo' },
-    { chave: 'cpf', titulo: 'CPF' },
-    { chave: 'dataNascimento', titulo: 'Data de Nascimento' },
-    { chave: 'email', titulo: 'E-mail' },
-    { chave: 'sexoDescricao', titulo: 'Sexo' },
-    { chave: 'ativo', titulo: 'Ativo' },
+  public colunas: TabelaColuna[] = [
+    { chave: 'id', titulo: 'TABELA.COLUNAS.ALUNO.CODIGO' },
+    { chave: 'matricula', titulo: 'TABELA.COLUNAS.ALUNO.MATRICULA' },
+    { chave: 'nome', titulo: 'TABELA.COLUNAS.ALUNO.NOME' },
+    {
+      chave: 'cpf',
+      titulo: 'TABELA.COLUNAS.ALUNO.CPF_CNPJ',
+      formatador: (v) => formatarCpfCnpj(v),
+      cssClassCelula: () => 'nowrap',
+    },
+    {
+      chave: 'dataNascimento',
+      titulo: 'TABELA.COLUNAS.ALUNO.DATA_NASCIMENTO',
+      formatador: (v) => this.datePipe.transform(v, 'dd/MM/yyyy') ?? '',
+    },
+    { chave: 'email', titulo: 'TABELA.COLUNAS.ALUNO.EMAIL' },
+    {
+      chave: 'sexo',
+      titulo: 'TABELA.COLUNAS.ALUNO.SEXO',
+      formatador: (v) => this.sexoFormatPipe.transform(v),
+      cssClassCelula: () => '',
+    },
+    {
+      chave: 'ativo',
+      titulo: 'TABELA.COLUNAS.ALUNO.STATUS',
+      cssClassCabecalho: 'coluna-centralizada',
+      cssClassCelula: (v) => (v ? 'badge badge-ativo' : 'badge badge-inativo'),
+      formatador: (v) => (v ? 'ALUNO.FORMULARIO.STATUS_ATIVO' : 'ALUNO.FORMULARIO.STATUS_INATIVO'),
+    },
   ];
 
-  opcoesSexo: SelectOptionInterface[] = [
+  public opcoesSexo: SelectOptionInterface[] = [
     { value: 1, label: 'ALUNO.FORMULARIO.SEXO_MASCULINO' },
     { value: 2, label: 'ALUNO.FORMULARIO.SEXO_FEMININO' },
     { value: 3, label: 'ALUNO.FORMULARIO.SEXO_OUTRO' },
   ];
 
-  alunoForm!: FormGroup<{
+  public acoesTabela: AcaoTabela[] = [
+    { id: 'editar', rotulo: 'ALUNO.BOTOES.EDITAR', varianteBotao: 'primario' },
+    {
+      id: 'inativar',
+      rotulo: 'ALUNO.BOTOES.INATIVAR',
+      varianteBotao: 'perigo',
+      condicaoVisibilidade: (aluno: AlunoInterface) => aluno.ativo === true,
+    },
+    {
+      id: 'reativar',
+      rotulo: 'ALUNO.BOTOES.REATIVAR',
+      varianteBotao: 'sucesso',
+      condicaoVisibilidade: (aluno: AlunoInterface) => aluno.ativo === false,
+    },
+  ];
+
+  private modoModal: 'adicionar' | 'editar' = 'adicionar';
+  private alunoEmEdicao: AlunoInterface | null = null;
+
+  public get tituloModal(): string {
+    return this.modoModal === 'editar'
+      ? 'ALUNO.MODAL.EDICAO_TITULO'
+      : 'ALUNO.MODAL.CADASTRO_TITULO';
+  }
+
+  public get rotuloSubmit(): string {
+    return this.modoModal === 'editar'
+      ? 'ALUNO.BOTOES.SALVAR_ALTERACOES'
+      : 'ALUNO.BOTOES.ADICIONAR_ALUNO';
+  }
+
+  public definirAcao(evento: EventoAcaoTabela<AlunoInterface>) {
+    switch (evento.acaoId) {
+      case 'editar':
+        this.alunoEmEdicao = evento.item;
+        this.modoModal = 'editar';
+        this.abrirModalEdicao(evento.item);
+        break;
+      case 'inativar':
+        this.inativarAluno(evento.item.id);
+        break;
+      case 'reativar':
+        this.reativarAluno(evento.item.id);
+        break;
+      default:
+        console.warn(`Ação não reconhecida: ${evento.acaoId}`);
+    }
+  }
+
+  public alunoForm!: FormGroup<{
     nome: FormControl<string | null>;
     cpf: FormControl<string | null>;
     email: FormControl<string | null>;
@@ -75,7 +155,7 @@ export class AlunoIndex implements OnInit {
     sexo: FormControl<number | null>;
   }>;
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.alunoForm = this.fb.group({
       nome: ['', [Validators.required, Validators.minLength(3)]],
       cpf: ['', [Validators.required, CpfCnpjValidator.validarCpfCnpj()]],
@@ -84,7 +164,7 @@ export class AlunoIndex implements OnInit {
       sexo: new FormControl<number | null>(null, Validators.required),
     });
 
-    this.carregarAlunos();
+    this.listaAlunos$ = this.facade.alunos$;
 
     const valoresNumericosSexoEnum = Object.values(SexoEnum).filter(
       (valor) => typeof valor === 'number',
@@ -92,39 +172,86 @@ export class AlunoIndex implements OnInit {
 
     this.opcoesSexo = valoresNumericosSexoEnum.map((valor) => ({
       value: valor,
-      label: this.obterChaveTraducaoSexo(valor),
+      label: this.sexoFormatPipe.transform(valor),
     }));
   }
 
-  carregarAlunos(): void {
-    this.listaAlunos$ = this.alunoService.buscarAlunos().pipe(
-      map(
-        (dadosRetornados) =>
-          dadosRetornados.map((aluno) => ({
-            ...aluno,
-            sexoDescricao: this.obterDescricaoSexo(aluno.sexo),
-          })) as AlunoModel[],
-      ),
-    );
+  private abrirModalEdicao(aluno: AlunoInterface): void {
+    this.alunoForm.patchValue({
+      nome: aluno.nome,
+      email: aluno.email,
+      sexo: aluno.sexo,
+      cpf: formatarCpfCnpj(aluno.cpf),
+      dataNascimento: this.formatarDataParaFormulario(aluno.dataNascimento),
+    });
+    this.alunoForm.get('cpf')?.disable();
+    this.isModalAberto = true;
   }
 
-  private criarAlunoParaEnvio(): AlunoCreateDTO {
+  private formatarDataParaFormulario(data: Date | string): string {
+    return this.datePipe.transform(data, 'yyyy-MM-dd') ?? '';
+  }
+
+  public salvarAluno(): void {
+    if (this.modoModal === 'editar') this.editarAluno();
+    else this.adicionarAluno();
+  }
+
+  private editarAluno(): void {
+    if (this.alunoForm.invalid) {
+      this.tipoAlerta = 'erro';
+      this.textoAlerta = 'MENSAGEM.FORMULARIO_INVALIDO';
+      this.mostrarAlerta = true;
+      return;
+    }
+    const payload: AlunoEditarDTO = {
+      id: this.alunoEmEdicao!.id,
+      nome: this.alunoForm.value.nome!.trim(),
+      email: this.alunoForm.value.email!.trim(),
+      sexo: Number(this.alunoForm.value.sexo),
+      dataNascimento: this.alunoForm.value.dataNascimento!,
+    };
+    this.facade
+      .editar(payload)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        tap(() => {
+          this.fecharModal();
+          this.tipoAlertaPagina = 'sucesso';
+          this.textoAlertaPagina = 'MENSAGEM.SUCESSO_EDICAO_ALUNO';
+          this.mostrarAlertaPagina = true;
+        }),
+        catchError(() => {
+          this.tipoAlerta = 'erro';
+          this.textoAlerta = 'MENSAGEM.ERRO_EDICAO_ALUNO';
+          this.mostrarAlerta = true;
+          return of(null);
+        }),
+      )
+      .subscribe();
+  }
+
+  private criarAlunoParaEnvio(): AlunoAdicionarDTO {
     const formValues = this.alunoForm.value;
 
     return {
       nome: formValues.nome!.trim(),
       cpf: formValues.cpf!.trim(),
       email: formValues.email!.trim(),
-      dataNascimento: this.formatarDataParaApi(formValues.dataNascimento!),
+      dataNascimento: this.alunoForm.value.dataNascimento!,
       sexo: Number(formValues.sexo),
     };
   }
 
-  mostrarAlerta: boolean = false;
-  tipoAlerta: 'sucesso' | 'erro' = 'sucesso';
-  textoAlerta: string = '';
+  public mostrarAlerta: boolean = false;
+  public tipoAlerta: 'sucesso' | 'erro' = 'sucesso';
+  public textoAlerta: string = '';
 
-  AdicionarAluno() {
+  public mostrarAlertaPagina: boolean = false;
+  public tipoAlertaPagina: 'sucesso' | 'erro' = 'erro';
+  public textoAlertaPagina: string = '';
+
+  private adicionarAluno() {
     if (this.alunoForm.invalid) {
       this.tipoAlerta = 'erro';
       this.textoAlerta = 'MENSAGEM.FORMULARIO_INVALIDO';
@@ -133,12 +260,15 @@ export class AlunoIndex implements OnInit {
     }
     const novoAluno = this.criarAlunoParaEnvio();
 
-    this.alunoService
-      .adicionarAluno(novoAluno)
+    this.facade
+      .adicionar(novoAluno)
       .pipe(
+        takeUntilDestroyed(this.destroyRef),
         tap(() => {
           this.fecharModal();
-          this.carregarAlunos();
+          this.tipoAlertaPagina = 'sucesso';
+          this.textoAlertaPagina = 'MENSAGEM.SUCESSO_CADASTRO_ALUNO';
+          this.mostrarAlertaPagina = true;
         }),
         catchError(() => {
           this.tipoAlerta = 'erro';
@@ -150,94 +280,75 @@ export class AlunoIndex implements OnInit {
       .subscribe();
   }
 
-  private formatarDataParaApi(dataNascimento: string): string {
-    const [ano, mes, dia] = dataNascimento.split('-');
-    return `${ano.padStart(4, '0')}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
+  private inativarAluno(id: number) {
+    this.facade
+      .inativar(id)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        tap(() => {
+          this.tipoAlertaPagina = 'sucesso';
+          this.textoAlertaPagina = 'MENSAGEM.SUCESSO_INATIVAR_ALUNO';
+          this.mostrarAlertaPagina = true;
+        }),
+        catchError(() => {
+          this.tipoAlertaPagina = 'erro';
+          this.textoAlertaPagina = 'MENSAGEM.ERRO_INATIVAR_ALUNO';
+          this.mostrarAlertaPagina = true;
+          return of(null);
+        }),
+      )
+      .subscribe();
   }
 
-  obterDescricaoSexo(valorEnum: number): string {
-    switch (Number(valorEnum)) {
-      case 1:
-        return this.translate.instant('ALUNO.FORMULARIO.SEXO_MASCULINO');
-      case 2:
-        return this.translate.instant('ALUNO.FORMULARIO.SEXO_FEMININO');
-      case 3:
-        return this.translate.instant('ALUNO.FORMULARIO.SEXO_OUTRO');
-      default:
-        return '-';
-    }
+  private reativarAluno(id: number) {
+    this.facade
+      .reativar(id)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        tap(() => {
+          this.tipoAlertaPagina = 'sucesso';
+          this.textoAlertaPagina = 'MENSAGEM.SUCESSO_REATIVAR_ALUNO';
+          this.mostrarAlertaPagina = true;
+        }),
+        catchError(() => {
+          this.tipoAlertaPagina = 'erro';
+          this.textoAlertaPagina = 'MENSAGEM.ERRO_REATIVAR_ALUNO';
+          this.mostrarAlertaPagina = true;
+          return of(null);
+        }),
+      )
+      .subscribe();
   }
 
-  obterErroCpfCnpj(): string {
+  public obterErroCpfCnpj(): string {
     const controle = this.alunoForm.get('cpf');
-
-    if (controle?.invalid && controle?.touched) {
-      if (controle.hasError('required')) {
-        return this.translate.instant('VALIDACAO.OBRIGATORIO');
-      }
-
-      if (controle.hasError('documentoInvalido')) {
-        return this.translate.instant('VALIDACAO.DOCUMENTO_INVALIDO');
-      }
-
-      if (controle.hasError('cpfInvalido')) {
-        return this.translate.instant('VALIDACAO.CPF_INVALIDO');
-      }
-
-      if (controle.hasError('cnpjInvalido')) {
-        return this.translate.instant('VALIDACAO.CNPJ_INVALIDO');
-      }
-    }
-
+    if (controle?.hasError('required')) return this.translate.instant('VALIDACAO.OBRIGATORIO');
+    if (controle?.hasError('documentoInvalido')) return this.translate.instant('VALIDACAO.DOCUMENTO_INVALIDO');
+    if (controle?.hasError('cpfInvalido')) return this.translate.instant('VALIDACAO.CPF_INVALIDO');
+    if (controle?.hasError('cnpjInvalido')) return this.translate.instant('VALIDACAO.CNPJ_INVALIDO');
     return '';
   }
 
-  obterErroDataNascimento(): string {
+  public obterErroDataNascimento(): string {
     const controle = this.alunoForm.get('dataNascimento');
-
-    if (controle?.invalid && controle?.touched) {
-      if (controle.hasError('required')) {
-        return this.translate.instant('VALIDACAO.OBRIGATORIO');
-      }
-
-      if (controle.hasError('dataFuturaOuPresente')) {
-        return this.translate.instant('VALIDACAO.DATA_FUTURA');
-      }
-
-      if (controle.hasError('idadeMaximaExcedida')) {
-        return this.translate.instant('VALIDACAO.IDADE_MAXIMA');
-      }
-    }
-
+    if (controle?.hasError('required')) return this.translate.instant('VALIDACAO.OBRIGATORIO');
+    if (controle?.hasError('dataFuturaOuPresente')) return this.translate.instant('VALIDACAO.DATA_FUTURA');
+    if (controle?.hasError('idadeMaximaExcedida')) return this.translate.instant('VALIDACAO.IDADE_MAXIMA');
     return '';
   }
 
-  obterChaveTraducaoSexo(valorEnum: number): string {
-    switch (valorEnum) {
-      case SexoEnum.MASCULINO:
-        return 'ALUNO.FORMULARIO.SEXO_MASCULINO';
-      case SexoEnum.FEMININO:
-        return 'ALUNO.FORMULARIO.SEXO_FEMININO';
-      case SexoEnum.OUTRO:
-        return 'ALUNO.FORMULARIO.SEXO_OUTRO';
-      default:
-        return '';
-    }
-  }
+  public isModalAberto: boolean = false;
 
-  isModalAberto: boolean = false;
-
-  abrirModal() {
+  public abrirModal() {
     this.isModalAberto = true;
   }
 
-  fecharModal() {
+  public fecharModal() {
     this.isModalAberto = false;
     this.mostrarAlerta = false;
+    this.modoModal = 'adicionar';
+    this.alunoEmEdicao = null;
+    this.alunoForm.get('cpf')?.enable();
     this.alunoForm.reset();
-  }
-
-  trocarIdioma(idioma: string) {
-    this.translate.use(idioma);
   }
 }

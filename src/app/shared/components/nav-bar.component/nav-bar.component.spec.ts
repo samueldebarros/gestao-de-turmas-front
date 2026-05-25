@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TabelaGenerica } from './tabela-generica.component';
+import { NavBarComponent } from './nav-bar.component';
 
-describe('TabelaGenerica', () => {
-  let component: TabelaGenerica;
-  let fixture: ComponentFixture<TabelaGenerica>;
+describe('NavBarComponent', () => {
+  let component: NavBarComponent;
+  let fixture: ComponentFixture<NavBarComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TabelaGenerica],
+      imports: [NavBarComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(TabelaGenerica);
+    fixture = TestBed.createComponent(NavBarComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

@@ -9,10 +9,11 @@
     (input)="onInput($event)"
     (blur)="onTouched()"
     [value]="inputAtual"
-    [class.input-error]="errorMessage"
+    [disabled]="disabled"
+    [class.input-error]="exibirErro"
   />
 
-  @if (errorMessage) {
+  @if (exibirErro) {
     <span class="error-message" role="alert">
       {{ errorMessage }}
     </span>

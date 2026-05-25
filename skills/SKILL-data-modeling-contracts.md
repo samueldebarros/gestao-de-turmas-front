@@ -1,4 +1,7 @@
-# Skill: Modelagem de Dados e Contratos (Classes, DTOs, Enums)
+---
+name: gestao-turmas-front-skill-data-modeling
+description: Diretrizes para modelagem de dados, contratos de API, DTOs, enums estruturados e internacionalização (i18n). Define a hierarquia de tipos e a tipagem estrita de formulários reativos no Angular.
+---
 
 ## Hierarquia de Classes e Interfaces
 
@@ -62,7 +65,7 @@
 
 ## I18n (Internacionalização)
 
-- Todas as strings visíveis em português/inglês via `i18n/*.json`.
+- Todas as strings visíveis em português/inglês via `public/i18n/*.json`.
 - Use chaves estruturadas: `ALUNO.FORMULARIO.NOME_LABEL`, `VALIDACAO.OBRIGATORIO`.
 - Injete `TranslateService` em componentes que precisam tradução dinâmica.
 - Use `translate.instant('CHAVE')` para síncrono, `async pipe` para observables.

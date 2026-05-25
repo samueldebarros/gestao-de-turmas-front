@@ -1,8 +1,8 @@
 import { SexoEnum } from '../enums/sexo.enum';
 
-export interface AlunoCreateDTO {
+export interface AlunoEditarDTO {
+  id: number;
   nome: string;
-  cpf: string;
   email: string;
   sexo: SexoEnum;
   dataNascimento: string;

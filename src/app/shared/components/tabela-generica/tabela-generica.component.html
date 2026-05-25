@@ -3,7 +3,11 @@
     <thead>
       <tr>
         @for (coluna of colunas; track coluna) {
-          <th>{{ coluna.titulo }}</th>
+          <th [class]="coluna.cssClassCabecalho || ''">{{ coluna.titulo | translate }}</th>
+        }
+
+        @if (acoes.length > 0) {
+          <th class="cabecalho-acoes">{{ 'TABELA.COLUNAS.ACOES' | translate }}</th>
         }
       </tr>
     </thead>
@@ -12,11 +16,38 @@
         <tr>
           @for (coluna of colunas; track coluna.chave) {
             <td>
-              @if (coluna.chave === 'dataNascimento') {
-                {{ $any(item)[coluna.chave] | date: 'dd/MM/yyyy' }}
+              @if (coluna.cssClassCelula) {
+                <span [class]="coluna.cssClassCelula($any(item)[coluna.chave])">
+                  {{
+                    coluna.formatador
+                      ? (coluna.formatador($any(item)[coluna.chave]) | translate)
+                      : ($any(item)[coluna.chave] | translate)
+                  }}
+                </span>
               } @else {
-                {{ $any(item)[coluna.chave] }}
+                {{
+                  coluna.formatador
+                    ? coluna.formatador($any(item)[coluna.chave])
+                    : $any(item)[coluna.chave]
+                }}
               }
+            </td>
+          }
+
+          @if (acoes.length > 0) {
+            <td class="celula-acoes">
+              <div class="botoes-wrapper">
+                @for (acao of acoes; track acao.id) {
+                  @if (!acao.condicaoVisibilidade || acao.condicaoVisibilidade(item)) {
+                    <app-botao
+                      [variante]="acao.varianteBotao"
+                      (click)="dispararAcao(acao.id, item)"
+                    >
+                      {{ acao.rotulo | translate }}
+                    </app-botao>
+                  }
+                }
+              </div>
             </td>
           }
         </tr>

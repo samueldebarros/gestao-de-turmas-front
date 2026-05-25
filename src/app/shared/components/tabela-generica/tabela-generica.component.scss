@@ -5,18 +5,18 @@ $cor-hover-linha: #fef2f2;
 
 .tabela-container {
   margin: 0 auto;
-  overflow-x: auto; 
+  width: 100%;
   border: 1px solid $cor-borda;
   border-radius: 8px;
-
 }
 
 .tabela-customizada {
-  width: 100%; 
+  width: 100%;
   border-collapse: collapse;
-  text-align: left; 
+  text-align: left;
 
-  th, td {
+  th,
+  td {
     padding: 12px 16px;
     border-bottom: 1px solid $cor-borda;
     color: #374151;
@@ -31,6 +31,58 @@ $cor-hover-linha: #fef2f2;
   tbody tr {
     &:nth-child(even) {
       background-color: $cor-fundo-cabecalho;
+    }
+
+    &:hover {
+      background-color: $cor-hover-linha;
+    }
+  }
+
+  .celula-acoes {
+    vertical-align: middle;
+  }
+
+  .coluna-centralizada {
+    text-align: center;
+  }
+
+  .botoes-wrapper {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+
+    app-botao {
+      min-width: 110px;
+    }
+  }
+
+  .nowrap {
+    white-space: nowrap;
+  }
+
+  .cabecalho-acoes {
+    width: 210px;
+    text-align: center;
+  }
+
+  .badge {
+    display: flex;
+    justify-content: center;
+    min-width: 45px;
+    min-height: 10px;
+    color: rgb(255, 255, 255);
+    font-weight: 500;
+    padding: 3px 6px;
+    border-radius: 10px;
+
+    &-ativo {
+      background-color: rgb(16, 173, 16);
+    }
+
+    &-inativo {
+      background-color: rgb(173, 16, 16);
     }
   }
 }

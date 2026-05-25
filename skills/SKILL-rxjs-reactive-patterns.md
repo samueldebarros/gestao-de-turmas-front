@@ -1,4 +1,7 @@
-# Skill: Padrões Reativos e Integração Front-end (RxJS)
+---
+name: gestao-turmas-front-skill-rxjs
+description: Diretrizes de desenvolvimento reativo utilizando RxJS e HttpClient no Angular. Define padrões para criação de streams, gerenciamento de ciclo de vida de requisições, tratamento de erros globais e locais, e vinculação de dados no template via async pipe.
+---
 
 ## Streams e Observables
 

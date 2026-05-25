@@ -1,5 +1,5 @@
 import { Component, forwardRef, Input } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { AbstractControl, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
   selector: 'app-form-field-text',
@@ -19,7 +19,14 @@ export class FormFieldTextComponent implements ControlValueAccessor {
   @Input() placeholder: string = '';
   @Input() type: 'text' | 'password' | 'email' | 'date' = 'text';
   @Input() errorMessage: string = '';
+  @Input() control?: AbstractControl | null;
 
+  get exibirErro(): boolean {
+    if (this.control) return this.control.invalid && this.control.touched;
+    return !!this.errorMessage;
+  }
+
+  disabled = false;
   inputAtual: string = '';
 
   onChange: any = () => {};
@@ -35,6 +42,10 @@ export class FormFieldTextComponent implements ControlValueAccessor {
 
   registerOnTouched(fn: any): void {
     this.onTouched = fn;
+  }
+
+  setDisabledState(isDisabled: boolean): void {
+    this.disabled = isDisabled;
   }
 
   onInput(event: Event) {

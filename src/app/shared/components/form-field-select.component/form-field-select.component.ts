@@ -1,6 +1,6 @@
 import { Component, forwardRef, Input } from '@angular/core';
 import { SelectOptionInterface } from '../../interfaces/select-option.interface';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
+import { AbstractControl, ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
@@ -22,6 +22,12 @@ export class FormFieldSelectComponent implements ControlValueAccessor {
   @Input() placeholder: string = 'Selecione...';
   @Input() options: SelectOptionInterface[] = [];
   @Input() errorMessage: string = '';
+  @Input() control?: AbstractControl | null;
+
+  get exibirErro(): boolean {
+    if (this.control) return this.control.invalid && this.control.touched;
+    return !!this.errorMessage;
+  }
 
   valorAtual: any = '';
   isDisabled: boolean = false;

@@ -6,16 +6,21 @@
   "ALUNO": {
     "BOTOES": {
       "ADICIONAR_ALUNO": "Adicionar Aluno",
-      "CANCELAR": "Cancelar"
+      "SALVAR_ALTERACOES": "Salvar alterações",
+      "CANCELAR": "Cancelar",
+      "EDITAR": "Editar",
+      "INATIVAR": "Inativar",
+      "REATIVAR": "Reativar"
     },
     "MODAL": {
-      "CADASTRO_TITULO": "Cadastro de Aluno"
+      "CADASTRO_TITULO": "Cadastro de Aluno",
+      "EDICAO_TITULO": "Editar Aluno"
     },
     "FORMULARIO": {
       "NOME_LABEL": "Nome Completo",
       "NOME_PLACEHOLDER": "Digite o nome",
-      "CPF_LABEL": "CPF",
-      "CPF_PLACEHOLDER": "Digite o CPF",
+      "CPF_LABEL": "CPF/CNPJ",
+      "CPF_PLACEHOLDER": "Digite o CPF/CNPJ",
       "EMAIL_LABEL": "Email",
       "EMAIL_PLACEHOLDER": "Digite o email",
       "EMAIL_INVALIDO": "Email inválido",
@@ -25,7 +30,25 @@
       "SEXO_SELECIONE": "Selecione",
       "SEXO_MASCULINO": "Masculino",
       "SEXO_FEMININO": "Feminino",
-      "SEXO_OUTRO": "Outro"
+      "SEXO_OUTRO": "Outro",
+      "STATUS": "Status",
+      "STATUS_ATIVO": "Ativo",
+      "STATUS_INATIVO": "Inativo"
+    }
+  },
+  "TABELA": {
+    "COLUNAS": {
+      "ALUNO": {
+        "CODIGO": "Cód.",
+        "MATRICULA": "Matrícula",
+        "NOME": "Nome Completo",
+        "CPF_CNPJ": "CPF/CNPJ",
+        "DATA_NASCIMENTO": "Data de Nascimento",
+        "EMAIL": "E-mail",
+        "SEXO": "Sexo",
+        "STATUS": "Status"
+      },
+      "ACOES": "Ações"
     }
   },
   "VALIDACAO": {
@@ -38,6 +61,13 @@
   },
   "MENSAGEM": {
     "FORMULARIO_INVALIDO": "Formulário inválido.",
-    "ERRO_CADASTRO_ALUNO": "Ocorreu um erro ao cadastrar o aluno."
+    "ERRO_CADASTRO_ALUNO": "Ocorreu um erro ao cadastrar o aluno.",
+    "ERRO_EDICAO_ALUNO": "Ocorreu um erro ao editar o aluno.",
+    "ERRO_INATIVAR_ALUNO": "Ocorreu um erro ao inativar o aluno.",
+    "ERRO_REATIVAR_ALUNO": "Ocorreu um erro ao reativar o aluno.",
+    "SUCESSO_CADASTRO_ALUNO": "Aluno cadastrado com sucesso.",
+    "SUCESSO_EDICAO_ALUNO": "Aluno editado com sucesso.",
+    "SUCESSO_INATIVAR_ALUNO": "Aluno inativado com sucesso.",
+    "SUCESSO_REATIVAR_ALUNO": "Aluno reativado com sucesso."
   }
 }

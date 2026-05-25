@@ -1,0 +1,11 @@
+<div class="navbar">
+  <h3>Gestão de Turmas</h3>
+  <div class="botoes-idioma">
+    <app-botao (acaoBotao)="trocarIdioma('pt-BR')" [variante]="'secundario'">
+      {{ 'IDIOMA.PORTUGUES' | translate }}</app-botao
+    >
+    <app-botao (acaoBotao)="trocarIdioma('en')" [variante]="'secundario'">
+      {{ 'IDIOMA.INGLES' | translate }}</app-botao
+    >
+  </div>
+</div>

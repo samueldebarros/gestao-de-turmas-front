@@ -1,5 +1,15 @@
+.alerta-pagina {
+  position: fixed;
+  bottom: 65px;
+  right: 12px;
+  z-index: 1000;
+  min-width: 300px;
+  max-width: 480px;
+}
+
 .container {
-  width: 50%;
+  width: 100%;
+  max-width: 1250px;
   margin: 0 auto;
   padding: 20px;
   display: flex;
@@ -11,12 +21,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-.botoes-idioma {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
 }
 
 .erro-texto {
