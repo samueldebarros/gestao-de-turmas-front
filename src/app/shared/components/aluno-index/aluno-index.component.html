@@ -41,7 +41,7 @@
         [placeholder]="'ALUNO.FORMULARIO.CPF_PLACEHOLDER' | translate"
         formControlName="cpf"
         [control]="alunoForm.get('cpf')"
-        [errorMessage]="obterErroCpfCnpj()"
+        [errorMessage]="alunoForm.get('cpf') | errorMessage | translate"
       ></app-form-field-text>
 
       <app-form-field-text
@@ -58,7 +58,7 @@
         formControlName="dataNascimento"
         type="date"
         [control]="alunoForm.get('dataNascimento')"
-        [errorMessage]="obterErroDataNascimento()"
+        [errorMessage]="alunoForm.get('dataNascimento') | errorMessage | translate"
       ></app-form-field-text>
 
       <app-form-field-select

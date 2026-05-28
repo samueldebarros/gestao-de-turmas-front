@@ -30,6 +30,7 @@ import { AlunoInterface } from '../../interfaces/aluno.interface.js';
 import { formatarCpfCnpj } from '../../utils/cpf-cnpj.utils';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SexoFormatPipe } from '../../pipes/sexo-format.pipe.js';
+import { ErrorMessagePipe } from '../../pipes/error-message.pipe';
 
 @Component({
   selector: 'app-aluno-index',
@@ -44,6 +45,7 @@ import { SexoFormatPipe } from '../../pipes/sexo-format.pipe.js';
     FormFieldSelectComponent,
     MensagemComponent,
     AsyncPipe,
+    ErrorMessagePipe,
   ],
   templateUrl: './aluno-index.component.html',
   styleUrl: './aluno-index.component.scss',
@@ -54,12 +56,9 @@ export class AlunoIndex implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly facade = inject(AlunoFacadeService);
   private readonly sexoFormatPipe = inject(SexoFormatPipe);
-
-  constructor(
-    private readonly fb: FormBuilder,
-    private readonly translate: TranslateService,
-    private readonly datePipe: DatePipe,
-  ) {}
+  private readonly fb = inject(FormBuilder);
+  private readonly datePipe = inject(DatePipe);
+  private readonly translate = inject(TranslateService);
 
   public colunas: TabelaColuna[] = [
     { chave: 'id', titulo: 'TABELA.COLUNAS.ALUNO.CODIGO' },
@@ -117,6 +116,29 @@ export class AlunoIndex implements OnInit {
   private modoModal: 'adicionar' | 'editar' = 'adicionar';
   private alunoEmEdicao: AlunoInterface | null = null;
 
+  public isModalAberto: boolean = false;
+
+  public mostrarAlerta: boolean = false;
+  public tipoAlerta: 'sucesso' | 'erro' = 'sucesso';
+  public textoAlerta: string = '';
+
+  public mostrarAlertaPagina: boolean = false;
+  public tipoAlertaPagina: 'sucesso' | 'erro' = 'erro';
+  public textoAlertaPagina: string = '';
+
+  public abrirModal() {
+    this.isModalAberto = true;
+  }
+
+  public fecharModal() {
+    this.isModalAberto = false;
+    this.mostrarAlerta = false;
+    this.modoModal = 'adicionar';
+    this.alunoEmEdicao = null;
+    this.alunoForm.get('cpf')?.enable();
+    this.alunoForm.reset();
+  }
+
   public get tituloModal(): string {
     return this.modoModal === 'editar'
       ? 'ALUNO.MODAL.EDICAO_TITULO'
@@ -127,6 +149,12 @@ export class AlunoIndex implements OnInit {
     return this.modoModal === 'editar'
       ? 'ALUNO.BOTOES.SALVAR_ALTERACOES'
       : 'ALUNO.BOTOES.ADICIONAR_ALUNO';
+  }
+
+  private exibirAlertaPagina(tipo: 'sucesso' | 'erro', texto: string): void {
+    this.tipoAlertaPagina = tipo;
+    this.textoAlertaPagina = texto;
+    this.mostrarAlertaPagina = true;
   }
 
   public definirAcao(evento: EventoAcaoTabela<AlunoInterface>) {
@@ -197,6 +225,56 @@ export class AlunoIndex implements OnInit {
     else this.adicionarAluno();
   }
 
+  private criarAlunoParaEnvio(): AlunoAdicionarDTO {
+    const formValues = this.alunoForm.value;
+
+    return {
+      nome: formValues.nome!.trim(),
+      cpf: formValues.cpf!.trim(),
+      email: formValues.email!.trim(),
+      dataNascimento: this.alunoForm.value.dataNascimento!,
+      sexo: Number(formValues.sexo),
+    };
+  }
+
+  private executarAcaoNaLista(
+    acao$: Observable<unknown>,
+    chaveSucesso: string,
+    chaveErro: string,
+    aoSucesso?: () => void,
+  ): void {
+    acao$
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        tap(() => {
+          aoSucesso?.();
+          this.exibirAlertaPagina('sucesso', chaveSucesso);
+        }),
+        catchError(() => {
+          this.exibirAlertaPagina('erro', chaveErro);
+          return of(null);
+        }),
+      )
+      .subscribe();
+  }
+
+  private adicionarAluno() {
+    if (this.alunoForm.invalid) {
+      this.tipoAlerta = 'erro';
+      this.textoAlerta = 'MENSAGEM.FORMULARIO_INVALIDO';
+      this.mostrarAlerta = true;
+      return;
+    }
+    const novoAluno = this.criarAlunoParaEnvio();
+
+    this.executarAcaoNaLista(
+      this.facade.adicionar(novoAluno),
+      'MENSAGEM.SUCESSO_CADASTRO_ALUNO',
+      'MENSAGEM.ERRO_CADASTRO_ALUNO',
+      () => this.fecharModal(),
+    );
+  }
+
   private editarAluno(): void {
     if (this.alunoForm.invalid) {
       this.tipoAlerta = 'erro';
@@ -211,144 +289,28 @@ export class AlunoIndex implements OnInit {
       sexo: Number(this.alunoForm.value.sexo),
       dataNascimento: this.alunoForm.value.dataNascimento!,
     };
-    this.facade
-      .editar(payload)
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        tap(() => {
-          this.fecharModal();
-          this.tipoAlertaPagina = 'sucesso';
-          this.textoAlertaPagina = 'MENSAGEM.SUCESSO_EDICAO_ALUNO';
-          this.mostrarAlertaPagina = true;
-        }),
-        catchError(() => {
-          this.tipoAlerta = 'erro';
-          this.textoAlerta = 'MENSAGEM.ERRO_EDICAO_ALUNO';
-          this.mostrarAlerta = true;
-          return of(null);
-        }),
-      )
-      .subscribe();
-  }
 
-  private criarAlunoParaEnvio(): AlunoAdicionarDTO {
-    const formValues = this.alunoForm.value;
-
-    return {
-      nome: formValues.nome!.trim(),
-      cpf: formValues.cpf!.trim(),
-      email: formValues.email!.trim(),
-      dataNascimento: this.alunoForm.value.dataNascimento!,
-      sexo: Number(formValues.sexo),
-    };
-  }
-
-  public mostrarAlerta: boolean = false;
-  public tipoAlerta: 'sucesso' | 'erro' = 'sucesso';
-  public textoAlerta: string = '';
-
-  public mostrarAlertaPagina: boolean = false;
-  public tipoAlertaPagina: 'sucesso' | 'erro' = 'erro';
-  public textoAlertaPagina: string = '';
-
-  private adicionarAluno() {
-    if (this.alunoForm.invalid) {
-      this.tipoAlerta = 'erro';
-      this.textoAlerta = 'MENSAGEM.FORMULARIO_INVALIDO';
-      this.mostrarAlerta = true;
-      return;
-    }
-    const novoAluno = this.criarAlunoParaEnvio();
-
-    this.facade
-      .adicionar(novoAluno)
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        tap(() => {
-          this.fecharModal();
-          this.tipoAlertaPagina = 'sucesso';
-          this.textoAlertaPagina = 'MENSAGEM.SUCESSO_CADASTRO_ALUNO';
-          this.mostrarAlertaPagina = true;
-        }),
-        catchError(() => {
-          this.tipoAlerta = 'erro';
-          this.textoAlerta = 'MENSAGEM.ERRO_CADASTRO_ALUNO';
-          this.mostrarAlerta = true;
-          return of(null);
-        }),
-      )
-      .subscribe();
+    this.executarAcaoNaLista(
+      this.facade.editar(payload),
+      'MENSAGEM.SUCESSO_EDICAO_ALUNO',
+      'MENSAGEM.ERRO_EDICAO_ALUNO',
+      () => this.fecharModal(),
+    );
   }
 
   private inativarAluno(id: number) {
-    this.facade
-      .inativar(id)
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        tap(() => {
-          this.tipoAlertaPagina = 'sucesso';
-          this.textoAlertaPagina = 'MENSAGEM.SUCESSO_INATIVAR_ALUNO';
-          this.mostrarAlertaPagina = true;
-        }),
-        catchError(() => {
-          this.tipoAlertaPagina = 'erro';
-          this.textoAlertaPagina = 'MENSAGEM.ERRO_INATIVAR_ALUNO';
-          this.mostrarAlertaPagina = true;
-          return of(null);
-        }),
-      )
-      .subscribe();
+    this.executarAcaoNaLista(
+      this.facade.inativar(id),
+      'MENSAGEM.SUCESSO_INATIVAR_ALUNO',
+      'MENSAGEM.ERRO_INATIVAR_ALUNO',
+    );
   }
 
   private reativarAluno(id: number) {
-    this.facade
-      .reativar(id)
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        tap(() => {
-          this.tipoAlertaPagina = 'sucesso';
-          this.textoAlertaPagina = 'MENSAGEM.SUCESSO_REATIVAR_ALUNO';
-          this.mostrarAlertaPagina = true;
-        }),
-        catchError(() => {
-          this.tipoAlertaPagina = 'erro';
-          this.textoAlertaPagina = 'MENSAGEM.ERRO_REATIVAR_ALUNO';
-          this.mostrarAlertaPagina = true;
-          return of(null);
-        }),
-      )
-      .subscribe();
-  }
-
-  public obterErroCpfCnpj(): string {
-    const controle = this.alunoForm.get('cpf');
-    if (controle?.hasError('required')) return this.translate.instant('VALIDACAO.OBRIGATORIO');
-    if (controle?.hasError('documentoInvalido')) return this.translate.instant('VALIDACAO.DOCUMENTO_INVALIDO');
-    if (controle?.hasError('cpfInvalido')) return this.translate.instant('VALIDACAO.CPF_INVALIDO');
-    if (controle?.hasError('cnpjInvalido')) return this.translate.instant('VALIDACAO.CNPJ_INVALIDO');
-    return '';
-  }
-
-  public obterErroDataNascimento(): string {
-    const controle = this.alunoForm.get('dataNascimento');
-    if (controle?.hasError('required')) return this.translate.instant('VALIDACAO.OBRIGATORIO');
-    if (controle?.hasError('dataFuturaOuPresente')) return this.translate.instant('VALIDACAO.DATA_FUTURA');
-    if (controle?.hasError('idadeMaximaExcedida')) return this.translate.instant('VALIDACAO.IDADE_MAXIMA');
-    return '';
-  }
-
-  public isModalAberto: boolean = false;
-
-  public abrirModal() {
-    this.isModalAberto = true;
-  }
-
-  public fecharModal() {
-    this.isModalAberto = false;
-    this.mostrarAlerta = false;
-    this.modoModal = 'adicionar';
-    this.alunoEmEdicao = null;
-    this.alunoForm.get('cpf')?.enable();
-    this.alunoForm.reset();
+    this.executarAcaoNaLista(
+      this.facade.reativar(id),
+      'MENSAGEM.SUCESSO_REATIVAR_ALUNO',
+      'MENSAGEM.ERRO_REATIVAR_ALUNO',
+    );
   }
 }
