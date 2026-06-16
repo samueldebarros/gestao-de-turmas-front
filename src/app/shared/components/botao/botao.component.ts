@@ -10,6 +10,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 export class Botao {
   @Input() variante: string = 'primario';
   @Input() tipo: 'button' | 'submit' | 'reset' = 'button';
+  @Input() tamanho: 'padrao' | 'grande' = 'padrao';
 
   @Output() acaoBotao = new EventEmitter<void>();
 

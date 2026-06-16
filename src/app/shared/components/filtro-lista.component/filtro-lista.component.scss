@@ -1,0 +1,13 @@
+.filtro-container {
+  display: flex;
+  gap: 15px;
+  align-items: flex-end;
+
+  .filtro-text {
+    width: 100%;
+  }
+
+  .filtro-button {
+    min-width: 110px;
+  }
+}

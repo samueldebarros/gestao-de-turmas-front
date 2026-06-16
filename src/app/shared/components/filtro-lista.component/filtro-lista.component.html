@@ -1,0 +1,25 @@
+<form class="filtro-container" [formGroup]="formFiltro">
+  <div class="filtro-text">
+    <app-form-field-text
+      formControlName="pesquisa"
+      [placeholder]="('ALUNO.FORMULARIO.PESQUISAR' | translate) + '...'"
+    ></app-form-field-text>
+  </div>
+
+  @if (filtros.length > 0) {
+    @for (filtro of filtros; track filtro.controlName) {
+      <app-form-field-select
+        [formControlName]="filtro.controlName"
+        [label]="filtro.label"
+        [options]="filtro.options"
+        [placeholder]="filtro.placeholder"
+      ></app-form-field-select>
+    }
+  }
+
+  <div class="filtro-button">
+    <app-botao [variante]="'perigo'" [tamanho]="'grande'" (acaoBotao)="onLimparFiltro()">
+      {{ 'ALUNO.FORMULARIO.LIMPAR' | translate }}
+    </app-botao>
+  </div>
+</form>

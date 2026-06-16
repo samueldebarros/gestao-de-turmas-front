@@ -3,6 +3,17 @@
     "PORTUGUES": "Portuguese",
     "INGLES": "English"
   },
+  "NAVBAR": {
+    "ALUNOS": "Students",
+    "DOCENTES": "Teachers"
+  },
+  "PAPEL": {
+    "ESCOLHA_TITULO": "Choose your role",
+    "ESCOLHA_SUBTITULO": "Select a role to access the system",
+    "ADMIN": "Administrator",
+    "COORDENADOR": "Coordinator",
+    "DOCENTE": "Teacher"
+  },
   "ALUNO": {
     "BOTOES": {
       "ADICIONAR_ALUNO": "Add Student",
@@ -33,7 +44,10 @@
       "SEXO_OUTRO": "Other",
       "STATUS": "Status",
       "STATUS_ATIVO": "Active",
-      "STATUS_INATIVO": "Inactive"
+      "STATUS_INATIVO": "Inactive",
+      "FILTRAR": "Filter",
+      "LIMPAR": "Clean",
+      "PESQUISAR": "Search"
     }
   },
   "TABELA": {
@@ -69,5 +83,14 @@
     "SUCESSO_EDICAO_ALUNO": "Student updated successfully.",
     "SUCESSO_INATIVAR_ALUNO": "Student deactivated successfully.",
     "SUCESSO_REATIVAR_ALUNO": "Student reactivated successfully."
+  },
+  "LOGIN": {
+    "TITULO": "Sign in",
+    "EMAIL_LABEL": "Email",
+    "SENHA_LABEL": "Password",
+    "ENTRAR": "Sign in",
+    "EMAIL_INVALIDO": "Enter a valid email",
+    "SENHA_OBRIGATORIA": "Enter your password",
+    "ERRO_CREDENCIAIS": "Invalid email or password"
   }
 }

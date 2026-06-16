@@ -3,6 +3,17 @@
     "PORTUGUES": "Português",
     "INGLES": "Inglês"
   },
+  "NAVBAR": {
+    "ALUNOS": "Alunos",
+    "DOCENTES": "Docentes"
+  },
+  "PAPEL": {
+    "ESCOLHA_TITULO": "Escolha seu papel",
+    "ESCOLHA_SUBTITULO": "Selecione um papel para acessar o sistema",
+    "ADMIN": "Administrador",
+    "COORDENADOR": "Coordenador",
+    "DOCENTE": "Docente"
+  },
   "ALUNO": {
     "BOTOES": {
       "ADICIONAR_ALUNO": "Adicionar Aluno",
@@ -33,7 +44,10 @@
       "SEXO_OUTRO": "Outro",
       "STATUS": "Status",
       "STATUS_ATIVO": "Ativo",
-      "STATUS_INATIVO": "Inativo"
+      "STATUS_INATIVO": "Inativo",
+      "FILTRAR": "Filtrar",
+      "LIMPAR": "Limpar",
+      "PESQUISAR": "Pesquisar"
     }
   },
   "TABELA": {
@@ -69,5 +83,14 @@
     "SUCESSO_EDICAO_ALUNO": "Aluno editado com sucesso.",
     "SUCESSO_INATIVAR_ALUNO": "Aluno inativado com sucesso.",
     "SUCESSO_REATIVAR_ALUNO": "Aluno reativado com sucesso."
+  },
+  "LOGIN": {
+    "TITULO": "Entrar",
+    "EMAIL_LABEL": "E-mail",
+    "SENHA_LABEL": "Senha",
+    "ENTRAR": "Entrar",
+    "EMAIL_INVALIDO": "Informe um e-mail válido",
+    "SENHA_OBRIGATORIA": "Informe sua senha",
+    "ERRO_CREDENCIAIS": "E-mail ou senha inválidos"
   }
 }

@@ -1,11 +1,11 @@
 import { Component, inject, signal } from '@angular/core';
-import { AlunoIndex } from './shared/components/aluno-index/aluno-index.component.js';
+import { RouterOutlet } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { NavBarComponent } from './shared/components/nav-bar.component/nav-bar.component.js';
 
 @Component({
   selector: 'app-root',
-  imports: [AlunoIndex, NavBarComponent],
+  imports: [RouterOutlet, NavBarComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })

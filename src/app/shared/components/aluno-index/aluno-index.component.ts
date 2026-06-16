@@ -20,7 +20,6 @@ import { MensagemComponent } from '../mensagem.component/mensagem.component';
 import { AlunoFacadeService } from '../../../core/facades/aluno-facade.service.js';
 import { Observable, catchError, of, tap } from 'rxjs';
 import { AsyncPipe, DatePipe } from '@angular/common';
-import { AlunoModel } from '../../models/aluno.model.js';
 import { SexoEnum } from '../../enums/sexo.enum.js';
 import { AlunoAdicionarDTO } from '../../interfaces/aluno-adicionar-dto.interface.js';
 import { AlunoEditarDTO } from '../../interfaces/aluno-editar-dto.interface.js';
@@ -31,6 +30,12 @@ import { formatarCpfCnpj } from '../../utils/cpf-cnpj.utils';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SexoFormatPipe } from '../../pipes/sexo-format.pipe.js';
 import { ErrorMessagePipe } from '../../pipes/error-message.pipe';
+import { FiltroListaComponent } from '../filtro-lista.component/filtro-lista.component';
+import { SelectFilterInterface } from '../../interfaces/select-filter.interface.js';
+import { FiltroListaInterface } from '../../interfaces/filtro-lista.interface';
+import { AlertaState } from '../../interfaces/alerta-state.interface';
+import { PaginacaoComponent } from '../paginacao.component/paginacao.component';
+import { ResultadoPaginado } from '../../interfaces/resultado-paginado.interface';
 
 @Component({
   selector: 'app-aluno-index',
@@ -46,13 +51,15 @@ import { ErrorMessagePipe } from '../../pipes/error-message.pipe';
     MensagemComponent,
     AsyncPipe,
     ErrorMessagePipe,
+    FiltroListaComponent,
+    PaginacaoComponent,
   ],
   templateUrl: './aluno-index.component.html',
   styleUrl: './aluno-index.component.scss',
   providers: [DatePipe, SexoFormatPipe],
 })
 export class AlunoIndex implements OnInit {
-  public listaAlunos$!: Observable<AlunoModel[]>;
+  public resultado$!: Observable<ResultadoPaginado<AlunoInterface>>;
   private readonly destroyRef = inject(DestroyRef);
   private readonly facade = inject(AlunoFacadeService);
   private readonly sexoFormatPipe = inject(SexoFormatPipe);
@@ -97,6 +104,11 @@ export class AlunoIndex implements OnInit {
     { value: 3, label: 'ALUNO.FORMULARIO.SEXO_OUTRO' },
   ];
 
+  public opcoesStatus: SelectOptionInterface[] = [
+    { value: true, label: 'ALUNO.FORMULARIO.STATUS_ATIVO' },
+    { value: false, label: 'ALUNO.FORMULARIO.STATUS_INATIVO' },
+  ];
+
   public acoesTabela: AcaoTabela[] = [
     { id: 'editar', rotulo: 'ALUNO.BOTOES.EDITAR', varianteBotao: 'primario' },
     {
@@ -113,18 +125,36 @@ export class AlunoIndex implements OnInit {
     },
   ];
 
+  public filtrosAluno: SelectFilterInterface[] = [
+    {
+      controlName: 'sexo',
+      label: '',
+      placeholder: 'TABELA.COLUNAS.ALUNO.SEXO',
+      options: this.opcoesSexo,
+    },
+    {
+      controlName: 'ativo',
+      label: '',
+      placeholder: 'TABELA.COLUNAS.ALUNO.STATUS',
+      options: this.opcoesStatus,
+    },
+  ];
+
   private modoModal: 'adicionar' | 'editar' = 'adicionar';
   private alunoEmEdicao: AlunoInterface | null = null;
 
   public isModalAberto: boolean = false;
 
-  public mostrarAlerta: boolean = false;
-  public tipoAlerta: 'sucesso' | 'erro' = 'sucesso';
-  public textoAlerta: string = '';
+  public alertaModal: AlertaState = { visivel: false, tipo: 'sucesso', texto: '' };
+  public alertaPagina: AlertaState = { visivel: false, tipo: 'erro', texto: '' };
 
-  public mostrarAlertaPagina: boolean = false;
-  public tipoAlertaPagina: 'sucesso' | 'erro' = 'erro';
-  public textoAlertaPagina: string = '';
+  private exibirAlertaModal(tipo: AlertaState['tipo'], texto: string): void {
+    this.alertaModal = { visivel: true, tipo, texto };
+  }
+
+  private ocultarAlertaModal(): void {
+    this.alertaModal = { ...this.alertaModal, visivel: false };
+  }
 
   public abrirModal() {
     this.isModalAberto = true;
@@ -132,7 +162,7 @@ export class AlunoIndex implements OnInit {
 
   public fecharModal() {
     this.isModalAberto = false;
-    this.mostrarAlerta = false;
+    this.ocultarAlertaModal();
     this.modoModal = 'adicionar';
     this.alunoEmEdicao = null;
     this.alunoForm.get('cpf')?.enable();
@@ -151,10 +181,8 @@ export class AlunoIndex implements OnInit {
       : 'ALUNO.BOTOES.ADICIONAR_ALUNO';
   }
 
-  private exibirAlertaPagina(tipo: 'sucesso' | 'erro', texto: string): void {
-    this.tipoAlertaPagina = tipo;
-    this.textoAlertaPagina = texto;
-    this.mostrarAlertaPagina = true;
+  private exibirAlertaPagina(tipo: AlertaState['tipo'], texto: string): void {
+    this.alertaPagina = { visivel: true, tipo, texto };
   }
 
   public definirAcao(evento: EventoAcaoTabela<AlunoInterface>) {
@@ -192,7 +220,7 @@ export class AlunoIndex implements OnInit {
       sexo: new FormControl<number | null>(null, Validators.required),
     });
 
-    this.listaAlunos$ = this.facade.alunos$;
+    this.resultado$ = this.facade.resultado$;
 
     const valoresNumericosSexoEnum = Object.values(SexoEnum).filter(
       (valor) => typeof valor === 'number',
@@ -237,6 +265,14 @@ export class AlunoIndex implements OnInit {
     };
   }
 
+  filtrarTabela(filtro: FiltroListaInterface): void {
+    this.facade.aplicarFiltros(filtro);
+  }
+
+  mudarPagina(pagina: number): void {
+    this.facade.mudarPagina(pagina);
+  }
+
   private executarAcaoNaLista(
     acao$: Observable<unknown>,
     chaveSucesso: string,
@@ -260,9 +296,7 @@ export class AlunoIndex implements OnInit {
 
   private adicionarAluno() {
     if (this.alunoForm.invalid) {
-      this.tipoAlerta = 'erro';
-      this.textoAlerta = 'MENSAGEM.FORMULARIO_INVALIDO';
-      this.mostrarAlerta = true;
+      this.exibirAlertaModal('erro', 'MENSAGEM.FORMULARIO_INVALIDO');
       return;
     }
     const novoAluno = this.criarAlunoParaEnvio();
@@ -277,9 +311,7 @@ export class AlunoIndex implements OnInit {
 
   private editarAluno(): void {
     if (this.alunoForm.invalid) {
-      this.tipoAlerta = 'erro';
-      this.textoAlerta = 'MENSAGEM.FORMULARIO_INVALIDO';
-      this.mostrarAlerta = true;
+      this.exibirAlertaModal('erro', 'MENSAGEM.FORMULARIO_INVALIDO');
       return;
     }
     const payload: AlunoEditarDTO = {

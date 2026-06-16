@@ -1,30 +1,49 @@
 <div class="alerta-pagina">
   <app-mensagem
-    [(visivel)]="mostrarAlertaPagina"
-    [tipo]="tipoAlertaPagina"
-    [texto]="textoAlertaPagina"
+    [(visivel)]="alertaPagina.visivel"
+    [tipo]="alertaPagina.tipo"
+    [texto]="alertaPagina.texto"
   ></app-mensagem>
 </div>
 
 <div class="container">
-  <app-tabela-generica
-    [dados]="(listaAlunos$ | async) || []"
-    [colunas]="colunas"
-    [acoes]="acoesTabela"
-    (acaoClicada)="definirAcao($event)"
-  ></app-tabela-generica>
-
-  <div class="botoes">
+  <div class="acoes-topo">
     <app-botao variante="secundario" (acaoBotao)="abrirModal()">{{
       'ALUNO.BOTOES.ADICIONAR_ALUNO' | translate
     }}</app-botao>
   </div>
 
+  <app-filtro-lista
+    [filtros]="filtrosAluno"
+    (acaoFiltrar)="filtrarTabela($event)"
+  ></app-filtro-lista>
+
+  @if (resultado$ | async; as r) {
+    <app-tabela-generica
+      [dados]="r.itens"
+      [colunas]="colunas"
+      [acoes]="acoesTabela"
+      (acaoClicada)="definirAcao($event)"
+    ></app-tabela-generica>
+
+    @if (r.totalPaginas > 1) {
+      <div class="rodape-tabela">
+        <div class="paginacao">
+          <app-paginacao
+            [paginaAtual]="r.paginaAtual"
+            [totalPaginas]="r.totalPaginas"
+            (mudarPagina)="mudarPagina($event)"
+          ></app-paginacao>
+        </div>
+      </div>
+    }
+  }
+
   <app-modal [titulo]="tituloModal | translate" [(visivel)]="isModalAberto">
     <app-mensagem
-      [(visivel)]="mostrarAlerta"
-      [tipo]="tipoAlerta"
-      [texto]="textoAlerta"
+      [(visivel)]="alertaModal.visivel"
+      [tipo]="alertaModal.tipo"
+      [texto]="alertaModal.texto"
     ></app-mensagem>
 
     <form [formGroup]="alunoForm" (ngSubmit)="salvarAluno()" class="formAluno">

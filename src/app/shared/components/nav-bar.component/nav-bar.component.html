@@ -1,5 +1,19 @@
 <div class="navbar">
   <h3>Gestão de Turmas</h3>
+
+  <nav class="navbar-links">
+    @if (papel$ | async; as papel) {
+      @if (papel === 'Admin' || papel === 'Coordenador' || papel === 'Docente') {
+        <a routerLink="/alunos" routerLinkActive="link-ativo">{{ 'NAVBAR.ALUNOS' | translate }}</a>
+      }
+      @if (papel === 'Admin' || papel === 'Coordenador') {
+        <a routerLink="/docentes" routerLinkActive="link-ativo">{{
+          'NAVBAR.DOCENTES' | translate
+        }}</a>
+      }
+    }
+  </nav>
+
   <div class="botoes-idioma">
     <app-botao (acaoBotao)="trocarIdioma('pt-BR')" [variante]="'secundario'">
       {{ 'IDIOMA.PORTUGUES' | translate }}</app-botao

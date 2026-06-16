@@ -1,5 +1,9 @@
 <div>
-  <button [type]="tipo" [class]="'botao-' + variante" (click)="onClick()">
+  <button
+    [type]="tipo"
+    [class]="'botao-' + variante + ' botao-tamanho-' + tamanho"
+    (click)="onClick()"
+  >
     <ng-content></ng-content>
   </button>
 </div>

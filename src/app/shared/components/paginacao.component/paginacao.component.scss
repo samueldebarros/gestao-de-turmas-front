@@ -1,0 +1,42 @@
+$cor-primaria: #1c53b9;
+$cor-borda: #d1d5db;
+$cor-texto-desabilitado: #9ca3af;
+
+.paginacao {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+button {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid $cor-borda;
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: $cor-primaria;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+
+  &:hover:not(:disabled):not(.selecionado) {
+    border-color: $cor-primaria;
+    background-color: rgba($cor-primaria, 0.08);
+  }
+
+  &.selecionado {
+    background-color: $cor-primaria;
+    border-color: $cor-primaria;
+    color: #ffffff;
+    cursor: default;
+  }
+
+  &:disabled {
+    color: $cor-texto-desabilitado;
+    border-color: $cor-borda;
+    background-color: #f9fafb;
+    cursor: not-allowed;
+  }
+}

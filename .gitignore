@@ -41,13 +41,22 @@ __screenshots__/
 
 # Environment variables and secrets
 .env
-.env.local
-.env.*.local
-.env.production
+.env.*
+!.env.example
 .secrets/
 secrets.json
 *.pem
 *.key
+*.p12
+*.pfx
+*.crt
+*.cer
+credentials.json
+.npmrc
+
+# Angular environment files with secrets (keep environment.ts template tracked)
+/src/environments/environment.local.ts
+/src/environments/environment.*.local.ts
 
 # Build cache and artifacts
 /.parcel-cache
@@ -56,16 +65,12 @@ secrets.json
 *.tsbuildinfo
 .vitest/
 .eslintcache
-.prettierignore.json
 
-# Package manager
-pnpm-lock.yaml
-yarn.lock
-
-# NPM cache
+# NPM cache and debug logs
 .npm/
 npm-debug.log*
 yarn-error.log*
+pnpm-debug.log*
 lerna-debug.log*
 
 # System files
@@ -77,14 +82,16 @@ Thumbs.db
 *.swo
 *~
 
-# VS Code workspace settings (personal)
-.vscode/settings.json
-.vscode/extensions.json
-
 # Testing
 .nyc_output/
 htmlcov/
 
-# Local development
+# Local development overrides
 local.json
 config.local.json
+
+# Claude Code local config (Skills pessoais)
+.claude/
+
+# Relatorios de estudo locais
+docs/

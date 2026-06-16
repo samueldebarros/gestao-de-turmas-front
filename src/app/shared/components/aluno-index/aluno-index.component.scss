@@ -23,6 +23,16 @@
   align-items: center;
 }
 
+.acoes-topo {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.rodape-tabela {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .erro-texto {
   color: red;
 }

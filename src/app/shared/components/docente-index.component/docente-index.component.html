@@ -1,0 +1,6 @@
+<div class="container">
+  <app-tabela-generica
+    [colunas]="colunas"
+    [dados]="(docentes$ | async) ?? []"
+  ></app-tabela-generica>
+</div>

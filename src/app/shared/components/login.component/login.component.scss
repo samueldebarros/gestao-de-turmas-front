@@ -1,0 +1,45 @@
+$cor-primaria: #1c53b9;
+$cor-perigo: #db2626;
+
+.login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+  padding: 24px 16px;
+
+  &__card {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 380px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 32px;
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  }
+
+  &__titulo {
+    margin: 0 0 8px;
+    font-size: 22px;
+    font-weight: 600;
+    text-align: center;
+    color: #111827;
+  }
+
+  &__alerta {
+    margin: 0;
+    padding: 10px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+
+    &--erro {
+      color: $cor-perigo;
+      background-color: rgba($cor-perigo, 0.08);
+      border: 1px solid rgba($cor-perigo, 0.3);
+    }
+  }
+}

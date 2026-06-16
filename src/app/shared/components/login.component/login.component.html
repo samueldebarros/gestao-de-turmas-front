@@ -1,0 +1,29 @@
+<div class="login">
+  <form class="login__card" [formGroup]="loginForm" (ngSubmit)="entrar()">
+    <h1 class="login__titulo">{{ 'LOGIN.TITULO' | translate }}</h1>
+
+    <app-form-field-text
+      formControlName="email"
+      type="email"
+      [label]="'LOGIN.EMAIL_LABEL' | translate"
+      [control]="loginForm.controls.email"
+      [errorMessage]="'LOGIN.EMAIL_INVALIDO' | translate"
+    ></app-form-field-text>
+
+    <app-form-field-text
+      formControlName="senha"
+      type="password"
+      [label]="'LOGIN.SENHA_LABEL' | translate"
+      [control]="loginForm.controls.senha"
+      [errorMessage]="'LOGIN.SENHA_OBRIGATORIA' | translate"
+    ></app-form-field-text>
+
+    @if (alerta(); as a) {
+      @if (a.visivel) {
+        <p class="login__alerta login__alerta--erro" role="alert">{{ a.texto | translate }}</p>
+      }
+    }
+
+    <app-botao tipo="submit" tamanho="grande">{{ 'LOGIN.ENTRAR' | translate }}</app-botao>
+  </form>
+</div>

@@ -1,143 +1,77 @@
 ---
 name: gestao-turmas-front-context
-description: Contexto global da codebase do front-end do sistema Gestão de Turmas. Contém a stack tecnológica (Angular), a estrutura de pastas do repositório e o estado atual da arquitetura.
+description: Mapa fiel da codebase do front-end Gestão de Turmas — estrutura real de pastas, módulos de domínio existentes, padrões adotados e dívidas técnicas conhecidas. Reflete o código em junho/2026. Para regras, ver AGENTS.md e os SKILLs.
 ---
 
 # Contexto da Codebase — Gestão de Turmas Front-end
 
----
+App Angular 21 (standalone) para administração de turmas. Consome uma API .NET em `https://localhost:7048/api`. Foco atual: módulos de **Aluno** (CRUD completo, paginado e filtrável) e **Docente** (listagem read-only). Disciplinas e Turmas ainda não têm tela.
 
-# 1. Visão Geral
+## 1. Stack
 
-O projeto `gestao-turmas-front` é um aplicativo Angular de front-end para gestão de turmas e alunos.
-É uma aplicação com foco em cadastro e visualização de turmas, usando componentes compartilhados e formulários reativos.
+Angular 21 · TypeScript estrito (`strict`, `strictTemplates`, `noPropertyAccessFromIndexSignature`) · RxJS 7.8 · SCSS · `@ngx-translate/core` 17 (loader HTTP) · Vitest 4.
 
----
+## 2. Estrutura real de `src/app/`
 
-# 2. Objetivo do Projeto
+```
+app.ts / app.html / app.scss      Root standalone. Inicializa i18n no constructor; usa signal() p/ title.
+app.config.ts                     provideRouter + provideHttpClient + provideTranslateService (loader HTTP, fallback pt-BR).
+app.routes.ts                     Lazy loading REAL: 'alunos' e 'docentes' via loadChildren; '' → 'alunos'.
 
-O objetivo principal é oferecer uma interface de administração de turmas com:
+core/
+  services/    aluno.service.ts        HTTP puro do domínio Aluno (CRUD + inativar/reativar). Monta HttpParams via reduce.
+               docente.service.ts      HTTP puro do domínio Docente (lista sem paginação).
+  facades/     aluno-facade.service.ts BehaviorSubject de estado de filtro/página + resultado$ derivado (switchMap). Métodos de intenção.
+               docente-facade.service.ts  Wrapper read-only com shareReplay({bufferSize:1, refCount:true}).
 
-- lista de alunos, docentes, disciplinas e turmas
-- cadastro, edição e controle de status d
-- se comunicar com o projeto em backend com acesso ao banco de dados de alunos
+shared/
+  components/
+    aluno-index/                  SMART. Lista paginada + modal CRUD + filtros + alertas. + aluno.routes.ts (lazy).
+    docente-index.component/      SMART minimalista (só docentes$ | async). + docente.routes.ts (lazy).
+    tabela-generica/              DUMB genérico <T extends EntidadeBaseInterface>. Colunas/ações configuráveis.
+    filtro-lista.component/       DUMB reativo. valueChanges + debounce(300) + distinctUntilChanged → acaoFiltrar.
+    paginacao.component/          DUMB stateless. Getters computados; emite mudarPagina(n).
+    form-field-text.component/    DUMB + ControlValueAccessor.
+    form-field-select.component/  DUMB + ControlValueAccessor (preserva tipo do value).
+    modal/                        DUMB. <dialog> nativo via ViewChild + ngOnChanges. Two-way [(visivel)].
+    mensagem.component/           DUMB. Toast de alerta. Two-way [(visivel)].
+    botao/                        DUMB. variante/tipo/tamanho; emite acaoBotao.
+    nav-bar.component/            DUMB de navegação + trocarIdioma() (i18n global via translate.use()).
+  interfaces/                     Contratos de dados (ver SKILL-data-modeling-contracts.md).
+  models/                         EntidadeBaseModel, AlunoModel — classes concretas, NÃO instanciadas em runtime (dívida D6).
+  enums/        sexo.enum.ts      SexoEnum numérico (MASCULINO=1, FEMININO=2, OUTRO=3).
+  pipes/        cpf-cnpj · sexo-format · error-message  (pipes retornam CHAVE i18n, não texto traduzido).
+  validators/   cpf-cnpj.validator.ts (Módulo 11) · idade.validator.ts.
+  utils/        cpf-cnpj.utils.ts (formatarCpfCnpj).
+```
 
----
+> `features/` existe mas está VAZIA. O domínio mora hoje em `shared/components/` (decisão de fato do projeto). Não popule `features/` sem alinhar com o time.
 
-# 3. Stack Tecnológica
+## 3. Padrões adotados (a norma a seguir)
 
-- Angular
-- TypeScript
-- SCSS
-- RxJS
-- Vitest
+- **Roteamento:** lazy por domínio (`loadChildren` no root → `loadComponent` na rota do módulo). Domínios novos seguem o mesmo molde de `aluno.routes.ts`.
+- **Camadas:** Component (Smart) → Facade (estado + orquestração) → Service (HTTP puro). Veja a Skill `state-and-data-flow`.
+- **Leitura reativa:** lista exposta como `Observable` e consumida com `async pipe`. **Mutação** (adicionar/editar/inativar) via `subscribe()` gerenciado por `takeUntilDestroyed`. A distinção query↔command está na Skill `rxjs-reactive-patterns`.
+- **Componentes de campo:** implementam `ControlValueAccessor` para entrar em Reactive Forms tipados. Veja a Skill `component-design`.
+- **Estado coeso:** alertas/modais como objetos (`AlertaState`), não como propriedades soltas.
+- **i18n:** centralizado em `public/i18n/*.json`; componentes/pipes referenciam chaves.
 
----
+## 4. Dívidas técnicas conhecidas (padrões-alvo, NÃO bugs em produção)
 
-# 4. Estrutura do Repositório
+Não "corrija" estes itens sem solicitação explícita. Estão listados para que novas features já nasçam melhores e para orientar refactors quando pedidos.
 
-## Arquivos principais
+- **D1 — OnPush ausente.** Nenhum componente usa `ChangeDetectionStrategy.OnPush`. Alvo: adicionar em componentes novos; migrar os existentes quando tocados. (O `AlunoIndex` usa `subscribe()`/`tap()`, então OnPush ali exige cuidado com CD manual.)
+- **D2 — `any` residual.** `TabelaColuna.formatador/cssClassCelula` e `AcaoTabela.condicaoVisibilidade` usam `(valor: any)`; os callbacks CVA (`onChange`/`onTouched`) também. Alvo: genéricos (`<T>`) e tipos de função.
+- **D3 — Estado modal não-discriminado.** `AlunoIndex` guarda `modoModal: 'adicionar'|'editar'` + `alunoEmEdicao: AlunoInterface|null` separados, com `!` em `alunoEmEdicao!.id`. Alvo: discriminated union (`{ modo: 'adicionar' } | { modo: 'editar'; aluno: AlunoInterface }`).
+- **D4 — i18n incompleto no Docente.** `docente-index` mistura chaves (`TABELA.COLUNAS.ALUNO.NOME`) com strings hardcoded (`'Id'`, `'Disciplina'`, `'Carga Horária'`) e reaproveita chaves de Aluno. Alvo: chaves próprias de Docente.
+- **D5 — `[control]` como Input coexiste com CVA.** Os form-fields implementam CVA, mas ainda recebem `@Input() control?` para exibir erro. É um híbrido consciente; o caminho-alvo é o componente derivar o estado de erro do próprio CVA/`NgControl`.
+- **D6 — Models concretos sem uso em runtime.** `AlunoModel`/`EntidadeBaseModel` existem mas o domínio flui inteiramente por interfaces e DTOs; nada instancia essas classes. Mantê-las apenas se surgir necessidade real (factory/defaults); caso contrário são candidatas a remoção.
+- **D7 — `apiUrl` hardcoded** no service (`https://localhost:7048/...`). Alvo: mover para `environment`/token de configuração.
 
-- `angular.json` — configuração do workspace e build.
-- `package.json` — dependências e scripts.
-- `tsconfig.app.json`, `tsconfig.json`, `tsconfig.spec.json` — configurações TypeScript.
-- `README.md` — instruções de uso e build.
-- `CONTEXT.md` — contexto do projeto.
+## 5. Scripts
 
-## Pasta principal
+`npm start` (ng serve) · `npm run build` · `npm run watch` · `npm test` (Vitest).
 
-- `src/` — código-fonte.
-  - `main.ts` — bootstrap da aplicação.
-  - `index.html` — shell HTML.
-  - `styles.scss` — estilos globais.
-  - `app/` — aplicação Angular.
-    - `app.ts` — componente raiz `App`.
-    - `app.html` — template do app.
-    - `app.scss` — estilo do app.
-    - `app.routes.ts` — rotas da aplicação (atualmente vazio).
-    - `app.config.ts` — arquivo de configuração adicional.
-    - `app.spec.ts` — teste do app.
-    - `core/` — pasta preparada para serviços e providers, atualmente vazia.
-    - `features/` — pasta preparada para funcionalidades de domínio, atualmente vazia.
-    - `shared/` — componentes e modelos reutilizáveis.
-      - `components/` — UI compartilhada.
-      - `models/` — interfaces e enums de domínio.
+## 6. Onde ler as regras
 
----
-
-# 5. Componentes e Domínio
-
-## Componentes compartilhados
-
-- `shared/components/aluno-index/AlunoIndex` — lista de alunos, modal de cadastro e formulário reativo.
-- `shared/components/tabela-generica/TabelaGenerica` — componente genérico de tabela.
-- `shared/components/modal/Modal` — componente de diálogo/modal.
-- `shared/components/botao/Botao` — componente de botão reutilizável.
-
-## Modelos de domínio
-
-- `shared/models/aluno.interface.ts` — interface `AlunoInterface` estendendo `EntidadeBaseInterface`.
-- `shared/models/entidade-base.interface.ts` — `id` e `ativo`.
-- `shared/models/sexo.enum.ts` — enum `SexoEnum` com valores `MASCULINO = 1`, `FEMININO = 2` e `OUTRO = 3`.
-- `shared/models/tabela-coluna.interface.ts` — interface `TabelaColuna` para colunas de tabela.
-
----
-
-# 6. Estado atual da aplicação
-
-- A aplicação usa componente raiz `App` que importa `AlunoIndex` diretamente em vez de rotas.
-- `app.routes.ts` está definido, mas atualmente não possui nenhuma rota configurada.
-- `core/` e `features/` existem como pastas de estrutura, mas ainda não contêm código.
-- `AlunoIndex` usa `FormBuilder` e `ReactiveFormsModule` para gestão de formulário.
-- Dados de alunos são mantidos em memória dentro do componente.
-
----
-
-# 7. Scripts de desenvolvimento
-
-- `npm start` — inicia o servidor de desenvolvimento com `ng serve`.
-- `npm build` — compila a aplicação.
-- `npm watch` — compila em modo observação para desenvolvimento.
-- `npm test` — executa testes unitários.
-
----
-
-# 8. Observações de arquitetura e melhorias
-
-## Padrões atuais
-
-- Uso de componentes standalone no app.
-- Uso de formulários reativos (`FormGroup`, `FormControl`, `FormBuilder`).
-- Separação inicial entre `shared/components` e `shared/models`.
-
-## Oportunidades de melhoria
-
-- Implementar telas de gestão de Docentes, Disciplinas e Turmas.
-- Implementar lazy loading e rotas no `app.routes.ts`.
-- Movimentar lógica de negócio e estado para `core/services/`.
-- Criar uma feature isolada em `src/app/features/alunos/`.
-- Corrigir `styleUrl` para `styleUrls` no `App` e nos componentes para seguir Angular padrão.
-- Evitar manter estado da lista de alunos apenas no componente; usar serviço de persistência ou store local.
-- Avaliar o uso de Signals apenas para estado interno se o app evoluir, mantendo a comunicação via decoradores tradicionais."
-
----
-
-# 9. Guia de estilo do projeto
-
-Conforme `project-guidelines/SKILL.md` e `AGENTS.md`:
-
-- Use `kebab-case` para arquivos.
-- Use `PascalCase` para classes e enums.
-- Prefira componentes pequenos e focados.
-- Separe smart components de dumb components.
-- Centralize tipos e enums em `shared/models/`.
-- Mantenha `core/` para serviços singleton e `features/` para casos de uso.
-- Evite lógica de negócio dentro de templates e componentes de UI puros.
-
----
-
-# 10. Conclusão
-
-Este projeto é uma base Angular moderna com estrutura inicial para expansão.
-A principal funcionalidade atual é a gestão de alunos via `AlunoIndex`, com componentes UI reutilizáveis e modelos simples.
-O foco natural de evolução é mover a aplicação para rotas de feature, serviços de domínio e persistência mais robusta.
+`AGENTS.md` (global — sempre carregado: princípios, três camadas, reflexos-gatilho, ordem de prioridade) · Skills em `.claude/skills/`: `component-design` · `state-and-data-flow` · `rxjs-reactive-patterns` · `data-modeling-contracts`.

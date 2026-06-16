@@ -1,0 +1,9 @@
+<div class="paginacao">
+  <button [disabled]="!temPaginaAnterior" (click)="paginaAnterior()">&lt;&lt;</button>
+  @for (pagina of paginas; track pagina) {
+    <button (click)="irParaPagina(pagina)" [class.selecionado]="paginaAtual === pagina">
+      {{ pagina }}
+    </button>
+  }
+  <button [disabled]="!temProximaPagina" (click)="proximaPagina()">&gt;&gt;</button>
+</div>
