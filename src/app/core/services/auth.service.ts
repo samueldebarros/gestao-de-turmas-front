@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environments';
-import { LoginDTO } from '../../shared/interfaces/login-dto.interface';
+import { LoginDTO } from '../../shared/interfaces/dto/login-dto.interface';
 import { Observable } from 'rxjs';
-import { UsuarioAutenticadoInterface } from '../../shared/interfaces/usuario-autenticado.interface';
+import { UsuarioAutenticadoInterface } from '../../shared/interfaces/entities/usuario-autenticado.interface';
 import { PapelUsuario } from '../../shared/types/papel-usuario.type';
 
 @Injectable({ providedIn: 'root' })

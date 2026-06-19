@@ -1,5 +1,5 @@
 import { Component, forwardRef, Input } from '@angular/core';
-import { SelectOptionInterface } from '../../interfaces/select-option.interface';
+import { SelectOptionInterface } from '../../interfaces/ui/select-option.interface';
 import { AbstractControl, ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 

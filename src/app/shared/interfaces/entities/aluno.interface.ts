@@ -1,5 +1,5 @@
-import { SexoEnum } from '../enums/sexo.enum';
-import { EntidadeBaseInterface } from '../interfaces/entidade-base.interface';
+import { SexoEnum } from '../../enums/sexo.enum';
+import { EntidadeBaseInterface } from './entidade-base.interface';
 
 export interface AlunoInterface extends EntidadeBaseInterface {
   matricula: string;

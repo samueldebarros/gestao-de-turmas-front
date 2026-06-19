@@ -1,9 +1,9 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { TabelaGenerica } from '../tabela-generica/tabela-generica.component';
-import { TabelaColuna } from '../../interfaces/tabela-coluna.interface';
-import { DocenteFacadeService } from '../../../core/facades/docente-facade.service';
+import { TabelaGenerica } from '../../shared/components/tabela-generica/tabela-generica.component';
+import { TabelaColuna } from '../../shared/interfaces/ui/tabela-coluna.interface';
+import { DocenteFacadeService } from '../../core/facades/docente-facade.service';
 import { Observable } from 'rxjs';
-import { DocenteSqlInterface } from '../../interfaces/docente-sql.interface';
+import { DocenteSqlInterface } from '../../shared/interfaces/entities/docente-sql.interface';
 import { AsyncPipe } from '@angular/common';
 
 @Component({

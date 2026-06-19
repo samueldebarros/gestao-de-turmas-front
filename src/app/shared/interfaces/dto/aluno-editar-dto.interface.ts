@@ -1,4 +1,4 @@
-import { SexoEnum } from '../enums/sexo.enum';
+import { SexoEnum } from '../../enums/sexo.enum';
 
 export interface AlunoEditarDTO {
   id: number;

@@ -1,11 +1,11 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { AlunoInterface } from '../../shared/interfaces/aluno.interface';
-import { AlunoAdicionarDTO } from '../../shared/interfaces/aluno-adicionar-dto.interface';
-import { AlunoEditarDTO } from '../../shared/interfaces/aluno-editar-dto.interface';
-import { AlunoFiltro } from '../../shared/interfaces/aluno-filtro.interface';
-import { ResultadoPaginado } from '../../shared/interfaces/resultado-paginado.interface';
+import { AlunoInterface } from '../../shared/interfaces/entities/aluno.interface';
+import { AlunoAdicionarDTO } from '../../shared/interfaces/dto/aluno-adicionar-dto.interface';
+import { AlunoEditarDTO } from '../../shared/interfaces/dto/aluno-editar-dto.interface';
+import { AlunoFiltro } from '../../shared/interfaces/ui/aluno-filtro.interface';
+import { ResultadoPaginado } from '../../shared/interfaces/ui/resultado-paginado.interface';
 import { environment } from '../../../environments/environments';
 
 @Injectable({

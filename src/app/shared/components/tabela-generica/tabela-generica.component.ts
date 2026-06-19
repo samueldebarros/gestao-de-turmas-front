@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { TabelaColuna } from '../../interfaces/tabela-coluna.interface';
-import { EntidadeBaseInterface } from '../../interfaces/entidade-base.interface';
-import { AcaoTabela } from '../../interfaces/acao-tabela.interface';
-import { EventoAcaoTabela } from '../../interfaces/evento-acao-tabela.interface';
+import { TabelaColuna } from '../../interfaces/ui/tabela-coluna.interface';
+import { EntidadeBaseInterface } from '../../interfaces/entities/entidade-base.interface';
+import { AcaoTabela } from '../../interfaces/ui/acao-tabela.interface';
+import { EventoAcaoTabela } from '../../interfaces/ui/evento-acao-tabela.interface';
 import { Botao } from '../botao/botao.component';
 import { TranslatePipe } from '@ngx-translate/core';
 

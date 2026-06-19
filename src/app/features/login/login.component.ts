@@ -6,13 +6,13 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { AuthFacadeService } from '../../../core/facades/auth-facade.service';
+import { AuthFacadeService } from '../../core/facades/auth-facade.service';
 import { Router } from '@angular/router';
-import { AlertaState } from '../../interfaces/alerta-state.interface';
-import { LoginDTO } from '../../interfaces/login-dto.interface';
+import { AlertaState } from '../../shared/interfaces/ui/alerta-state.interface';
+import { LoginDTO } from '../../shared/interfaces/dto/login-dto.interface';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormFieldTextComponent } from '../form-field-text.component/form-field-text.component';
-import { Botao } from '../botao/botao.component';
+import { FormFieldTextComponent } from '../../shared/components/form-field-text.component/form-field-text.component';
+import { Botao } from '../../shared/components/botao/botao.component';
 import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({

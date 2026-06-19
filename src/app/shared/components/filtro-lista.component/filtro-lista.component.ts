@@ -2,8 +2,8 @@ import { Component, DestroyRef, EventEmitter, inject, Input, OnInit, Output } fr
 import { FormFieldTextComponent } from '../form-field-text.component/form-field-text.component';
 import { FormFieldSelectComponent } from '../form-field-select.component/form-field-select.component';
 import { Botao } from '../botao/botao.component';
-import { SelectFilterInterface } from '../../interfaces/select-filter.interface';
-import { FiltroListaInterface } from '../../interfaces/filtro-lista.interface';
+import { SelectFilterInterface } from '../../interfaces/ui/select-filter.interface';
+import { FiltroListaInterface } from '../../interfaces/ui/filtro-lista.interface';
 import {
   AbstractControl,
   FormBuilder,

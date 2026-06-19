@@ -24,10 +24,13 @@ core/
   facades/     aluno-facade.service.ts BehaviorSubject de estado de filtro/página + resultado$ derivado (switchMap). Métodos de intenção.
                docente-facade.service.ts  Wrapper read-only com shareReplay({bufferSize:1, refCount:true}).
 
-shared/
+features/                         Componentes SMART de domínio, um diretório por feature. Cada um traz seu *.routes.ts (lazy).
+  aluno/        aluno-index.component.ts   SMART. Lista paginada + modal CRUD + filtros + alertas. + aluno.routes.ts.
+  docente/      docente-index.component.ts SMART minimalista (só docentes$ | async). + docente.routes.ts.
+  login/        login.component.ts         SMART. Form de login + alerta.
+
+shared/                           SÓ o genuinamente reutilizável (Dumb components + contratos + utilitários).
   components/
-    aluno-index/                  SMART. Lista paginada + modal CRUD + filtros + alertas. + aluno.routes.ts (lazy).
-    docente-index.component/      SMART minimalista (só docentes$ | async). + docente.routes.ts (lazy).
     tabela-generica/              DUMB genérico <T extends EntidadeBaseInterface>. Colunas/ações configuráveis.
     filtro-lista.component/       DUMB reativo. valueChanges + debounce(300) + distinctUntilChanged → acaoFiltrar.
     paginacao.component/          DUMB stateless. Getters computados; emite mudarPagina(n).
@@ -37,7 +40,11 @@ shared/
     mensagem.component/           DUMB. Toast de alerta. Two-way [(visivel)].
     botao/                        DUMB. variante/tipo/tamanho; emite acaoBotao.
     nav-bar.component/            DUMB de navegação + trocarIdioma() (i18n global via translate.use()).
-  interfaces/                     Contratos de dados (ver SKILL-data-modeling-contracts.md).
+  interfaces/                     Contratos de dados, agrupados por papel (ver SKILL-data-modeling-contracts.md):
+    dto/                          Contratos de ESCRITA (payload p/ servidor): aluno-adicionar/editar, login.
+    entities/                     Domínio (contrato de leitura): entidade-base, aluno, docente-sql, usuario-autenticado.
+    ui/                           Genéricos de tela: tabela-coluna, acao/evento-tabela, select-option/filter,
+                                    filtro-lista, aluno-filtro, resultado-paginado, alerta-state.
   models/                         EntidadeBaseModel, AlunoModel — classes concretas, NÃO instanciadas em runtime (dívida D6).
   enums/        sexo.enum.ts      SexoEnum numérico (MASCULINO=1, FEMININO=2, OUTRO=3).
   pipes/        cpf-cnpj · sexo-format · error-message  (pipes retornam CHAVE i18n, não texto traduzido).
@@ -45,7 +52,7 @@ shared/
   utils/        cpf-cnpj.utils.ts (formatarCpfCnpj).
 ```
 
-> `features/` existe mas está VAZIA. O domínio mora hoje em `shared/components/` (decisão de fato do projeto). Não popule `features/` sem alinhar com o time.
+> **Regra de fronteira `features/` vs. `shared/`:** componente SMART (injeta Facade, conhece o domínio, carrega rota) mora em `features/<dominio>/`. Componente DUMB reutilizável (só `@Input()/@Output()`) mora em `shared/components/`. Contratos de dado vão em `shared/interfaces/{dto,entities,ui}/` conforme o papel.
 
 ## 3. Padrões adotados (a norma a seguir)
 

@@ -1,5 +1,5 @@
 import { SexoEnum } from '../enums/sexo.enum';
-import { AlunoInterface } from '../interfaces/aluno.interface';
+import { AlunoInterface } from '../interfaces/entities/aluno.interface';
 
 export class AlunoModel implements AlunoInterface {
   matricula: string;

@@ -1,8 +1,8 @@
 import { Component, DestroyRef, inject, OnInit } from '@angular/core';
-import { TabelaGenerica } from '../tabela-generica/tabela-generica.component.js';
-import { TabelaColuna } from '../../interfaces/tabela-coluna.interface.js';
-import { Botao } from '../botao/botao.component.js';
-import { Modal } from '../modal/modal.component.js';
+import { TabelaGenerica } from '../../shared/components/tabela-generica/tabela-generica.component.js';
+import { TabelaColuna } from '../../shared/interfaces/ui/tabela-coluna.interface.js';
+import { Botao } from '../../shared/components/botao/botao.component.js';
+import { Modal } from '../../shared/components/modal/modal.component.js';
 import {
   FormBuilder,
   FormControl,
@@ -10,32 +10,32 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { FormFieldTextComponent } from '../form-field-text.component/form-field-text.component.js';
-import { CpfCnpjValidator } from '../../validators/cpf-cnpj.validator.js';
-import { IdadeValidator } from '../../validators/idade.validator.js';
+import { FormFieldTextComponent } from '../../shared/components/form-field-text.component/form-field-text.component.js';
+import { CpfCnpjValidator } from '../../shared/validators/cpf-cnpj.validator.js';
+import { IdadeValidator } from '../../shared/validators/idade.validator.js';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { SelectOptionInterface } from '../../interfaces/select-option.interface.js';
-import { FormFieldSelectComponent } from '../form-field-select.component/form-field-select.component.js';
-import { MensagemComponent } from '../mensagem.component/mensagem.component';
-import { AlunoFacadeService } from '../../../core/facades/aluno-facade.service.js';
+import { SelectOptionInterface } from '../../shared/interfaces/ui/select-option.interface.js';
+import { FormFieldSelectComponent } from '../../shared/components/form-field-select.component/form-field-select.component.js';
+import { MensagemComponent } from '../../shared/components/mensagem.component/mensagem.component';
+import { AlunoFacadeService } from '../../core/facades/aluno-facade.service.js';
 import { Observable, catchError, of, tap } from 'rxjs';
 import { AsyncPipe, DatePipe } from '@angular/common';
-import { SexoEnum } from '../../enums/sexo.enum.js';
-import { AlunoAdicionarDTO } from '../../interfaces/aluno-adicionar-dto.interface.js';
-import { AlunoEditarDTO } from '../../interfaces/aluno-editar-dto.interface.js';
-import { AcaoTabela } from '../../interfaces/acao-tabela.interface.js';
-import { EventoAcaoTabela } from '../../interfaces/evento-acao-tabela.interface.js';
-import { AlunoInterface } from '../../interfaces/aluno.interface.js';
-import { formatarCpfCnpj } from '../../utils/cpf-cnpj.utils';
+import { SexoEnum } from '../../shared/enums/sexo.enum.js';
+import { AlunoAdicionarDTO } from '../../shared/interfaces/dto/aluno-adicionar-dto.interface.js';
+import { AlunoEditarDTO } from '../../shared/interfaces/dto/aluno-editar-dto.interface.js';
+import { AcaoTabela } from '../../shared/interfaces/ui/acao-tabela.interface.js';
+import { EventoAcaoTabela } from '../../shared/interfaces/ui/evento-acao-tabela.interface.js';
+import { AlunoInterface } from '../../shared/interfaces/entities/aluno.interface.js';
+import { formatarCpfCnpj } from '../../shared/utils/cpf-cnpj.utils';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { SexoFormatPipe } from '../../pipes/sexo-format.pipe.js';
-import { ErrorMessagePipe } from '../../pipes/error-message.pipe';
-import { FiltroListaComponent } from '../filtro-lista.component/filtro-lista.component';
-import { SelectFilterInterface } from '../../interfaces/select-filter.interface.js';
-import { FiltroListaInterface } from '../../interfaces/filtro-lista.interface';
-import { AlertaState } from '../../interfaces/alerta-state.interface';
-import { PaginacaoComponent } from '../paginacao.component/paginacao.component';
-import { ResultadoPaginado } from '../../interfaces/resultado-paginado.interface';
+import { SexoFormatPipe } from '../../shared/pipes/sexo-format.pipe.js';
+import { ErrorMessagePipe } from '../../shared/pipes/error-message.pipe';
+import { FiltroListaComponent } from '../../shared/components/filtro-lista.component/filtro-lista.component';
+import { SelectFilterInterface } from '../../shared/interfaces/ui/select-filter.interface.js';
+import { FiltroListaInterface } from '../../shared/interfaces/ui/filtro-lista.interface';
+import { AlertaState } from '../../shared/interfaces/ui/alerta-state.interface';
+import { PaginacaoComponent } from '../../shared/components/paginacao.component/paginacao.component';
+import { ResultadoPaginado } from '../../shared/interfaces/ui/resultado-paginado.interface';
 
 @Component({
   selector: 'app-aluno-index',

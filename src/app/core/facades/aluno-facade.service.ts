@@ -1,12 +1,12 @@
 import { inject, Injectable } from '@angular/core';
 import { AlunoService } from '../services/aluno.service';
 import { BehaviorSubject, debounceTime, Observable, switchMap, tap } from 'rxjs';
-import { AlunoAdicionarDTO } from '../../shared/interfaces/aluno-adicionar-dto.interface';
-import { AlunoEditarDTO } from '../../shared/interfaces/aluno-editar-dto.interface';
-import { FiltroListaInterface } from '../../shared/interfaces/filtro-lista.interface';
-import { AlunoFiltro } from '../../shared/interfaces/aluno-filtro.interface';
-import { AlunoInterface } from '../../shared/interfaces/aluno.interface';
-import { ResultadoPaginado } from '../../shared/interfaces/resultado-paginado.interface';
+import { AlunoAdicionarDTO } from '../../shared/interfaces/dto/aluno-adicionar-dto.interface';
+import { AlunoEditarDTO } from '../../shared/interfaces/dto/aluno-editar-dto.interface';
+import { FiltroListaInterface } from '../../shared/interfaces/ui/filtro-lista.interface';
+import { AlunoFiltro } from '../../shared/interfaces/ui/aluno-filtro.interface';
+import { AlunoInterface } from '../../shared/interfaces/entities/aluno.interface';
+import { ResultadoPaginado } from '../../shared/interfaces/ui/resultado-paginado.interface';
 import { SexoEnum } from '../../shared/enums/sexo.enum';
 
 @Injectable({

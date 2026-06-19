@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { DocenteSqlInterface } from '../../shared/interfaces/docente-sql.interface';
+import { DocenteSqlInterface } from '../../shared/interfaces/entities/docente-sql.interface';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environments';
 
