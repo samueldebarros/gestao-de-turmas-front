@@ -1,0 +1,19 @@
+<div class="container">
+  <h2>{{ 'DASHBOARD.TITULO' | translate }}</h2>
+
+  <section class="secao">
+    <h3>{{ 'DASHBOARD.PAINEL_DEMOGRAFICO' | translate }}</h3>
+    <app-tabela-generica
+      [colunas]="colunasPainel"
+      [dados]="(painelDemografico$ | async) ?? []"
+    ></app-tabela-generica>
+  </section>
+
+  <section class="secao">
+    <h3>{{ 'DASHBOARD.BALANCO_EVASAO' | translate }}</h3>
+    <app-tabela-generica
+      [colunas]="colunasEvasao"
+      [dados]="(balancoEvasao$ | async) ?? []"
+    ></app-tabela-generica>
+  </section>
+</div>

@@ -5,7 +5,8 @@
   },
   "NAVBAR": {
     "ALUNOS": "Alunos",
-    "DOCENTES": "Docentes"
+    "DOCENTES": "Docentes",
+    "DASHBOARD": "Dashboard"
   },
   "PAPEL": {
     "ESCOLHA_TITULO": "Escolha seu papel",
@@ -48,6 +49,10 @@
       "FILTRAR": "Filtrar",
       "LIMPAR": "Limpar",
       "PESQUISAR": "Pesquisar"
+    },
+    "BUSCA": {
+      "LABEL": "Find student",
+      "PLACEHOLDER": "Type name or enrollment"
     }
   },
   "TABELA": {
@@ -62,8 +67,29 @@
         "SEXO": "Sexo",
         "STATUS": "Status"
       },
+      "PAINEL_DEMOGRAFICO": {
+        "TURMA": "Turma",
+        "SERIE": "Série",
+        "MENOR_15": "Menores de 15",
+        "DE_15_A_17": "15 a 17 anos",
+        "MAIOR_18": "18 anos ou mais",
+        "IDADE_MEDIA": "Idade Média"
+      },
+      "BALANCO_EVASAO": {
+        "ANO_LETIVO": "Ano Letivo",
+        "SERIE": "Série",
+        "TOTAL_MATRICULAS": "Total de Matrículas",
+        "ALUNOS_ATIVOS": "Alunos Ativos",
+        "TRANCADOS_CANCELADOS": "Trancados/Cancelados",
+        "PERCENTUAL_EVASAO": "Evasão"
+      },
       "ACOES": "Ações"
     }
+  },
+  "DASHBOARD": {
+    "TITULO": "Dashboard",
+    "PAINEL_DEMOGRAFICO": "Painel Demográfico por Turma",
+    "BALANCO_EVASAO": "Balanço de Evasão por Série"
   },
   "VALIDACAO": {
     "OBRIGATORIO": "Este campo é obrigatório.",
@@ -92,5 +118,12 @@
     "EMAIL_INVALIDO": "Informe um e-mail válido",
     "SENHA_OBRIGATORIA": "Informe sua senha",
     "ERRO_CREDENCIAIS": "E-mail ou senha inválidos"
-  }
+  },
+  "SEM_PERMISSAO": {
+    "TITULO": "Acesso negado",
+    "MENSAGEM": "Você não tem permissão para acessar esta área.",
+    "VOLTAR_INICIO": "Ir para o início"
+  },
+  "DATE_PICKER": { "HOJE": "Hoje", "LIMPAR": "Limpar" },
+  "AUTOCOMPLETE": { "BUSCANDO": "Buscando...", "NENHUM_RESULTADO": "Nenhum resultado" }
 }

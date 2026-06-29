@@ -13,6 +13,14 @@
     }}</app-botao>
   </div>
 
+  <app-autocomplete
+    [label]="'ALUNO.BUSCA.LABEL' | translate"
+    [placeholder]="'ALUNO.BUSCA.PLACEHOLDER' | translate"
+    [buscar]="buscarAluno"
+    [rotulo]="rotuloAluno"
+    (selecionado)="editarPelaBusca($event)"
+  ></app-autocomplete>
+
   <app-filtro-lista
     [filtros]="filtrosAluno"
     (acaoFiltrar)="filtrarTabela($event)"
@@ -23,7 +31,9 @@
       [dados]="r.itens"
       [colunas]="colunas"
       [acoes]="acoesTabela"
+      [ordenacaoAtual]="ordenacaoAtual$ | async"
       (acaoClicada)="definirAcao($event)"
+      (ordenarPor)="ordenar($event)"
     ></app-tabela-generica>
 
     @if (r.totalPaginas > 1) {
@@ -71,14 +81,13 @@
         [errorMessage]="'ALUNO.FORMULARIO.EMAIL_INVALIDO' | translate"
       ></app-form-field-text>
 
-      <app-form-field-text
+      <app-date-picker
         [label]="'ALUNO.FORMULARIO.DATA_NASCIMENTO_LABEL' | translate"
         [placeholder]="'ALUNO.FORMULARIO.DATA_NASCIMENTO_PLACEHOLDER' | translate"
         formControlName="dataNascimento"
-        type="date"
         [control]="alunoForm.get('dataNascimento')"
         [errorMessage]="alunoForm.get('dataNascimento') | errorMessage | translate"
-      ></app-form-field-text>
+      ></app-date-picker>
 
       <app-form-field-select
         [label]="'ALUNO.FORMULARIO.SEXO_LABEL' | translate"

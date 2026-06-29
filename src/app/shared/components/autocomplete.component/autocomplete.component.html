@@ -1,0 +1,38 @@
+<div class="autocomplete">
+  @if (label) {
+    <label class="form-label">{{ label }}</label>
+  }
+
+  <input
+    type="text"
+    role="combobox"
+    [attr.aria-expanded]="aberto()"
+    [placeholder]="placeholder"
+    [value]="texto()"
+    (input)="aoDigitar($event)"
+    (focus)="aberto.set(sugestoes().length > 0)"
+  />
+
+  @if (aberto()) {
+    <ul class="sugestoes" role="listbox">
+      @if (carregando()) {
+        <li class="estado">{{ 'AUTOCOMPLETE.BUSCANDO' | translate }}</li>
+      } @else if (sugestoes().length === 0) {
+        <li class="estado">{{ 'AUTOCOMPLETE.NENHUM_RESULTADO' | translate }}</li>
+      } @else {
+        @for (item of sugestoes(); track item.id; let i = $index) {
+          <li
+            role="option"
+            class="sugestao"
+            [class.ativa]="i === indiceAtivo()"
+            [attr.aria-selected]="i === indiceAtivo()"
+            (mouseenter)="indiceAtivo.set(i)"
+            (click)="selecionar(item)"
+          >
+            {{ rotulo(item) }}
+          </li>
+        }
+      }
+    </ul>
+  }
+</div>

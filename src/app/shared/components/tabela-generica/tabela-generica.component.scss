@@ -2,6 +2,7 @@ $cor-texto-secundario: #6b7280;
 $cor-borda: #e5e7eb;
 $cor-fundo-cabecalho: #f9fafb;
 $cor-hover-linha: #fef2f2;
+$cor-primaria: #1c53b9;
 
 .tabela-container {
   margin: 0 auto;
@@ -60,6 +61,41 @@ $cor-hover-linha: #fef2f2;
 
   .nowrap {
     white-space: nowrap;
+  }
+
+  .cabecalho-ordenavel {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    color: inherit;
+    text-align: inherit;
+    cursor: pointer;
+
+    &:hover {
+      color: $cor-primaria;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $cor-primaria;
+      outline-offset: 2px;
+      border-radius: 2px;
+    }
+  }
+
+  .indicador-ordenacao {
+    font-size: 0.75em;
+    line-height: 1;
+    color: $cor-texto-secundario;
+  }
+
+  th[aria-sort='ascending'] .indicador-ordenacao,
+  th[aria-sort='descending'] .indicador-ordenacao {
+    color: $cor-primaria;
   }
 
   .cabecalho-acoes {

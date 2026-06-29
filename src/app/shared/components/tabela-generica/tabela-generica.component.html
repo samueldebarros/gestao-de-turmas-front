@@ -3,7 +3,33 @@
     <thead>
       <tr>
         @for (coluna of colunas; track coluna) {
-          <th [class]="coluna.cssClassCabecalho || ''">{{ coluna.titulo | translate }}</th>
+          <th
+            [class]="coluna.cssClassCabecalho || ''"
+            [attr.aria-sort]="
+              coluna.chaveOrdenacao == null
+                ? null
+                : direcaoDaColuna(coluna) === 'asc'
+                  ? 'ascending'
+                  : direcaoDaColuna(coluna) === 'desc'
+                    ? 'descending'
+                    : 'none'
+            "
+          >
+            @if (coluna.chaveOrdenacao != null) {
+              <button type="button" class="cabecalho-ordenavel" (click)="aoClicarCabecalho(coluna)">
+                {{ coluna.titulo | translate }}
+                <span class="indicador-ordenacao" aria-hidden="true">{{
+                  direcaoDaColuna(coluna) === 'asc'
+                    ? '▲'
+                    : direcaoDaColuna(coluna) === 'desc'
+                      ? '▼'
+                      : '⇅'
+                }}</span>
+              </button>
+            } @else {
+              {{ coluna.titulo | translate }}
+            }
+          </th>
         }
 
         @if (acoes.length > 0) {

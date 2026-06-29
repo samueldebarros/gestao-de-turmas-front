@@ -4,4 +4,5 @@ export interface TabelaColuna {
   formatador?: (valor: any) => string;
   cssClassCabecalho?: string;
   cssClassCelula?: (valor: any) => string;
+  chaveOrdenacao?: number;
 }

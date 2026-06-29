@@ -36,6 +36,9 @@ import { FiltroListaInterface } from '../../shared/interfaces/ui/filtro-lista.in
 import { AlertaState } from '../../shared/interfaces/ui/alerta-state.interface';
 import { PaginacaoComponent } from '../../shared/components/paginacao.component/paginacao.component';
 import { ResultadoPaginado } from '../../shared/interfaces/ui/resultado-paginado.interface';
+import { OrdenacaoAlunoEnum } from '../../shared/enums/ordenacao-aluno.enum.js';
+import { DatePickerComponent } from '../../shared/components/date-picker.component/date-picker.component.js';
+import { AutocompleteComponent } from '../../shared/components/autocomplete.component/autocomplete.component.js';
 
 @Component({
   selector: 'app-aluno-index',
@@ -53,6 +56,8 @@ import { ResultadoPaginado } from '../../shared/interfaces/ui/resultado-paginado
     ErrorMessagePipe,
     FiltroListaComponent,
     PaginacaoComponent,
+    DatePickerComponent,
+    AutocompleteComponent,
   ],
   templateUrl: './aluno-index.component.html',
   styleUrl: './aluno-index.component.scss',
@@ -69,8 +74,12 @@ export class AlunoIndex implements OnInit {
 
   public colunas: TabelaColuna[] = [
     { chave: 'id', titulo: 'TABELA.COLUNAS.ALUNO.CODIGO' },
-    { chave: 'matricula', titulo: 'TABELA.COLUNAS.ALUNO.MATRICULA' },
-    { chave: 'nome', titulo: 'TABELA.COLUNAS.ALUNO.NOME' },
+    {
+      chave: 'matricula',
+      titulo: 'TABELA.COLUNAS.ALUNO.MATRICULA',
+      chaveOrdenacao: OrdenacaoAlunoEnum.MATRICULA,
+    },
+    { chave: 'nome', titulo: 'TABELA.COLUNAS.ALUNO.NOME', chaveOrdenacao: OrdenacaoAlunoEnum.NOME },
     {
       chave: 'cpf',
       titulo: 'TABELA.COLUNAS.ALUNO.CPF_CNPJ',
@@ -81,6 +90,7 @@ export class AlunoIndex implements OnInit {
       chave: 'dataNascimento',
       titulo: 'TABELA.COLUNAS.ALUNO.DATA_NASCIMENTO',
       formatador: (v) => this.datePipe.transform(v, 'dd/MM/yyyy') ?? '',
+      chaveOrdenacao: OrdenacaoAlunoEnum.DATA_NASCIMENTO,
     },
     { chave: 'email', titulo: 'TABELA.COLUNAS.ALUNO.EMAIL' },
     {
@@ -139,6 +149,12 @@ export class AlunoIndex implements OnInit {
       options: this.opcoesStatus,
     },
   ];
+
+  public ordenacaoAtual$ = this.facade.ordenacaoAtual$;
+
+  ordenar(campo: number): void {
+    this.facade.ordenarPor(campo);
+  }
 
   private modoModal: 'adicionar' | 'editar' = 'adicionar';
   private alunoEmEdicao: AlunoInterface | null = null;
@@ -230,6 +246,15 @@ export class AlunoIndex implements OnInit {
       value: valor,
       label: this.sexoFormatPipe.transform(valor),
     }));
+  }
+
+  buscarAluno = (termo: string): Observable<AlunoInterface[]> => this.facade.buscarSugestoes(termo);
+  rotuloAluno = (aluno: AlunoInterface): string => `${aluno.matricula} — ${aluno.nome}`;
+
+  public editarPelaBusca(aluno: AlunoInterface): void {
+    this.alunoEmEdicao = aluno;
+    this.modoModal = 'editar';
+    this.abrirModalEdicao(aluno);
   }
 
   private abrirModalEdicao(aluno: AlunoInterface): void {

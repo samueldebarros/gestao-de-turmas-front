@@ -13,6 +13,9 @@ export const authErrorInterceptor: HttpInterceptorFn = (req, next) => {
         auth.encerrarSessaoLocal();
         router.navigateByUrl('/login');
       }
+      if (erro.status === 403 && !req.url.includes('/auth/')) {
+        router.navigateByUrl('/sem-permissao');
+      }
       return throwError(() => erro);
     }),
   );

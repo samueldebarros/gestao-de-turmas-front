@@ -1,0 +1,62 @@
+<div class="campo-data">
+  @if (label) {
+    <label class="form-label">{{ label }}</label>
+  }
+
+  <button
+    type="button"
+    class="gatilho"
+    [class.input-error]="exibirErro"
+    [disabled]="disabled()"
+    aria-haspopup="dialog"
+    [attr.aria-expanded]="aberto()"
+    (click)="alternarCalendario()"
+  >
+    <span [class.placeholder]="!valorExibicao()">
+      {{ valorExibicao() || placeholder }}
+    </span>
+  </button>
+
+  @if (aberto()) {
+    <div class="calendario" role="dialog" [attr.aria-label]="rotuloMesAno()">
+      <div class="cabecalho">
+        <button type="button" (click)="mesAnterior()" aria-label="Mês anterior">‹</button>
+        <span class="mes-ano">{{ rotuloMesAno() }}</span>
+        <button type="button" (click)="proximoMes()" aria-label="Próximo mês">›</button>
+      </div>
+
+      <div class="semana">
+        @for (nome of nomesDiasSemana(); track nome) {
+          <span class="nome-dia">{{ nome }}</span>
+        }
+      </div>
+
+      <div class="grade">
+        @for (d of dias(); track d.iso) {
+          <button
+            type="button"
+            class="dia"
+            [class.fora-do-mes]="!d.doMesAtual"
+            [class.selecionado]="d.selecionado"
+            [class.hoje]="d.hoje"
+            [disabled]="d.desabilitado"
+            [attr.aria-current]="d.hoje ? 'date' : null"
+            [attr.aria-pressed]="d.selecionado"
+            (click)="selecionarDia(d)"
+          >
+            {{ d.dia }}
+          </button>
+        }
+      </div>
+
+      <div class="rodape">
+        <button type="button" (click)="irParaHoje()">{{ 'DATE_PICKER.HOJE' | translate }}</button>
+        <button type="button" (click)="limpar()">{{ 'DATE_PICKER.LIMPAR' | translate }}</button>
+      </div>
+    </div>
+  }
+
+  @if (exibirErro) {
+    <span class="error-message" role="alert">{{ errorMessage }}</span>
+  }
+</div>

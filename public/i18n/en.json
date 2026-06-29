@@ -5,7 +5,8 @@
   },
   "NAVBAR": {
     "ALUNOS": "Students",
-    "DOCENTES": "Teachers"
+    "DOCENTES": "Teachers",
+    "DASHBOARD": "Dashboard"
   },
   "PAPEL": {
     "ESCOLHA_TITULO": "Choose your role",
@@ -48,6 +49,10 @@
       "FILTRAR": "Filter",
       "LIMPAR": "Clean",
       "PESQUISAR": "Search"
+    },
+    "BUSCA": {
+      "LABEL": "Find student",
+      "PLACEHOLDER": "Type name or enrollment"
     }
   },
   "TABELA": {
@@ -62,8 +67,29 @@
         "SEXO": "Gender",
         "STATUS": "Status"
       },
+      "PAINEL_DEMOGRAFICO": {
+        "TURMA": "Class",
+        "SERIE": "Grade",
+        "MENOR_15": "Under 15",
+        "DE_15_A_17": "15 to 17",
+        "MAIOR_18": "18 or older",
+        "IDADE_MEDIA": "Average Age"
+      },
+      "BALANCO_EVASAO": {
+        "ANO_LETIVO": "School Year",
+        "SERIE": "Grade",
+        "TOTAL_MATRICULAS": "Total Enrollments",
+        "ALUNOS_ATIVOS": "Active Students",
+        "TRANCADOS_CANCELADOS": "Suspended/Cancelled",
+        "PERCENTUAL_EVASAO": "Dropout"
+      },
       "ACOES": "Actions"
     }
+  },
+  "DASHBOARD": {
+    "TITULO": "Dashboard",
+    "PAINEL_DEMOGRAFICO": "Demographic Panel by Class",
+    "BALANCO_EVASAO": "Dropout Balance by Grade"
   },
   "VALIDACAO": {
     "OBRIGATORIO": "This field is required.",
@@ -92,5 +118,12 @@
     "EMAIL_INVALIDO": "Enter a valid email",
     "SENHA_OBRIGATORIA": "Enter your password",
     "ERRO_CREDENCIAIS": "Invalid email or password"
-  }
+  },
+  "SEM_PERMISSAO": {
+    "TITULO": "Access denied",
+    "MENSAGEM": "You don't have permission to access this area.",
+    "VOLTAR_INICIO": "Go to home"
+  },
+  "DATE_PICKER": { "HOJE": "Today", "LIMPAR": "Clear" },
+  "AUTOCOMPLETE": { "BUSCANDO": "Searching...", "NENHUM_RESULTADO": "No results" }
 }
