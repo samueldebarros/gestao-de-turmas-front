@@ -2,8 +2,13 @@
   <button
     [type]="tipo"
     [class]="'botao-' + variante + ' botao-tamanho-' + tamanho"
+    [class.botao--carregando]="carregando"
+    [disabled]="carregando || desabilitado"
     (click)="onClick()"
   >
+    @if (carregando) {
+      <span class="botao__spinner" aria-hidden="true"></span>
+    }
     <ng-content></ng-content>
   </button>
 </div>

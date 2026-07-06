@@ -4,24 +4,45 @@
   flex-direction: column;
   gap: 8px;
 
-  .gatilho {
+  .campo-entrada {
+    position: relative;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+  }
+  .gatilho {
+    width: 100%;
     padding: 10px;
+    padding-right: 40px;
     border: 1px solid #ccc;
     border-radius: 5px;
     background: #fff;
     font-size: 16px;
-    cursor: pointer;
+    box-sizing: border-box;
 
-    .placeholder {
+    &::placeholder {
       color: #9ca3af;
     }
     &:disabled {
       background: #f3f4f6;
       color: #9ca3af;
       cursor: not-allowed;
+    }
+  }
+  .icone-calendario {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: none;
+    padding: 4px;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
     }
   }
   .input-error {
@@ -47,11 +68,34 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 8px;
+
+      button {
+        border: none;
+        background: none;
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 16px;
+        cursor: pointer;
+
+        &:hover:not(:disabled) {
+          background: #eff6ff;
+        }
+      }
+      .titulo {
+        flex: 1;
+        font-weight: 600;
+        font-size: 15px;
+      }
     }
     .semana,
     .grade {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
+    }
+    .grade.grade--blocos {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-top: 4px;
     }
     .nome-dia {
       text-align: center;
@@ -82,6 +126,12 @@
       }
       &:hover:not(:disabled):not(.selecionado) {
         background: #eff6ff;
+      }
+      &.bloco {
+        aspect-ratio: auto;
+        padding: 12px 0;
+        border-radius: 8px;
+        font-size: 14px;
       }
     }
     .rodape {

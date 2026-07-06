@@ -33,6 +33,51 @@ export class DatePickerComponent implements ControlValueAccessor {
   protected readonly mesVisivel = signal(this.hoje.getMonth());
   protected readonly anoVisivel = signal(this.hoje.getFullYear());
   private readonly locale = signal(this.localeAtual());
+  protected readonly visao = signal<'dias' | 'meses' | 'anos'>('dias');
+  protected readonly inicioDecada = computed(() => Math.floor(this.anoVisivel() / 10) * 10);
+
+  protected readonly anosDecada = computed(() =>
+    Array.from({ length: 12 }, (_, i) => this.inicioDecada() - 1 + i),
+  );
+
+  protected readonly nomesMeses = computed(() => {
+    const fmt = new Intl.DateTimeFormat(this.locale(), { month: 'short' });
+    return Array.from({ length: 12 }, (_, mes) => {
+      const nome = fmt.format(new Date(2024, mes, 1));
+      return nome.charAt(0).toUpperCase() + nome.slice(1);
+    });
+  });
+
+  protected readonly rotuloCabecalho = computed(() => {
+    switch (this.visao()) {
+      case 'dias':
+        return this.rotuloMesAno();
+      case 'meses':
+        return String(this.anoVisivel());
+      case 'anos':
+        return `${this.inicioDecada()} – ${this.inicioDecada() + 9}`;
+    }
+  });
+
+  protected subirNivel(): void {
+    this.visao.update((v) => (v === 'dias' ? 'meses' : 'anos'));
+  }
+  protected anterior(): void {
+    if (this.visao() === 'dias') return this.mesAnterior();
+    this.anoVisivel.update((a) => a - (this.visao() === 'meses' ? 1 : 10));
+  }
+  protected proximo(): void {
+    if (this.visao() === 'dias') return this.proximoMes();
+    this.anoVisivel.update((a) => a + (this.visao() === 'meses' ? 1 : 10));
+  }
+  protected escolherMes(mes: number): void {
+    this.mesVisivel.set(mes);
+    this.visao.set('dias');
+  }
+  protected escolherAno(ano: number): void {
+    this.anoVisivel.set(ano);
+    this.visao.set('meses');
+  }
 
   @Input() label = '';
   @Input() placeholder = '';
@@ -40,6 +85,7 @@ export class DatePickerComponent implements ControlValueAccessor {
   @Input() control?: AbstractControl | null;
   @Input() min?: string;
   @Input() max?: string;
+  @Input() feriados: string[] = [];
 
   protected readonly valor = signal('');
   protected readonly disabled = signal(false);
@@ -55,6 +101,38 @@ export class DatePickerComponent implements ControlValueAccessor {
     if (!partes) return '';
     return `${this.pad(partes.dia)}/${this.pad(partes.mes + 1)}/${partes.ano}`;
   });
+
+  private analisarEntrada(texto: string): string | null {
+    const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(texto.trim());
+    if (!m) return null;
+    const [, dd, mm, yyyy] = m;
+    const dia = Number(dd),
+      mes = Number(mm) - 1,
+      ano = Number(yyyy);
+    const data = new Date(ano, mes, dia);
+    if (data.getFullYear() !== ano || data.getMonth() !== mes || data.getDate() !== dia)
+      return null;
+    const iso = this.formatarIso(ano, mes, dia);
+    return this.foraDoIntervalo(iso) ? null : iso;
+  }
+
+  protected aoConfirmarTexto(evento: Event): void {
+    const alvo = evento.target as HTMLInputElement;
+    if (!alvo.value.trim()) {
+      this.limpar();
+      return;
+    }
+    const iso = this.analisarEntrada(alvo.value);
+    if (!iso) {
+      this.onTouched();
+      alvo.value = this.valorExibicao();
+      return;
+    }
+    this.valor.set(iso);
+    this.onChange(iso);
+    this.onTouched();
+    this.sincronizarMesVisivel(iso);
+  }
 
   private onChange: (valor: string) => void = () => {};
   private onTouched: () => void = () => {};
@@ -125,13 +203,17 @@ export class DatePickerComponent implements ControlValueAccessor {
   private foraDoIntervalo(iso: string): boolean {
     if (this.min && iso < this.min) return true;
     if (this.max && iso > this.max) return true;
+    if (this.feriados.includes(iso)) return true;
     return false;
   }
 
   protected alternarCalendario(): void {
     if (this.disabled()) return;
     this.aberto.update((aberto) => !aberto);
-    if (this.aberto()) this.sincronizarMesVisivel(this.valor());
+    if (this.aberto()) {
+      this.visao.set('dias');
+      this.sincronizarMesVisivel(this.valor());
+    }
   }
 
   protected selecionarDia(dia: DiaCalendario): void {
@@ -139,6 +221,7 @@ export class DatePickerComponent implements ControlValueAccessor {
     this.valor.set(dia.iso);
     this.onChange(dia.iso);
     this.onTouched();
+    this.visao.set('dias');
     this.aberto.set(false);
   }
 
@@ -163,6 +246,7 @@ export class DatePickerComponent implements ControlValueAccessor {
   protected irParaHoje(): void {
     this.mesVisivel.set(this.hoje.getMonth());
     this.anoVisivel.set(this.hoje.getFullYear());
+    this.visao.set('dias');
   }
 
   protected limpar(): void {

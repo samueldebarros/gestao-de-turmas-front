@@ -28,6 +28,7 @@ export class LoginComponent {
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly alerta = signal<AlertaState | null>(null);
+  protected readonly carregando = signal(false);
 
   protected readonly loginForm: FormGroup<{
     email: FormControl<string | null>;
@@ -38,11 +39,12 @@ export class LoginComponent {
   });
 
   entrar(): void {
-    if (this.loginForm.invalid) {
+    if (this.loginForm.invalid || this.carregando()) {
       this.loginForm.markAllAsTouched();
       return;
     }
     this.alerta.set(null);
+    this.carregando.set(true);
 
     const { email, senha } = this.loginForm.getRawValue();
     const credenciais: LoginDTO = { email: (email ?? '').trim(), senha: senha ?? '' };
@@ -52,8 +54,10 @@ export class LoginComponent {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => this.router.navigate(['/alunos']),
-        error: () =>
-          this.alerta.set({ visivel: true, tipo: 'erro', texto: 'LOGIN.ERRO_CREDENCIAIS' }),
+        error: () => {
+          this.carregando.set(false);
+          this.alerta.set({ visivel: true, tipo: 'erro', texto: 'LOGIN.ERRO_CREDENCIAIS' });
+        },
       });
   }
 }

@@ -115,6 +115,7 @@
     "EMAIL_LABEL": "Email",
     "SENHA_LABEL": "Password",
     "ENTRAR": "Sign in",
+    "ENTRANDO": "Signing in...",
     "EMAIL_INVALIDO": "Enter a valid email",
     "SENHA_OBRIGATORIA": "Enter your password",
     "ERRO_CREDENCIAIS": "Invalid email or password"

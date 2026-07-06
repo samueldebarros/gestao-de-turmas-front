@@ -51,8 +51,8 @@
       "PESQUISAR": "Pesquisar"
     },
     "BUSCA": {
-      "LABEL": "Find student",
-      "PLACEHOLDER": "Type name or enrollment"
+      "LABEL": "Encontrar aluno",
+      "PLACEHOLDER": "Digite o nome ou matrícula"
     }
   },
   "TABELA": {
@@ -115,6 +115,7 @@
     "EMAIL_LABEL": "E-mail",
     "SENHA_LABEL": "Senha",
     "ENTRAR": "Entrar",
+    "ENTRANDO": "Entrando...",
     "EMAIL_INVALIDO": "Informe um e-mail válido",
     "SENHA_OBRIGATORIA": "Informe sua senha",
     "ERRO_CREDENCIAIS": "E-mail ou senha inválidos"

@@ -15,6 +15,7 @@ import {
   debounceTime,
   distinctUntilChanged,
   filter,
+  map,
   Observable,
   of,
   Subject,
@@ -36,7 +37,7 @@ export class AutocompleteComponent<T extends EntidadeBaseInterface> implements O
   @Input({ required: true }) rotulo!: (item: T) => string;
   @Input() label = '';
   @Input() placeholder = '';
-  @Input() minCaracteres = 1;
+  @Input() minCaracteres = 3;
   @Input() debounceMs = 300;
 
   @Output() selecionado = new EventEmitter<T>();
@@ -54,6 +55,7 @@ export class AutocompleteComponent<T extends EntidadeBaseInterface> implements O
   ngOnInit(): void {
     this.termoBusca$
       .pipe(
+        map((termo) => termo.trim()),
         debounceTime(this.debounceMs),
         distinctUntilChanged(),
         filter((termo) => termo.length >= this.minCaracteres),
@@ -85,6 +87,11 @@ export class AutocompleteComponent<T extends EntidadeBaseInterface> implements O
     this.texto.set(this.rotulo(item));
     this.aberto.set(false);
     this.sugestoes.set([]);
+    this.reiniciarBusca();
+  }
+
+  private reiniciarBusca(): void {
+    this.termoBusca$.next('');
   }
 
   @HostListener('keydown.arrowdown', ['$event'])

@@ -11,10 +11,15 @@ export class Botao {
   @Input() variante: string = 'primario';
   @Input() tipo: 'button' | 'submit' | 'reset' = 'button';
   @Input() tamanho: 'padrao' | 'grande' = 'padrao';
+  @Input() carregando: boolean = false;
+  @Input() desabilitado: boolean = false;
 
   @Output() acaoBotao = new EventEmitter<void>();
 
   onClick() {
+    if (this.carregando || this.desabilitado) {
+      return;
+    }
     this.acaoBotao.emit();
   }
 }

@@ -24,6 +24,8 @@
       }
     }
 
-    <app-botao tipo="submit" tamanho="grande">{{ 'LOGIN.ENTRAR' | translate }}</app-botao>
+    <app-botao tipo="submit" tamanho="grande" [carregando]="carregando()">
+      {{ (carregando() ? 'LOGIN.ENTRANDO' : 'LOGIN.ENTRAR') | translate }}
+    </app-botao>
   </form>
 </div>

@@ -1,6 +1,15 @@
 import { inject, Injectable } from '@angular/core';
 import { AlunoService } from '../services/aluno.service';
-import { BehaviorSubject, debounceTime, map, Observable, of, switchMap, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  Observable,
+  of,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { AlunoAdicionarDTO } from '../../shared/interfaces/dto/aluno-adicionar-dto.interface';
 import { AlunoEditarDTO } from '../../shared/interfaces/dto/aluno-editar-dto.interface';
 import { FiltroListaInterface } from '../../shared/interfaces/ui/filtro-lista.interface';
@@ -11,13 +20,14 @@ import { SexoEnum } from '../../shared/enums/sexo.enum';
 import { OrdenacaoTabela } from '../../shared/interfaces/ui/ordenaca-tabela.interface';
 import { OrdenacaoAlunoEnum } from '../../shared/enums/ordenacao-aluno.enum';
 import { DirecaoOrdenacaoEnum } from '../../shared/enums/direcao-ordenacao.enum';
+import { CacheStorage } from '../../shared/utils/cache-storage';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AlunoFacadeService {
   private readonly alunoService = inject(AlunoService);
-  private readonly _paginaState$ = new BehaviorSubject<AlunoFiltro>({
+  private readonly filtroPadrao: AlunoFiltro = {
     pagina: 1,
     tamanhoPagina: 10,
     pesquisa: '',
@@ -25,6 +35,15 @@ export class AlunoFacadeService {
     ativo: null,
     ordenacao: null,
     direcao: null,
+  };
+  private readonly _paginaState$ = new BehaviorSubject<AlunoFiltro>({ ...this.filtroPadrao });
+
+  private readonly cacheSugestoes = new CacheStorage<AlunoInterface[]>({
+    storage: sessionStorage,
+    namespace: 'alunos:sugestoes',
+    versao: 1,
+    ttlMs: 5 * 60 * 1000,
+    limite: 50,
   });
 
   readonly resultado$: Observable<ResultadoPaginado<AlunoInterface>> = this._paginaState$.pipe(
@@ -36,6 +55,7 @@ export class AlunoFacadeService {
     map((s) =>
       s.ordenacao != null && s.direcao != null ? { campo: s.ordenacao, direcao: s.direcao } : null,
     ),
+    distinctUntilChanged((a, b) => a?.campo === b?.campo && a?.direcao === b?.direcao),
   );
 
   public aplicarFiltros(filtros: FiltroListaInterface): void {
@@ -79,56 +99,45 @@ export class AlunoFacadeService {
 
   public adicionar(dto: AlunoAdicionarDTO): Observable<void> {
     return this.alunoService.adicionarAluno(dto).pipe(
-      tap(() =>
-        this._paginaState$.next({
-          ...this._paginaState$.value,
-        }),
-      ),
+      tap(() => this.aposMutacao()),
     );
   }
 
   public editar(dto: AlunoEditarDTO): Observable<void> {
     return this.alunoService.editarAluno(dto).pipe(
-      tap(() =>
-        this._paginaState$.next({
-          ...this._paginaState$.value,
-        }),
-      ),
+      tap(() => this.aposMutacao()),
     );
   }
 
   public inativar(id: number): Observable<void> {
     return this.alunoService.inativarAluno(id).pipe(
-      tap(() =>
-        this._paginaState$.next({
-          ...this._paginaState$.value,
-        }),
-      ),
+      tap(() => this.aposMutacao()),
     );
   }
 
   public reativar(id: number): Observable<void> {
     return this.alunoService.reativarAluno(id).pipe(
-      tap(() =>
-        this._paginaState$.next({
-          ...this._paginaState$.value,
-        }),
-      ),
+      tap(() => this.aposMutacao()),
     );
   }
 
   public buscarSugestoes(termo: string): Observable<AlunoInterface[]> {
-    if (!termo.trim()) return of([]);
+    const chave = termo.trim().toLowerCase();
+    if (!chave) return of([]);
+
+    const emCache = this.cacheSugestoes.get(chave);
+    if (emCache) return of(emCache);
+
     return this.alunoService
-      .obterTodosOsAlunos({
-        pagina: 1,
-        tamanhoPagina: 5,
-        pesquisa: termo,
-        sexo: null,
-        ativo: null,
-        ordenacao: null,
-        direcao: null,
-      })
-      .pipe(map((resultado) => resultado.itens));
+      .obterTodosOsAlunos({ ...this.filtroPadrao, tamanhoPagina: 5, pesquisa: chave })
+      .pipe(
+        map((resultado) => resultado.itens),
+        tap((itens) => this.cacheSugestoes.set(chave, itens)),
+      );
+  }
+
+  private aposMutacao(): void {
+    this.cacheSugestoes.limpar();
+    this._paginaState$.next({ ...this._paginaState$.value });
   }
 }

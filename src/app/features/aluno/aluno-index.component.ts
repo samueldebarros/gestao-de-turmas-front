@@ -18,6 +18,7 @@ import { SelectOptionInterface } from '../../shared/interfaces/ui/select-option.
 import { FormFieldSelectComponent } from '../../shared/components/form-field-select.component/form-field-select.component.js';
 import { MensagemComponent } from '../../shared/components/mensagem.component/mensagem.component';
 import { AlunoFacadeService } from '../../core/facades/aluno-facade.service.js';
+import { FeriadoFacadeService } from '../../core/facades/feriado-facade.service.js';
 import { Observable, catchError, of, tap } from 'rxjs';
 import { AsyncPipe, DatePipe } from '@angular/common';
 import { SexoEnum } from '../../shared/enums/sexo.enum.js';
@@ -67,6 +68,7 @@ export class AlunoIndex implements OnInit {
   public resultado$!: Observable<ResultadoPaginado<AlunoInterface>>;
   private readonly destroyRef = inject(DestroyRef);
   private readonly facade = inject(AlunoFacadeService);
+  private readonly feriadoFacade = inject(FeriadoFacadeService);
   private readonly sexoFormatPipe = inject(SexoFormatPipe);
   private readonly fb = inject(FormBuilder);
   private readonly datePipe = inject(DatePipe);
@@ -119,6 +121,8 @@ export class AlunoIndex implements OnInit {
     { value: false, label: 'ALUNO.FORMULARIO.STATUS_INATIVO' },
   ];
 
+  public feriados$ = this.feriadoFacade.feriadosAnoAtual$;
+
   public acoesTabela: AcaoTabela[] = [
     { id: 'editar', rotulo: 'ALUNO.BOTOES.EDITAR', varianteBotao: 'primario' },
     {
@@ -152,7 +156,7 @@ export class AlunoIndex implements OnInit {
 
   public ordenacaoAtual$ = this.facade.ordenacaoAtual$;
 
-  ordenar(campo: number): void {
+  ordenar(campo: OrdenacaoAlunoEnum): void {
     this.facade.ordenarPor(campo);
   }
 
@@ -204,8 +208,6 @@ export class AlunoIndex implements OnInit {
   public definirAcao(evento: EventoAcaoTabela<AlunoInterface>) {
     switch (evento.acaoId) {
       case 'editar':
-        this.alunoEmEdicao = evento.item;
-        this.modoModal = 'editar';
         this.abrirModalEdicao(evento.item);
         break;
       case 'inativar':
@@ -251,13 +253,9 @@ export class AlunoIndex implements OnInit {
   buscarAluno = (termo: string): Observable<AlunoInterface[]> => this.facade.buscarSugestoes(termo);
   rotuloAluno = (aluno: AlunoInterface): string => `${aluno.matricula} — ${aluno.nome}`;
 
-  public editarPelaBusca(aluno: AlunoInterface): void {
+  public abrirModalEdicao(aluno: AlunoInterface): void {
     this.alunoEmEdicao = aluno;
     this.modoModal = 'editar';
-    this.abrirModalEdicao(aluno);
-  }
-
-  private abrirModalEdicao(aluno: AlunoInterface): void {
     this.alunoForm.patchValue({
       nome: aluno.nome,
       email: aluno.email,

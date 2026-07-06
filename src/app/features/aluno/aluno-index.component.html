@@ -18,7 +18,7 @@
     [placeholder]="'ALUNO.BUSCA.PLACEHOLDER' | translate"
     [buscar]="buscarAluno"
     [rotulo]="rotuloAluno"
-    (selecionado)="editarPelaBusca($event)"
+    (selecionado)="abrirModalEdicao($event)"
   ></app-autocomplete>
 
   <app-filtro-lista
@@ -87,6 +87,7 @@
         formControlName="dataNascimento"
         [control]="alunoForm.get('dataNascimento')"
         [errorMessage]="alunoForm.get('dataNascimento') | errorMessage | translate"
+        [feriados]="(feriados$ | async) ?? []"
       ></app-date-picker>
 
       <app-form-field-select
