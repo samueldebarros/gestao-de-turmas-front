@@ -6,4 +6,12 @@ export const TURMA_ROUTES: Routes = [
     loadComponent: () => import('./turma-index.component.js').then((m) => m.TurmaIndexComponent),
     title: 'Turmas',
   },
+  {
+    path: 'cadastrar',
+    loadComponent: () =>
+      import('./turma-cadastro.component/turma-cadastro.component.js').then(
+        (m) => m.TurmaCadastroComponent,
+      ),
+    title: 'Cadastrar turma',
+  },
 ];

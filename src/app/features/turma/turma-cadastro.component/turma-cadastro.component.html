@@ -1,0 +1,29 @@
+<div class="wizard">
+  <header class="wizard__cabecalho">
+    <h2>{{ 'TURMA.CADASTRO.TITULO' | translate }}</h2>
+    <app-botao variante="secundario" (acaoBotao)="cancelar()">
+      {{ 'TURMA.BOTOES.CANCELAR' | translate }}
+    </app-botao>
+  </header>
+
+  <app-stepper
+    [passos]="passos"
+    [passoAtual]="passoAtual"
+    [podeAvancar]="podeAvancar"
+    (voltar)="voltar()"
+    (avancar)="avancar()"
+    (concluir)="concluir()"
+  >
+    @switch (passoAtual) {
+      @case (0) {
+        <p class="passo-placeholder">Passo 1 — Informações (Etapa 3)</p>
+      }
+      @case (1) {
+        <p class="passo-placeholder">Passo 2 — Disciplinas (Etapa 4)</p>
+      }
+      @case (2) {
+        <p class="passo-placeholder">Passo 3 — Alunos (Etapa 5)</p>
+      }
+    }
+  </app-stepper>
+</div>
