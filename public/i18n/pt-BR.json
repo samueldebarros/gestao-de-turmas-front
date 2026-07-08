@@ -6,7 +6,8 @@
   "NAVBAR": {
     "ALUNOS": "Alunos",
     "DOCENTES": "Docentes",
-    "DASHBOARD": "Dashboard"
+    "DASHBOARD": "Dashboard",
+    "TURMAS": "Turmas"
   },
   "PAPEL": {
     "ESCOLHA_TITULO": "Escolha seu papel",
@@ -53,6 +54,35 @@
     "BUSCA": {
       "LABEL": "Encontrar aluno",
       "PLACEHOLDER": "Digite o nome ou matrícula"
+    }
+  },
+  "TURMA": {
+    "BOTOES": {
+      "CADASTRAR": "Cadastrar turma"
+    },
+    "FILTRO": {
+      "ANO_LETIVO": "Ano letivo",
+      "TURNO": "Turno",
+      "STATUS": "Status"
+    },
+    "TURNO": {
+      "1": "Matutino",
+      "2": "Vespertino",
+      "3": "Noturno"
+    },
+    "CARD": {
+      "SERIE": "Série",
+      "ANO_LETIVO": "Ano letivo",
+      "TURNO": "Turno",
+      "ALUNOS": "Alunos",
+      "DISCIPLINAS": "Disciplinas",
+      "ATIVO": "Ativa",
+      "INATIVO": "Inativa"
+    },
+    "LISTA": {
+      "CARREGANDO": "Carregando turmas...",
+      "VAZIO": "Nenhuma turma encontrada.",
+      "ERRO": "Não foi possível carregar as turmas. Tente novamente."
     }
   },
   "TABELA": {

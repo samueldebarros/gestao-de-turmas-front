@@ -1,0 +1,59 @@
+.card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  background: #fff;
+  cursor: pointer;
+  transition: box-shadow 0.15s ease;
+
+  &:hover {
+    box-shadow: 0 2px 8px rgba(28, 83, 185, 0.15);
+  }
+
+  &--inativo {
+    opacity: 0.6;
+  }
+
+  &__cabecalho {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
+
+  &__titulo {
+    margin: 0;
+    color: #1c53b9;
+  }
+
+  &__dados {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem 1rem;
+    margin: 0;
+
+    dt {
+      font-size: 0.75rem;
+      color: #666;
+    }
+    dd {
+      margin: 0;
+      font-weight: 600;
+    }
+  }
+}
+
+.badge {
+  font-size: 0.75rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 12px;
+
+  &--ativo {
+    background: #e6f4ea;
+    color: #1e7e34;
+  }
+  &--inativo {
+    background: #fdecea;
+    color: #c62828;
+  }
+}

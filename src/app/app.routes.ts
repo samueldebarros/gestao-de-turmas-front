@@ -21,6 +21,11 @@ export const routes: Routes = [
       import('./features/dashboard/dashboard.routes.js').then((m) => m.DASHBOARD_ROUTES),
   },
   {
+    path: 'turmas',
+    canMatch: [autenticadoGuard, papelGuard('Admin', 'Coordenador')],
+    loadChildren: () => import('./features/turma/turma.routes.js').then((m) => m.TURMA_ROUTES),
+  },
+  {
     path: 'login',
     loadComponent: () =>
       import('./features/login/login.component.js').then((m) => m.LoginComponent),

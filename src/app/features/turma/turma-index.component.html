@@ -1,0 +1,45 @@
+<div class="container">
+  <div class="acoes-topo">
+    <app-botao variante="secundario" routerLink="cadastrar">
+      {{ 'TURMA.BOTOES.CADASTRAR' | translate }}
+    </app-botao>
+  </div>
+
+  <app-filtro-lista [filtros]="filtrosTurma" (acaoFiltrar)="filtrar($event)"></app-filtro-lista>
+
+  @if (estado$ | async; as estado) {
+    @switch (estado.status) {
+      @case ('carregando') {
+        <p class="lista-status">{{ 'TURMA.LISTA.CARREGANDO' | translate }}</p>
+      }
+      @case ('erro') {
+        <app-mensagem
+          [visivel]="true"
+          tipo="erro"
+          [texto]="'TURMA.LISTA.ERRO' | translate"
+        ></app-mensagem>
+      }
+      @case ('ok') {
+        @if (estado.resultado.itens.length) {
+          <div class="grade-cards">
+            @for (turma of estado.resultado.itens; track turma.id) {
+              <app-turma-card [turma]="turma"></app-turma-card>
+            }
+          </div>
+
+          @if (estado.resultado.totalPaginas > 1) {
+            <div class="rodape-tabela">
+              <app-paginacao
+                [paginaAtual]="estado.resultado.paginaAtual"
+                [totalPaginas]="estado.resultado.totalPaginas"
+                (mudarPagina)="mudarPagina($event)"
+              ></app-paginacao>
+            </div>
+          }
+        } @else {
+          <p class="lista-status">{{ 'TURMA.LISTA.VAZIO' | translate }}</p>
+        }
+      }
+    }
+  }
+</div>

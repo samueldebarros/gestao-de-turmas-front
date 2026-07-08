@@ -6,7 +6,8 @@
   "NAVBAR": {
     "ALUNOS": "Students",
     "DOCENTES": "Teachers",
-    "DASHBOARD": "Dashboard"
+    "DASHBOARD": "Dashboard",
+    "TURMAS": "Classes"
   },
   "PAPEL": {
     "ESCOLHA_TITULO": "Choose your role",
@@ -53,6 +54,35 @@
     "BUSCA": {
       "LABEL": "Find student",
       "PLACEHOLDER": "Type name or enrollment"
+    }
+  },
+  "TURMA": {
+    "BOTOES": {
+      "CADASTRAR": "Add class"
+    },
+    "FILTRO": {
+      "ANO_LETIVO": "School year",
+      "TURNO": "Shift",
+      "STATUS": "Status"
+    },
+    "TURNO": {
+      "1": "Morning",
+      "2": "Afternoon",
+      "3": "Evening"
+    },
+    "CARD": {
+      "SERIE": "Grade",
+      "ANO_LETIVO": "School year",
+      "TURNO": "Shift",
+      "ALUNOS": "Students",
+      "DISCIPLINAS": "Subjects",
+      "ATIVO": "Active",
+      "INATIVO": "Inactive"
+    },
+    "LISTA": {
+      "CARREGANDO": "Loading classes...",
+      "VAZIO": "No classes found.",
+      "ERRO": "Could not load classes. Please try again."
     }
   },
   "TABELA": {
