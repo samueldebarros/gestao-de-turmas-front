@@ -98,27 +98,19 @@ export class AlunoFacadeService {
   }
 
   public adicionar(dto: AlunoAdicionarDTO): Observable<void> {
-    return this.alunoService.adicionarAluno(dto).pipe(
-      tap(() => this.aposMutacao()),
-    );
+    return this.alunoService.adicionarAluno(dto).pipe(tap(() => this.aposMutacao()));
   }
 
   public editar(dto: AlunoEditarDTO): Observable<void> {
-    return this.alunoService.editarAluno(dto).pipe(
-      tap(() => this.aposMutacao()),
-    );
+    return this.alunoService.editarAluno(dto).pipe(tap(() => this.aposMutacao()));
   }
 
   public inativar(id: number): Observable<void> {
-    return this.alunoService.inativarAluno(id).pipe(
-      tap(() => this.aposMutacao()),
-    );
+    return this.alunoService.inativarAluno(id).pipe(tap(() => this.aposMutacao()));
   }
 
   public reativar(id: number): Observable<void> {
-    return this.alunoService.reativarAluno(id).pipe(
-      tap(() => this.aposMutacao()),
-    );
+    return this.alunoService.reativarAluno(id).pipe(tap(() => this.aposMutacao()));
   }
 
   public buscarSugestoes(termo: string): Observable<AlunoInterface[]> {

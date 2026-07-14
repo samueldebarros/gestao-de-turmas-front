@@ -1,0 +1,36 @@
+<div class="stepper">
+  <ol class="stepper__indicador">
+    @for (passo of passos; track passo.id; let i = $index) {
+      <li
+        class="stepper__passo"
+        [class.ativo]="i === passoAtual"
+        [class.concluido]="i < passoAtual"
+      >
+        <span class="stepper__numero">{{ i + 1 }}</span>
+        <span class="stepper__rotulo">{{ passo.rotulo | translate }}</span>
+      </li>
+    }
+  </ol>
+
+  <div class="stepper__corpo">
+    <ng-content></ng-content>
+  </div>
+
+  <div class="stepper__rodape">
+    @if (!ehPrimeiro) {
+      <app-botao variante="secundario" (acaoBotao)="voltar.emit()">
+        {{ 'STEPPER.VOLTAR' | translate }}
+      </app-botao>
+    }
+
+    @if (!ehUltimo) {
+      <app-botao variante="primario" [desabilitado]="!podeAvancar" (acaoBotao)="avancar.emit()">
+        {{ 'STEPPER.AVANCAR' | translate }}
+      </app-botao>
+    } @else {
+      <app-botao variante="sucesso" [desabilitado]="!podeAvancar" (acaoBotao)="concluir.emit()">
+        {{ 'STEPPER.CONCLUIR' | translate }}
+      </app-botao>
+    }
+  </div>
+</div>

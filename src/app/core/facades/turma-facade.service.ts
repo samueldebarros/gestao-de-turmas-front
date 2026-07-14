@@ -10,11 +10,13 @@ import {
   of,
   startWith,
   switchMap,
+  tap,
 } from 'rxjs';
 import { TurmaInterface } from '../../shared/interfaces/entities/turma.interface';
 import { EstadoLista } from '../../shared/interfaces/ui/estado-lista.interface';
 import { FiltroListaInterface } from '../../shared/interfaces/ui/filtro-lista.interface';
 import { TurnoEnum } from '../../shared/enums/turno.enum';
+import { TurmaAdicionarDTO } from '../../shared/interfaces/dto/turma-adicionar-dto.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -57,5 +59,11 @@ export class TurmaFacadeService {
 
   mudarPagina(pagina: number): void {
     this._paginaState$.next({ ...this._paginaState$.value, pagina });
+  }
+
+  adicionar(dto: TurmaAdicionarDTO): Observable<void> {
+    return this.turmaService
+      .adicionarTurma(dto)
+      .pipe(tap(() => this._paginaState$.next({ ...this._paginaState$.value, pagina: 1 })));
   }
 }

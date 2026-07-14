@@ -1,4 +1,12 @@
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { TabelaGenerica } from '../../shared/components/tabela-generica/tabela-generica.component.js';
 import { TabelaColuna } from '../../shared/interfaces/ui/tabela-coluna.interface.js';
 import { Botao } from '../../shared/components/botao/botao.component.js';
@@ -40,6 +48,7 @@ import { ResultadoPaginado } from '../../shared/interfaces/ui/resultado-paginado
 import { OrdenacaoAlunoEnum } from '../../shared/enums/ordenacao-aluno.enum.js';
 import { DatePickerComponent } from '../../shared/components/date-picker.component/date-picker.component.js';
 import { AutocompleteComponent } from '../../shared/components/autocomplete.component/autocomplete.component.js';
+import { EstadoModal } from '../../shared/interfaces/ui/estado-modal.interface.js';
 
 @Component({
   selector: 'app-aluno-index',
@@ -63,6 +72,7 @@ import { AutocompleteComponent } from '../../shared/components/autocomplete.comp
   templateUrl: './aluno-index.component.html',
   styleUrl: './aluno-index.component.scss',
   providers: [DatePipe, SexoFormatPipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AlunoIndex implements OnInit {
   public resultado$!: Observable<ResultadoPaginado<AlunoInterface>>;
@@ -160,49 +170,48 @@ export class AlunoIndex implements OnInit {
     this.facade.ordenarPor(campo);
   }
 
-  private modoModal: 'adicionar' | 'editar' = 'adicionar';
-  private alunoEmEdicao: AlunoInterface | null = null;
+  private readonly estadoModal = signal<EstadoModal>({ modo: 'fechado' });
 
-  public isModalAberto: boolean = false;
+  public readonly modalAberto = computed(() => this.estadoModal().modo !== 'fechado');
 
-  public alertaModal: AlertaState = { visivel: false, tipo: 'sucesso', texto: '' };
-  public alertaPagina: AlertaState = { visivel: false, tipo: 'erro', texto: '' };
+  public alertaModal = signal<AlertaState>({ visivel: false, tipo: 'sucesso', texto: '' });
+  public readonly alertaPagina = signal<AlertaState>({ visivel: false, tipo: 'erro', texto: '' });
 
   private exibirAlertaModal(tipo: AlertaState['tipo'], texto: string): void {
-    this.alertaModal = { visivel: true, tipo, texto };
+    this.alertaModal.set({ visivel: true, tipo, texto });
+  }
+  public ocultarAlertaModal(): void {
+    this.alertaModal.update((a) => ({ ...a, visivel: false }));
   }
 
-  private ocultarAlertaModal(): void {
-    this.alertaModal = { ...this.alertaModal, visivel: false };
+  public abrirModal(): void {
+    this.estadoModal.set({ modo: 'adicionar' });
   }
 
-  public abrirModal() {
-    this.isModalAberto = true;
-  }
-
-  public fecharModal() {
-    this.isModalAberto = false;
+  public fecharModal(): void {
     this.ocultarAlertaModal();
-    this.modoModal = 'adicionar';
-    this.alunoEmEdicao = null;
     this.alunoForm.get('cpf')?.enable();
     this.alunoForm.reset();
+    this.estadoModal.set({ modo: 'fechado' });
   }
 
-  public get tituloModal(): string {
-    return this.modoModal === 'editar'
+  public readonly tituloModal = computed(() =>
+    this.estadoModal().modo === 'editar'
       ? 'ALUNO.MODAL.EDICAO_TITULO'
-      : 'ALUNO.MODAL.CADASTRO_TITULO';
-  }
+      : 'ALUNO.MODAL.CADASTRO_TITULO',
+  );
 
-  public get rotuloSubmit(): string {
-    return this.modoModal === 'editar'
+  public readonly rotuloSubmit = computed(() =>
+    this.estadoModal().modo === 'editar'
       ? 'ALUNO.BOTOES.SALVAR_ALTERACOES'
-      : 'ALUNO.BOTOES.ADICIONAR_ALUNO';
-  }
+      : 'ALUNO.BOTOES.ADICIONAR_ALUNO',
+  );
 
   private exibirAlertaPagina(tipo: AlertaState['tipo'], texto: string): void {
-    this.alertaPagina = { visivel: true, tipo, texto };
+    this.alertaPagina.set({ visivel: true, tipo, texto });
+  }
+  public ocultarAlertaPagina(): void {
+    this.alertaPagina.update((a) => ({ ...a, visivel: false }));
   }
 
   public definirAcao(evento: EventoAcaoTabela<AlunoInterface>) {
@@ -254,8 +263,6 @@ export class AlunoIndex implements OnInit {
   rotuloAluno = (aluno: AlunoInterface): string => `${aluno.matricula} — ${aluno.nome}`;
 
   public abrirModalEdicao(aluno: AlunoInterface): void {
-    this.alunoEmEdicao = aluno;
-    this.modoModal = 'editar';
     this.alunoForm.patchValue({
       nome: aluno.nome,
       email: aluno.email,
@@ -264,7 +271,7 @@ export class AlunoIndex implements OnInit {
       dataNascimento: this.formatarDataParaFormulario(aluno.dataNascimento),
     });
     this.alunoForm.get('cpf')?.disable();
-    this.isModalAberto = true;
+    this.estadoModal.set({ modo: 'editar', aluno });
   }
 
   private formatarDataParaFormulario(data: Date | string): string {
@@ -272,7 +279,8 @@ export class AlunoIndex implements OnInit {
   }
 
   public salvarAluno(): void {
-    if (this.modoModal === 'editar') this.editarAluno();
+    const estado = this.estadoModal();
+    if (estado.modo === 'editar') this.editarAluno(estado.aluno);
     else this.adicionarAluno();
   }
 
@@ -332,19 +340,18 @@ export class AlunoIndex implements OnInit {
     );
   }
 
-  private editarAluno(): void {
+  private editarAluno(aluno: AlunoInterface): void {
     if (this.alunoForm.invalid) {
       this.exibirAlertaModal('erro', 'MENSAGEM.FORMULARIO_INVALIDO');
       return;
     }
     const payload: AlunoEditarDTO = {
-      id: this.alunoEmEdicao!.id,
+      id: aluno.id,
       nome: this.alunoForm.value.nome!.trim(),
       email: this.alunoForm.value.email!.trim(),
       sexo: Number(this.alunoForm.value.sexo),
       dataNascimento: this.alunoForm.value.dataNascimento!,
     };
-
     this.executarAcaoNaLista(
       this.facade.editar(payload),
       'MENSAGEM.SUCESSO_EDICAO_ALUNO',

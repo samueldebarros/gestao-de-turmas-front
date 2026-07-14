@@ -1,0 +1,56 @@
+$cor-primaria: #1c53b9;
+$cor-secundaria: #6b7280;
+
+.stepper {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  &__indicador {
+    display: flex;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  &__passo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    color: $cor-secundaria;
+  }
+
+  &__numero {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  &__passo.ativo {
+    color: $cor-primaria;
+    font-weight: 600;
+  }
+
+  &__passo.concluido {
+    color: $cor-primaria;
+
+    .stepper__numero {
+      background: $cor-primaria;
+      color: #fff;
+    }
+  }
+
+  &__rodape {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+}

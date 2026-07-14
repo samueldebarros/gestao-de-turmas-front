@@ -1,0 +1,26 @@
+<p class="contador">
+  {{ 'TURMA.ALUNOS.SELECIONADOS' | translate: { total: selecionados.length } }}
+</p>
+
+<ul class="alunos">
+  @for (aluno of pagina.itens; track aluno.id) {
+    <li class="aluno">
+      <label>
+        <input
+          type="checkbox"
+          [checked]="estaSelecionado(aluno.id)"
+          (change)="alternar.emit(aluno.id)"
+        />
+        {{ aluno.matricula }} — {{ aluno.nome }}
+      </label>
+    </li>
+  }
+</ul>
+
+@if (pagina.totalPaginas > 1) {
+  <app-paginacao
+    [paginaAtual]="pagina.paginaAtual"
+    [totalPaginas]="pagina.totalPaginas"
+    (mudarPagina)="mudarPagina.emit($event)"
+  ></app-paginacao>
+}

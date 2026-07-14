@@ -19,11 +19,53 @@
   </nav>
 
   <div class="botoes-idioma">
-    <app-botao (acaoBotao)="trocarIdioma('pt-BR')" [variante]="'secundario'">
-      {{ 'IDIOMA.PORTUGUES' | translate }}</app-botao
+    <button
+      type="button"
+      class="botao-bandeira"
+      [class.ativo]="idiomaAtual() === 'pt-BR'"
+      [title]="'IDIOMA.PORTUGUES' | translate"
+      [attr.aria-label]="'IDIOMA.PORTUGUES' | translate"
+      (click)="trocarIdioma('pt-BR')"
     >
-    <app-botao (acaoBotao)="trocarIdioma('en')" [variante]="'secundario'">
-      {{ 'IDIOMA.INGLES' | translate }}</app-botao
+      <svg viewBox="0 0 28 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect width="28" height="20" fill="#009c3b" />
+        <polygon points="14,2.5 25.5,10 14,17.5 2.5,10" fill="#ffdf00" />
+        <circle cx="14" cy="10" r="4.3" fill="#002776" />
+      </svg>
+    </button>
+
+    <button
+      type="button"
+      class="botao-bandeira"
+      [class.ativo]="idiomaAtual() === 'en'"
+      [title]="'IDIOMA.INGLES' | translate"
+      [attr.aria-label]="'IDIOMA.INGLES' | translate"
+      (click)="trocarIdioma('en')"
     >
+      <svg viewBox="0 0 28 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect width="28" height="20" fill="#b22234" />
+        <g fill="#ffffff">
+          <rect y="1.54" width="28" height="1.54" />
+          <rect y="4.62" width="28" height="1.54" />
+          <rect y="7.69" width="28" height="1.54" />
+          <rect y="10.77" width="28" height="1.54" />
+          <rect y="13.85" width="28" height="1.54" />
+          <rect y="16.92" width="28" height="1.54" />
+        </g>
+        <rect width="11.2" height="10.77" fill="#3c3b6e" />
+        <g fill="#ffffff">
+          <circle cx="2" cy="2" r="0.7" />
+          <circle cx="5.7" cy="2" r="0.7" />
+          <circle cx="9.4" cy="2" r="0.7" />
+          <circle cx="3.85" cy="4.2" r="0.7" />
+          <circle cx="7.55" cy="4.2" r="0.7" />
+          <circle cx="2" cy="6.4" r="0.7" />
+          <circle cx="5.7" cy="6.4" r="0.7" />
+          <circle cx="9.4" cy="6.4" r="0.7" />
+          <circle cx="3.85" cy="8.6" r="0.7" />
+          <circle cx="7.55" cy="8.6" r="0.7" />
+        </g>
+      </svg>
+    </button>
   </div>
 </div>

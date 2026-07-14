@@ -8,6 +8,7 @@ export interface TurmaInterface extends EntidadeBaseInterface {
   anoLetivo: number;
   turno: TurnoEnum;
   turnoDescricao?: string;
+  capacidade: number;
   totalAlunos: number;
   totalDisciplinas: number;
 }

@@ -58,7 +58,8 @@
   },
   "TURMA": {
     "BOTOES": {
-      "CADASTRAR": "Cadastrar turma"
+      "CADASTRAR": "Cadastrar turma",
+      "CANCELAR": "Cancelar"
     },
     "FILTRO": {
       "ANO_LETIVO": "Ano letivo",
@@ -70,12 +71,18 @@
       "2": "Vespertino",
       "3": "Noturno"
     },
+    "SERIE": {
+      "1": "1º ano",
+      "2": "2º ano",
+      "3": "3º ano"
+    },
     "CARD": {
       "SERIE": "Série",
       "ANO_LETIVO": "Ano letivo",
       "TURNO": "Turno",
       "ALUNOS": "Alunos",
       "DISCIPLINAS": "Disciplinas",
+      "CAPACIDADE": "Capacidade",
       "ATIVO": "Ativa",
       "INATIVO": "Inativa"
     },
@@ -83,6 +90,31 @@
       "CARREGANDO": "Carregando turmas...",
       "VAZIO": "Nenhuma turma encontrada.",
       "ERRO": "Não foi possível carregar as turmas. Tente novamente."
+    },
+    "CADASTRO": {
+      "TITULO": "Cadastrar turma"
+    },
+    "STEPPER": {
+      "INFORMACOES": "Informações",
+      "DISCIPLINAS": "Disciplinas",
+      "ALUNOS": "Alunos"
+    },
+    "FORMULARIO": {
+      "IDENTIFICADOR_LABEL": "Identificador",
+      "IDENTIFICADOR_PLACEHOLDER": "Ex.: A",
+      "SERIE_LABEL": "Série",
+      "ANO_LETIVO_LABEL": "Ano letivo",
+      "ANO_LETIVO_PLACEHOLDER": "Ex.: 2026",
+      "CAPACIDADE_LABEL": "Capacidade",
+      "CAPACIDADE_PLACEHOLDER": "Ex.: 30",
+      "TURNO_LABEL": "Turno",
+      "SELECIONE": "Selecione"
+    },
+    "DISCIPLINAS": {
+      "VAZIO": "Nenhuma disciplina disponível."
+    },
+    "ALUNOS": {
+      "SELECIONADOS": "{{total}} aluno(s) selecionado(s)"
     }
   },
   "TABELA": {
@@ -156,5 +188,6 @@
     "VOLTAR_INICIO": "Ir para o início"
   },
   "DATE_PICKER": { "HOJE": "Hoje", "LIMPAR": "Limpar" },
-  "AUTOCOMPLETE": { "BUSCANDO": "Buscando...", "NENHUM_RESULTADO": "Nenhum resultado" }
+  "AUTOCOMPLETE": { "BUSCANDO": "Buscando...", "NENHUM_RESULTADO": "Nenhum resultado" },
+  "STEPPER": { "VOLTAR": "Voltar", "AVANCAR": "Avançar", "CONCLUIR": "Concluir" }
 }

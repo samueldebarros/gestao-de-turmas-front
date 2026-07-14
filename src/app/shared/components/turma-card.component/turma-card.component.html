@@ -1,6 +1,6 @@
 <article class="card" [class.card--inativo]="turma.ativo === false" (click)="acaoCard.emit(turma)">
   <header class="card__cabecalho">
-    <h3 class="card__titulo">{{ turma.identificador }}</h3>
+    <h3 class="card__titulo">{{ turma.serie }}º {{ turma.identificador }}</h3>
     <span
       class="badge"
       [class.badge--ativo]="turma.ativo !== false"
@@ -24,12 +24,8 @@
       <dd>{{ turma.turnoDescricao ?? ('TURMA.TURNO.' + turma.turno | translate) }}</dd>
     </div>
     <div>
-      <dt>{{ 'TURMA.CARD.ALUNOS' | translate }}</dt>
-      <dd>{{ turma.totalAlunos }}</dd>
-    </div>
-    <div>
-      <dt>{{ 'TURMA.CARD.DISCIPLINAS' | translate }}</dt>
-      <dd>{{ turma.totalDisciplinas }}</dd>
+      <dt>{{ 'TURMA.CARD.CAPACIDADE' | translate }}</dt>
+      <dd>{{ turma.capacidade }}</dd>
     </div>
   </dl>
 </article>

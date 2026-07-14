@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { SelectOptionInterface } from '../../shared/interfaces/ui/select-option.interface';
 import { TurmaFacadeService } from '../../core/facades/turma-facade.service';
 import { TurnoEnum } from '../../shared/enums/turno.enum';
@@ -31,6 +31,8 @@ import { RouterLink } from '@angular/router';
 })
 export class TurmaIndexComponent {
   private readonly facade = inject(TurmaFacadeService);
+
+  readonly sucessoCadastro = signal<boolean>(history.state?.sucesso === true);
 
   readonly estado$ = this.facade.estado$;
 
@@ -72,6 +74,10 @@ export class TurmaIndexComponent {
 
   mudarPagina(pagina: number): void {
     this.facade.mudarPagina(pagina);
+  }
+
+  fecharSucesso(): void {
+    this.sucessoCadastro.set(false);
   }
 
   private opcoesAnoLetivo(): SelectOptionInterface[] {

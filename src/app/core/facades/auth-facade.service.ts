@@ -1,6 +1,16 @@
 import { inject, Injectable } from '@angular/core';
 import { AuthService } from '../services/auth.service';
-import { BehaviorSubject, catchError, map, Observable, of, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  finalize,
+  map,
+  Observable,
+  of,
+  share,
+  shareReplay,
+  tap,
+} from 'rxjs';
 import { UsuarioAutenticadoInterface } from '../../shared/interfaces/entities/usuario-autenticado.interface';
 import { LoginDTO } from '../../shared/interfaces/dto/login-dto.interface';
 import { PapelUsuario } from '../../shared/types/papel-usuario.type';
@@ -14,6 +24,8 @@ export class AuthFacadeService {
   readonly usuarioLogado$ = this._usuario$.asObservable();
   readonly papel$ = this._usuario$.pipe(map((u) => u?.role ?? null));
   readonly estaLogado$ = this._usuario$.pipe(map((u) => u !== null));
+
+  private renovacao$: Observable<UsuarioAutenticadoInterface> | null = null;
 
   login(credenciais: LoginDTO): Observable<UsuarioAutenticadoInterface> {
     return this.authService.login(credenciais).pipe(tap((u) => this._usuario$.next(u)));
@@ -31,6 +43,15 @@ export class AuthFacadeService {
         return of(null);
       }),
     );
+  }
+
+  renovarSessao(): Observable<UsuarioAutenticadoInterface> {
+    this.renovacao$ ??= this.authService.refresh().pipe(
+      tap((usuario) => this._usuario$.next(usuario)),
+      finalize(() => (this.renovacao$ = null)),
+      shareReplay({ bufferSize: 1, refCount: true }),
+    );
+    return this.renovacao$;
   }
 
   estaAutenticado(): boolean {

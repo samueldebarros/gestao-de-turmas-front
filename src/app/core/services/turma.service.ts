@@ -5,6 +5,7 @@ import { TurmaFiltro } from '../../shared/interfaces/ui/turma-filtro.interface';
 import { Observable } from 'rxjs';
 import { TurmaInterface } from '../../shared/interfaces/entities/turma.interface';
 import { ResultadoPaginado } from '../../shared/interfaces/ui/resultado-paginado.interface';
+import { TurmaAdicionarDTO } from '../../shared/interfaces/dto/turma-adicionar-dto.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -23,5 +24,9 @@ export class TurmaService {
     return Object.entries(filtro)
       .filter(([, valor]) => valor !== null && valor !== undefined && valor !== '')
       .reduce((params, [chave, valor]) => params.set(chave, String(valor)), new HttpParams());
+  }
+
+  adicionarTurma(dto: TurmaAdicionarDTO): Observable<void> {
+    return this.http.post<void>(this.apiUrl, dto);
   }
 }

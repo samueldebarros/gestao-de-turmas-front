@@ -1,8 +1,9 @@
 <div class="alerta-pagina">
   <app-mensagem
-    [(visivel)]="alertaPagina.visivel"
-    [tipo]="alertaPagina.tipo"
-    [texto]="alertaPagina.texto"
+    [visivel]="alertaPagina().visivel"
+    (visivelChange)="ocultarAlertaPagina()"
+    [tipo]="alertaPagina().tipo"
+    [texto]="alertaPagina().texto"
   ></app-mensagem>
 </div>
 
@@ -49,11 +50,16 @@
     }
   }
 
-  <app-modal [titulo]="tituloModal | translate" [(visivel)]="isModalAberto">
+  <app-modal
+    [titulo]="tituloModal() | translate"
+    [visivel]="modalAberto()"
+    (visivelChange)="fecharModal()"
+  >
     <app-mensagem
-      [(visivel)]="alertaModal.visivel"
-      [tipo]="alertaModal.tipo"
-      [texto]="alertaModal.texto"
+      [visivel]="alertaModal().visivel"
+      (visivelChange)="ocultarAlertaModal()"
+      [tipo]="alertaModal().tipo"
+      [texto]="alertaModal().texto"
     ></app-mensagem>
 
     <form [formGroup]="alunoForm" (ngSubmit)="salvarAluno()" class="formAluno">
@@ -101,7 +107,7 @@
       ></app-form-field-select>
 
       <app-botao [tipo]="'submit'" [variante]="'primario'">
-        {{ rotuloSubmit | translate }}
+        {{ rotuloSubmit() | translate }}
       </app-botao>
 
       <app-botao [tipo]="'button'" (acaoBotao)="fecharModal()" [variante]="'perigo'">

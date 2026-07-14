@@ -1,29 +1,82 @@
-.botoes-idioma {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-}
+$cor-marca: #ad1010;
+$cor-marca-escuro: #870c0c;
 
 .navbar {
-  padding: 5px;
+  padding: 12px 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 24px;
+  background: linear-gradient(135deg, $cor-marca 0%, $cor-marca-escuro 100%);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+  h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+  }
 }
 
 .navbar-links {
   display: flex;
-  gap: 16px;
+  gap: 8px;
 
   a {
     text-decoration: none;
-    color: inherit;
-    padding: 4px 8px;
-    border-radius: 4px;
+    color: rgba(255, 255, 255, 0.9);
+    padding: 6px 12px;
+    border-radius: 6px;
     cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.15s ease, color 0.15s ease;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+    }
   }
 
   .link-ativo {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
     font-weight: 700;
+  }
+}
+
+.botoes-idioma {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.botao-bandeira {
+  padding: 2px;
+  border: 2px solid transparent;
+  border-radius: 5px;
+  background: transparent;
+  cursor: pointer;
+  line-height: 0;
+  opacity: 0.55;
+  transition: opacity 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+
+  svg {
+    display: block;
+    width: 28px;
+    height: 20px;
+    border-radius: 2px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  }
+
+  &:hover {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+
+  &.ativo {
+    opacity: 1;
+    border-color: rgba(255, 255, 255, 0.95);
   }
 }

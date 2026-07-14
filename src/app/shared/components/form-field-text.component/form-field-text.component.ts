@@ -17,7 +17,7 @@ import { AbstractControl, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angul
 export class FormFieldTextComponent implements ControlValueAccessor {
   @Input() label: string = '';
   @Input() placeholder: string = '';
-  @Input() type: 'text' | 'password' | 'email' | 'date' = 'text';
+  @Input() type: 'text' | 'password' | 'email' | 'date' | 'number' = 'text';
   @Input() errorMessage: string = '';
   @Input() control?: AbstractControl | null;
 
@@ -33,7 +33,7 @@ export class FormFieldTextComponent implements ControlValueAccessor {
   onTouched: any = () => {};
 
   writeValue(value: any): void {
-    this.inputAtual = value || '';
+    this.inputAtual = value ?? '';
   }
 
   registerOnChange(fn: any): void {
@@ -51,6 +51,12 @@ export class FormFieldTextComponent implements ControlValueAccessor {
   onInput(event: Event) {
     const valorDigitado = (event.target as HTMLInputElement).value;
     this.inputAtual = valorDigitado;
-    this.onChange(valorDigitado);
+    this.onChange(this.type === 'number' ? this.paraNumero(valorDigitado) : valorDigitado);
+  }
+
+  private paraNumero(valor: string): number | null {
+    if (valor.trim() === '') return null;
+    const numero = Number(valor);
+    return Number.isNaN(numero) ? null : numero;
   }
 }

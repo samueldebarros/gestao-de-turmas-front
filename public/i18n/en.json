@@ -58,7 +58,8 @@
   },
   "TURMA": {
     "BOTOES": {
-      "CADASTRAR": "Add class"
+      "CADASTRAR": "Add class",
+      "CANCELAR": "Cancel"
     },
     "FILTRO": {
       "ANO_LETIVO": "School year",
@@ -70,12 +71,18 @@
       "2": "Afternoon",
       "3": "Evening"
     },
+    "SERIE": {
+      "1": "1st year",
+      "2": "2nd year",
+      "3": "3rd year"
+    },
     "CARD": {
       "SERIE": "Grade",
       "ANO_LETIVO": "School year",
       "TURNO": "Shift",
       "ALUNOS": "Students",
       "DISCIPLINAS": "Subjects",
+      "CAPACIDADE": "Capacity",
       "ATIVO": "Active",
       "INATIVO": "Inactive"
     },
@@ -83,6 +90,31 @@
       "CARREGANDO": "Loading classes...",
       "VAZIO": "No classes found.",
       "ERRO": "Could not load classes. Please try again."
+    },
+    "CADASTRO": {
+      "TITULO": "Add class"
+    },
+    "STEPPER": {
+      "INFORMACOES": "Information",
+      "DISCIPLINAS": "Subjects",
+      "ALUNOS": "Students"
+    },
+    "FORMULARIO": {
+      "IDENTIFICADOR_LABEL": "Identifier",
+      "IDENTIFICADOR_PLACEHOLDER": "e.g.: A",
+      "SERIE_LABEL": "Grade",
+      "ANO_LETIVO_LABEL": "School year",
+      "ANO_LETIVO_PLACEHOLDER": "e.g.: 2026",
+      "CAPACIDADE_LABEL": "Capacity",
+      "CAPACIDADE_PLACEHOLDER": "e.g.: 30",
+      "TURNO_LABEL": "Shift",
+      "SELECIONE": "Select"
+    },
+    "DISCIPLINAS": {
+      "VAZIO": "No subjects available."
+    },
+    "ALUNOS": {
+      "SELECIONADOS": "{{total}} student(s) selected"
     }
   },
   "TABELA": {
@@ -156,5 +188,6 @@
     "VOLTAR_INICIO": "Go to home"
   },
   "DATE_PICKER": { "HOJE": "Today", "LIMPAR": "Clear" },
-  "AUTOCOMPLETE": { "BUSCANDO": "Searching...", "NENHUM_RESULTADO": "No results" }
+  "AUTOCOMPLETE": { "BUSCANDO": "Searching...", "NENHUM_RESULTADO": "No results" },
+  "STEPPER": { "VOLTAR": "Back", "AVANCAR": "Next", "CONCLUIR": "Finish" }
 }

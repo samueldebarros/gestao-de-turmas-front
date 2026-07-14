@@ -22,4 +22,8 @@ export class AuthService {
   obterUsuarioAtual(): Observable<UsuarioAutenticadoInterface> {
     return this.http.get<UsuarioAutenticadoInterface>(`${this.apiUrl}/me`);
   }
+
+  refresh(): Observable<UsuarioAutenticadoInterface> {
+    return this.http.post<UsuarioAutenticadoInterface>(`${this.apiUrl}/refresh`, {});
+  }
 }

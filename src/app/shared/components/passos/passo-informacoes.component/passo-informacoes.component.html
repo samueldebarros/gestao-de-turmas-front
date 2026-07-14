@@ -1,0 +1,45 @@
+<div class="passo-informacoes" [formGroup]="formGroup">
+  <app-form-field-text
+    formControlName="identificador"
+    [control]="formGroup.get('identificador')"
+    [label]="'TURMA.FORMULARIO.IDENTIFICADOR_LABEL' | translate"
+    [placeholder]="'TURMA.FORMULARIO.IDENTIFICADOR_PLACEHOLDER' | translate"
+    [errorMessage]="'VALIDACAO.OBRIGATORIO' | translate"
+  ></app-form-field-text>
+
+  <app-form-field-select
+    formControlName="serie"
+    [control]="formGroup.get('serie')"
+    [options]="opcoesSerie"
+    [label]="'TURMA.FORMULARIO.SERIE_LABEL' | translate"
+    [placeholder]="'TURMA.FORMULARIO.SELECIONE' | translate"
+    [errorMessage]="'VALIDACAO.OBRIGATORIO' | translate"
+  ></app-form-field-select>
+
+  <app-form-field-text
+    type="number"
+    formControlName="anoLetivo"
+    [control]="formGroup.get('anoLetivo')"
+    [label]="'TURMA.FORMULARIO.ANO_LETIVO_LABEL' | translate"
+    [placeholder]="'TURMA.FORMULARIO.ANO_LETIVO_PLACEHOLDER' | translate"
+    [errorMessage]="'VALIDACAO.OBRIGATORIO' | translate"
+  ></app-form-field-text>
+
+  <app-form-field-text
+    type="number"
+    formControlName="capacidade"
+    [control]="formGroup.get('capacidade')"
+    [label]="'TURMA.FORMULARIO.CAPACIDADE_LABEL' | translate"
+    [placeholder]="'TURMA.FORMULARIO.CAPACIDADE_PLACEHOLDER' | translate"
+    [errorMessage]="'VALIDACAO.OBRIGATORIO' | translate"
+  ></app-form-field-text>
+
+  <app-form-field-select
+    formControlName="turno"
+    [control]="formGroup.get('turno')"
+    [options]="opcoesTurno"
+    [label]="'TURMA.FORMULARIO.TURNO_LABEL' | translate"
+    [placeholder]="'TURMA.FORMULARIO.SELECIONE' | translate"
+    [errorMessage]="'VALIDACAO.OBRIGATORIO' | translate"
+  ></app-form-field-select>
+</div>

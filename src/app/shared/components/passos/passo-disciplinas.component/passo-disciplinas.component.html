@@ -1,0 +1,28 @@
+<ul class="disciplinas">
+  @for (grupo of grupos; track grupo.disciplinaNome) {
+    <li class="disciplina">
+      <label class="disciplina__marcar">
+        <input
+          type="checkbox"
+          [checked]="estaMarcada(grupo)"
+          (change)="alternarDisciplina(grupo, $event)"
+        />
+        {{ grupo.disciplinaNome }}
+      </label>
+
+      @if (estaMarcada(grupo)) {
+        <select
+          class="disciplina__docente"
+          [value]="idSelecionadoDoGrupo(grupo)"
+          (change)="escolherDocente(grupo, $event)"
+        >
+          @for (docente of grupo.docentes; track docente.id) {
+            <option [value]="docente.id">{{ docente.docenteNome }}</option>
+          }
+        </select>
+      }
+    </li>
+  } @empty {
+    <li>{{ 'TURMA.DISCIPLINAS.VAZIO' | translate }}</li>
+  }
+</ul>
