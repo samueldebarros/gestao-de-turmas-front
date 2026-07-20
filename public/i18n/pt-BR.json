@@ -115,6 +115,24 @@
     },
     "ALUNOS": {
       "SELECIONADOS": "{{total}} aluno(s) selecionado(s)"
+    },
+    "IMPORTAR": {
+      "LABEL": "Importar alunos por planilha (CSV)",
+      "PREVIEW": "Pré-visualização (linhas inválidas destacadas)",
+      "CONFIRMAR": "Confirmar importação",
+      "SUCESSO": "Alunos importados com sucesso",
+      "ERRO": "Falha ao importar alunos",
+      "ERRO_LINHA": {
+        "NOME_INVALIDO": "Nome inválido",
+        "CPF_INVALIDO": "CPF inválido",
+        "CPF_JA_EXISTE": "CPF já cadastrado",
+        "CPF_DUPLICADO_NO_LOTE": "CPF repetido na planilha",
+        "EMAIL_INVALIDO": "E-mail inválido",
+        "EMAIL_JA_EXISTE": "E-mail já cadastrado",
+        "EMAIL_DUPLICADO_NO_LOTE": "E-mail repetido na planilha",
+        "SEXO_INVALIDO": "Sexo inválido",
+        "DATA_INVALIDA": "Data de nascimento inválida"
+      }
     }
   },
   "TABELA": {
@@ -189,5 +207,13 @@
   },
   "DATE_PICKER": { "HOJE": "Hoje", "LIMPAR": "Limpar" },
   "AUTOCOMPLETE": { "BUSCANDO": "Buscando...", "NENHUM_RESULTADO": "Nenhum resultado" },
-  "STEPPER": { "VOLTAR": "Voltar", "AVANCAR": "Avançar", "CONCLUIR": "Concluir" }
+  "STEPPER": { "VOLTAR": "Voltar", "AVANCAR": "Avançar", "CONCLUIR": "Concluir" },
+  "FILE_UPLOAD": {
+    "INSTRUCAO": "Arraste um arquivo aqui ou clique para selecionar",
+    "REMOVER": "Remover",
+    "ERRO": {
+      "TIPO_INVALIDO": "Tipo de arquivo não permitido",
+      "TAMANHO_EXCEDIDO": "Arquivo maior que {{max}} MB"
+    }
+  }
 }

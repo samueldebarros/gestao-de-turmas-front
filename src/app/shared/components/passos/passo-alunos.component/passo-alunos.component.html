@@ -1,3 +1,29 @@
+<app-file-upload
+  [formControl]="planilha"
+  accept=".csv"
+  [tamanhoMaximoMb]="2"
+  [label]="'TURMA.IMPORTAR.LABEL' | translate"
+></app-file-upload>
+
+@if (linhasPreview?.length) {
+  <div class="preview">
+    <p class="preview__titulo">{{ 'TURMA.IMPORTAR.PREVIEW' | translate }}</p>
+    @for (linha of linhasPreview; track $index) {
+      <div class="preview__linha" [class.invalida]="!linha.valida || !!erroDaLinha($index)">
+        {{ linha.dados.nome }} — {{ linha.dados.email }}
+        @if (erroDaLinha($index); as erro) {
+          <span class="preview__erro">
+            {{ 'TURMA.IMPORTAR.ERRO_LINHA.' + erro.motivo | translate }}
+          </span>
+        }
+      </div>
+    }
+    <button type="button" class="preview__confirmar" (click)="confirmarImportacao.emit()">
+      {{ 'TURMA.IMPORTAR.CONFIRMAR' | translate }}
+    </button>
+  </div>
+}
+
 <p class="contador">
   {{ 'TURMA.ALUNOS.SELECIONADOS' | translate: { total: selecionados.length } }}
 </p>

@@ -12,6 +12,7 @@ import {
 } from 'rxjs';
 import { AlunoAdicionarDTO } from '../../shared/interfaces/dto/aluno-adicionar-dto.interface';
 import { AlunoEditarDTO } from '../../shared/interfaces/dto/aluno-editar-dto.interface';
+import { ImportacaoResultado } from '../../shared/interfaces/dto/importacao-alunos.interface';
 import { FiltroListaInterface } from '../../shared/interfaces/ui/filtro-lista.interface';
 import { AlunoFiltro } from '../../shared/interfaces/ui/aluno-filtro.interface';
 import { AlunoInterface } from '../../shared/interfaces/entities/aluno.interface';
@@ -99,6 +100,10 @@ export class AlunoFacadeService {
 
   public adicionar(dto: AlunoAdicionarDTO): Observable<void> {
     return this.alunoService.adicionarAluno(dto).pipe(tap(() => this.aposMutacao()));
+  }
+
+  public importarAlunos(dtos: AlunoAdicionarDTO[]): Observable<ImportacaoResultado> {
+    return this.alunoService.importarAlunos(dtos).pipe(tap(() => this.aposMutacao()));
   }
 
   public editar(dto: AlunoEditarDTO): Observable<void> {

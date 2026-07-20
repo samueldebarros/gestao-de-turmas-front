@@ -1,0 +1,34 @@
+<div class="file-upload">
+  @if (label) {
+    <label class="form-label">{{ label }}</label>
+  }
+
+  <div
+    class="zona"
+    [class.sobre]="arrastando()"
+    [class.desabilitada]="desabilitado()"
+    (click)="inputArquivo.click()"
+  >
+    <input
+      #inputArquivo
+      type="file"
+      [accept]="accept"
+      [disabled]="desabilitado()"
+      (change)="aoSelecionar($event)"
+      hidden
+    />
+
+    @if (arquivo(); as f) {
+      <span class="arquivo">{{ f.name }}</span>
+      <button type="button" class="remover" (click)="remover(); $event.stopPropagation()">
+        {{ 'FILE_UPLOAD.REMOVER' | translate }}
+      </button>
+    } @else {
+      <span class="instrucao">{{ 'FILE_UPLOAD.INSTRUCAO' | translate }}</span>
+    }
+  </div>
+
+  @if (erroValidacao(); as e) {
+    <span class="erro">{{ 'FILE_UPLOAD.ERRO.' + e | translate: { max: tamanhoMaximoMb } }}</span>
+  }
+</div>

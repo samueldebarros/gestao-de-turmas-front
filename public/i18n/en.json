@@ -115,6 +115,24 @@
     },
     "ALUNOS": {
       "SELECIONADOS": "{{total}} student(s) selected"
+    },
+    "IMPORTAR": {
+      "LABEL": "Import students from spreadsheet (CSV)",
+      "PREVIEW": "Preview (invalid rows highlighted)",
+      "CONFIRMAR": "Confirm import",
+      "SUCESSO": "Students imported successfully",
+      "ERRO": "Failed to import students",
+      "ERRO_LINHA": {
+        "NOME_INVALIDO": "Invalid name",
+        "CPF_INVALIDO": "Invalid CPF",
+        "CPF_JA_EXISTE": "CPF already registered",
+        "CPF_DUPLICADO_NO_LOTE": "CPF duplicated in the spreadsheet",
+        "EMAIL_INVALIDO": "Invalid email",
+        "EMAIL_JA_EXISTE": "Email already registered",
+        "EMAIL_DUPLICADO_NO_LOTE": "Email duplicated in the spreadsheet",
+        "SEXO_INVALIDO": "Invalid sex",
+        "DATA_INVALIDA": "Invalid birth date"
+      }
     }
   },
   "TABELA": {
@@ -189,5 +207,13 @@
   },
   "DATE_PICKER": { "HOJE": "Today", "LIMPAR": "Clear" },
   "AUTOCOMPLETE": { "BUSCANDO": "Searching...", "NENHUM_RESULTADO": "No results" },
-  "STEPPER": { "VOLTAR": "Back", "AVANCAR": "Next", "CONCLUIR": "Finish" }
+  "STEPPER": { "VOLTAR": "Back", "AVANCAR": "Next", "CONCLUIR": "Finish" },
+  "FILE_UPLOAD": {
+    "INSTRUCAO": "Drag a file here or click to select",
+    "REMOVER": "Remove",
+    "ERRO": {
+      "TIPO_INVALIDO": "File type not allowed",
+      "TAMANHO_EXCEDIDO": "File larger than {{max}} MB"
+    }
+  }
 }

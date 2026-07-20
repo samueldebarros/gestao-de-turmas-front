@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { AlunoInterface } from '../../shared/interfaces/entities/aluno.interface';
 import { AlunoAdicionarDTO } from '../../shared/interfaces/dto/aluno-adicionar-dto.interface';
 import { AlunoEditarDTO } from '../../shared/interfaces/dto/aluno-editar-dto.interface';
+import { ImportacaoResultado } from '../../shared/interfaces/dto/importacao-alunos.interface';
 import { AlunoFiltro } from '../../shared/interfaces/ui/aluno-filtro.interface';
 import { ResultadoPaginado } from '../../shared/interfaces/ui/resultado-paginado.interface';
 import { environment } from '../../../environments/environments';
@@ -29,6 +30,10 @@ export class AlunoService {
 
   adicionarAluno(aluno: AlunoAdicionarDTO): Observable<void> {
     return this.http.post<void>(this.apiUrl, aluno);
+  }
+
+  importarAlunos(alunos: AlunoAdicionarDTO[]): Observable<ImportacaoResultado> {
+    return this.http.post<ImportacaoResultado>(`${this.apiUrl}/importar`, { alunos });
   }
 
   inativarAluno(alunoId: number): Observable<void> {
