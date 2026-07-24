@@ -32,16 +32,13 @@
         ></app-passo-disciplinas>
       }
       @case (2) {
+        <app-importar-alunos (importado)="preSelecionarImportados($event)"></app-importar-alunos>
         @if (alunosPagina$ | async; as pagina) {
           <app-passo-alunos
             [pagina]="pagina"
             [selecionados]="alunosIds.value"
-            [planilha]="planilha"
-            [linhasPreview]="linhas()"
-            [errosImportacao]="errosImportacao()"
             (alternar)="alternarAluno($event)"
             (mudarPagina)="mudarPaginaAlunos($event)"
-            (confirmarImportacao)="confirmarImportacao()"
           ></app-passo-alunos>
         }
       }

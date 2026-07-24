@@ -12,6 +12,9 @@
     <app-botao variante="secundario" (acaoBotao)="abrirModal()">{{
       'ALUNO.BOTOES.ADICIONAR_ALUNO' | translate
     }}</app-botao>
+    <app-botao variante="secundario" (acaoBotao)="abrirImportar()">{{
+      'IMPORTAR_ALUNOS.BOTAO' | translate
+    }}</app-botao>
   </div>
 
   <app-autocomplete
@@ -114,5 +117,13 @@
         {{ 'ALUNO.BOTOES.CANCELAR' | translate }}
       </app-botao>
     </form>
+  </app-modal>
+
+  <app-modal
+    [titulo]="'IMPORTAR_ALUNOS.TITULO' | translate"
+    [visivel]="importarAberto()"
+    (visivelChange)="fecharImportar()"
+  >
+    <app-importar-alunos (importado)="aoImportar($event)"></app-importar-alunos>
   </app-modal>
 </div>

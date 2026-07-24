@@ -10,7 +10,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { DocenteFacadeService } from '../../../core/facades/docente-facade.service';
 import { AlunoFacadeService } from '../../../core/facades/aluno-facade.service';
 import { agruparPorDisciplina } from '../../../shared/utils/agrupar-por-disciplina.util';
-import { catchError, map, of, switchMap, tap } from 'rxjs';
+import { catchError, map, of, tap } from 'rxjs';
 import { PassoDisciplinasComponent } from '../../../shared/components/passos/passo-disciplinas.component/passo-disciplinas.component';
 import { PassoAlunosComponent } from '../../../shared/components/passos/passo-alunos.component/passo-alunos.component';
 import { PassoInformacoesComponent } from '../../../shared/components/passos/passo-informacoes.component/passo-informacoes.component';
@@ -20,14 +20,8 @@ import { AlertaState } from '../../../shared/interfaces/ui/alerta-state.interfac
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TurmaAdicionarDTO } from '../../../shared/interfaces/dto/turma-adicionar-dto.interface';
 import { MensagemComponent } from '../../../shared/components/mensagem.component/mensagem.component';
-import { LinhaImportacao, parsearCsvAlunos } from '../../../shared/utils/parsear-csv-alunos.util';
-import { lerArquivoTexto } from '../../../shared/utils/ler-arquivo-texto.util';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { HttpErrorResponse } from '@angular/common/http';
-import {
-  ImportacaoResultado,
-  LinhaErro,
-} from '../../../shared/interfaces/dto/importacao-alunos.interface';
+import { ImportacaoResultado } from '../../../shared/interfaces/dto/importacao-alunos.interface';
+import { ImportarAlunosComponent } from '../../../shared/components/importar-alunos.component/importar-alunos.component';
 
 @Component({
   selector: 'app-turma-cadastro',
@@ -40,6 +34,7 @@ import {
     PassoInformacoesComponent,
     AsyncPipe,
     MensagemComponent,
+    ImportarAlunosComponent,
   ],
   templateUrl: './turma-cadastro.component.html',
   styleUrl: './turma-cadastro.component.scss',
@@ -82,24 +77,6 @@ export class TurmaCadastroComponent {
     alunosIds: new FormControl<number[]>([], { nonNullable: true }),
   });
 
-  readonly planilha = new FormControl<File | null>(null);
-
-  readonly errosImportacao = signal<LinhaErro[]>([]);
-
-  readonly preview$ = this.planilha.valueChanges.pipe(
-    tap(() => this.errosImportacao.set([])),
-    switchMap((arquivo) =>
-      arquivo
-        ? lerArquivoTexto(arquivo).pipe(
-            map((texto) => parsearCsvAlunos(texto)),
-            catchError(() => of<LinhaImportacao[]>([])),
-          )
-        : of<LinhaImportacao[]>([]),
-    ),
-  );
-
-  readonly linhas = toSignal(this.preview$, { initialValue: [] as LinhaImportacao[] });
-
   readonly disciplinas$ = this.docenteFacade.docentes$.pipe(map(agruparPorDisciplina));
   readonly alunosPagina$ = this.alunoFacade.resultado$;
 
@@ -141,38 +118,10 @@ export class TurmaCadastroComponent {
     this.alunoFacade.mudarPagina(pagina);
   }
 
-  confirmarImportacao(): void {
-    const enviaveis = this.linhas()
-      .map((linha, indiceOriginal) => ({ linha, indiceOriginal }))
-      .filter((x) => x.linha.valida);
-    if (enviaveis.length === 0) return;
-
-    this.alunoFacade
-      .importarAlunos(enviaveis.map((x) => x.linha.dados))
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        tap((res: ImportacaoResultado) => {
-          const ids = res.criados.map((c) => c.id);
-          this.alunosIds.setValue([...new Set([...this.alunosIds.value, ...ids])]);
-          this.errosImportacao.set([]);
-          this.planilha.reset();
-          this.alerta.set({ visivel: true, tipo: 'sucesso', texto: 'TURMA.IMPORTAR.SUCESSO' });
-        }),
-        catchError((err: HttpErrorResponse) => {
-          if (err.status === 422 && err.error?.erros) {
-            this.errosImportacao.set(
-              (err.error.erros as LinhaErro[]).map((e) => ({
-                ...e,
-                indice: enviaveis[e.indice].indiceOriginal,
-              })),
-            );
-          } else {
-            this.alerta.set({ visivel: true, tipo: 'erro', texto: 'TURMA.IMPORTAR.ERRO' });
-          }
-          return of(null);
-        }),
-      )
-      .subscribe();
+  preSelecionarImportados(res: ImportacaoResultado): void {
+    const ids = res.criados.map((c) => c.id);
+    this.alunosIds.setValue([...new Set([...this.alunosIds.value, ...ids])]);
+    this.alerta.set({ visivel: true, tipo: 'sucesso', texto: 'IMPORTAR_ALUNOS.SUCESSO' });
   }
 
   concluir(): void {

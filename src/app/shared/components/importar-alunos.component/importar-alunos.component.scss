@@ -1,0 +1,52 @@
+$cor-primaria: #1c53b9;
+
+.erro-geral {
+  color: #b91c1c;
+  font-size: 0.9rem;
+}
+
+.preview {
+  margin: 1rem 0;
+  padding: 0.5rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fff;
+  max-height: 240px;
+  overflow-y: auto;
+
+  &__titulo {
+    margin: 0 0 0.5rem;
+    font-weight: 600;
+    color: $cor-primaria;
+  }
+
+  &__linha {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+
+    &.invalida {
+      color: #b91c1c;
+      background: #fef2f2;
+    }
+  }
+
+  &__erro {
+    display: block;
+    color: #b91c1c;
+    font-size: 0.85rem;
+  }
+
+  &__confirmar {
+    margin-top: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    background: $cor-primaria;
+    color: #fff;
+    cursor: pointer;
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+}

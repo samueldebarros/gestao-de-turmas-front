@@ -1,0 +1,29 @@
+<app-file-upload
+  [formControl]="planilha"
+  [accept]="accept"
+  [tamanhoMaximoMb]="tamanhoMaximoMb"
+  [label]="'IMPORTAR_ALUNOS.LABEL' | translate"
+></app-file-upload>
+
+@if (erroGeral()) {
+  <p class="erro-geral">{{ 'IMPORTAR_ALUNOS.ERRO' | translate }}</p>
+}
+
+@if (linhas().length) {
+  <div class="preview">
+    <p class="preview__titulo">{{ 'IMPORTAR_ALUNOS.PREVIEW' | translate }}</p>
+    @for (linha of linhas(); track $index) {
+      <div class="preview__linha" [class.invalida]="!linha.valida || !!erroDaLinha($index)">
+        {{ linha.dados.nome }} — {{ linha.dados.email }}
+        @if (erroDaLinha($index); as erro) {
+          <span class="preview__erro">
+            {{ 'IMPORTAR_ALUNOS.ERRO_LINHA.' + erro.motivo | translate }}
+          </span>
+        }
+      </div>
+    }
+    <button type="button" class="preview__confirmar" (click)="confirmar()">
+      {{ 'IMPORTAR_ALUNOS.CONFIRMAR' | translate }}
+    </button>
+  </div>
+}

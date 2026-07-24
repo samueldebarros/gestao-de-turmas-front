@@ -1,4 +1,4 @@
-import { Component, forwardRef, Host, HostListener, Input, signal } from '@angular/core';
+import { Component, forwardRef, HostListener, Input, signal } from '@angular/core';
 import { AbstractControl, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 

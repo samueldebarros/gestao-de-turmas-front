@@ -49,6 +49,8 @@ import { OrdenacaoAlunoEnum } from '../../shared/enums/ordenacao-aluno.enum.js';
 import { DatePickerComponent } from '../../shared/components/date-picker.component/date-picker.component.js';
 import { AutocompleteComponent } from '../../shared/components/autocomplete.component/autocomplete.component.js';
 import { EstadoModal } from '../../shared/interfaces/ui/estado-modal.interface.js';
+import { ImportarAlunosComponent } from '../../shared/components/importar-alunos.component/importar-alunos.component.js';
+import { ImportacaoResultado } from '../../shared/interfaces/dto/importacao-alunos.interface.js';
 
 @Component({
   selector: 'app-aluno-index',
@@ -68,6 +70,7 @@ import { EstadoModal } from '../../shared/interfaces/ui/estado-modal.interface.j
     PaginacaoComponent,
     DatePickerComponent,
     AutocompleteComponent,
+    ImportarAlunosComponent,
   ],
   templateUrl: './aluno-index.component.html',
   styleUrl: './aluno-index.component.scss',
@@ -374,5 +377,20 @@ export class AlunoIndex implements OnInit {
       'MENSAGEM.SUCESSO_REATIVAR_ALUNO',
       'MENSAGEM.ERRO_REATIVAR_ALUNO',
     );
+  }
+
+  public readonly importarAberto = signal(false);
+
+  public abrirImportar(): void {
+    this.importarAberto.set(true);
+  }
+
+  public fecharImportar(): void {
+    this.importarAberto.set(false);
+  }
+
+  public aoImportar(_res: ImportacaoResultado): void {
+    this.importarAberto.set(false);
+    this.exibirAlertaPagina('sucesso', 'IMPORTAR_ALUNOS.SUCESSO');
   }
 }

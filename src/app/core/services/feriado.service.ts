@@ -9,7 +9,7 @@ export class FeriadoService {
   private readonly http = new HttpClient(inject(HttpBackend));
   private readonly apiUrl = `${environment.brasilApiUrl}/feriados/v1`;
 
-  private readonly timeoutMs = 5_000;
+  private readonly timeoutMs = 5000;
   private readonly maxTentativas = 2;
   private readonly backoffBaseMs = 500;
 

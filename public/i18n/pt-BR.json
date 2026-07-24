@@ -1,4 +1,24 @@
 {
+  "IMPORTAR_ALUNOS": {
+    "BOTAO": "Importar planilha",
+    "TITULO": "Importar alunos por planilha",
+    "LABEL": "Importar alunos por planilha (CSV)",
+    "PREVIEW": "Pré-visualização (linhas inválidas destacadas)",
+    "CONFIRMAR": "Confirmar importação",
+    "SUCESSO": "Alunos importados com sucesso",
+    "ERRO": "Falha ao importar alunos",
+    "ERRO_LINHA": {
+      "NOME_INVALIDO": "Nome inválido",
+      "CPF_INVALIDO": "CPF inválido",
+      "CPF_JA_EXISTE": "CPF já cadastrado",
+      "CPF_DUPLICADO_NO_LOTE": "CPF repetido na planilha",
+      "EMAIL_INVALIDO": "E-mail inválido",
+      "EMAIL_JA_EXISTE": "E-mail já cadastrado",
+      "EMAIL_DUPLICADO_NO_LOTE": "E-mail repetido na planilha",
+      "SEXO_INVALIDO": "Sexo inválido",
+      "DATA_INVALIDA": "Data de nascimento inválida"
+    }
+  },
   "IDIOMA": {
     "PORTUGUES": "Português",
     "INGLES": "Inglês"
@@ -94,6 +114,9 @@
     "CADASTRO": {
       "TITULO": "Cadastrar turma"
     },
+    "MENSAGEM": {
+      "ERRO_CADASTRO": "Ocorreu um erro ao cadastrar a turma."
+    },
     "STEPPER": {
       "INFORMACOES": "Informações",
       "DISCIPLINAS": "Disciplinas",
@@ -115,24 +138,6 @@
     },
     "ALUNOS": {
       "SELECIONADOS": "{{total}} aluno(s) selecionado(s)"
-    },
-    "IMPORTAR": {
-      "LABEL": "Importar alunos por planilha (CSV)",
-      "PREVIEW": "Pré-visualização (linhas inválidas destacadas)",
-      "CONFIRMAR": "Confirmar importação",
-      "SUCESSO": "Alunos importados com sucesso",
-      "ERRO": "Falha ao importar alunos",
-      "ERRO_LINHA": {
-        "NOME_INVALIDO": "Nome inválido",
-        "CPF_INVALIDO": "CPF inválido",
-        "CPF_JA_EXISTE": "CPF já cadastrado",
-        "CPF_DUPLICADO_NO_LOTE": "CPF repetido na planilha",
-        "EMAIL_INVALIDO": "E-mail inválido",
-        "EMAIL_JA_EXISTE": "E-mail já cadastrado",
-        "EMAIL_DUPLICADO_NO_LOTE": "E-mail repetido na planilha",
-        "SEXO_INVALIDO": "Sexo inválido",
-        "DATA_INVALIDA": "Data de nascimento inválida"
-      }
     }
   },
   "TABELA": {
