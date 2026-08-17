@@ -70,7 +70,7 @@ export class FiltroListaComponent implements OnInit {
     const filtrosResetados: Record<string, unknown> = { pesquisa: '' };
 
     this.filtros.forEach((filtro) => {
-      filtrosResetados[filtro.controlName] = '';
+      filtrosResetados[filtro.controlName] = null;
     });
 
     return filtrosResetados;

@@ -23,8 +23,8 @@ import {
   tap,
 } from 'rxjs';
 import { EntidadeBaseInterface } from '../../interfaces/entities/entidade-base.interface';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslatePipe } from '@ngx-translate/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-autocomplete',
@@ -55,19 +55,20 @@ export class AutocompleteComponent<T extends EntidadeBaseInterface> implements O
   ngOnInit(): void {
     this.termoBusca$
       .pipe(
-        map((termo) => termo.trim()),
         debounceTime(this.debounceMs),
+        map((valor) => valor.trim()),
         distinctUntilChanged(),
-        filter((termo) => termo.length >= this.minCaracteres),
-        tap(() => this.carregando.set(true)),
-        switchMap((termo) => this.buscar(termo).pipe(catchError(() => of<T[]>([])))),
+        filter((valor) => valor.length >= this.minCaracteres),
+        tap(() => {
+          this.carregando.set(true);
+          this.aberto.set(true);
+        }),
+        switchMap((valor) => this.buscar(valor).pipe(catchError(() => of([])))),
         takeUntilDestroyed(this.destroyRef),
       )
-      .subscribe((itens) => {
-        this.sugestoes.set(itens);
+      .subscribe((resultado) => {
+        this.sugestoes.set(resultado);
         this.carregando.set(false);
-        this.aberto.set(true);
-        this.indiceAtivo.set(-1);
       });
   }
 

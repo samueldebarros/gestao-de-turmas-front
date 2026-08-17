@@ -34,6 +34,15 @@ Stack: Angular 21 (standalone, sem NgModule), TypeScript estrito, RxJS 7.8, SCSS
 - Passe AXE. Siga WCAG AA para foco, contraste e ARIA.
 - Prefira elementos nativos semânticos (ex.: `<dialog>` no Modal) a recriar comportamento com `<div>`.
 
+## Log e diagnóstico
+
+- **Nenhum `console.*` recebe objeto de domínio.** Nunca `console.log(aluno)`, `console.error(docente)` nem o `FormGroup` de um cadastro: eles carregam CPF, e-mail e data de nascimento. Logue **identificador e ação** (`aluno.id`, `evento.acaoId`), nunca a ficha.
+- **`HttpErrorResponse` de rota de domínio não vai inteiro para o console.** O objeto embute `error` (o corpo da resposta) e `url`. De `/alunos`, isso é a ficha completa impressa no DevTools. Logue `erro.status` e `erro.url`, ou trate em silêncio e mostre `AlertaState` na tela.
+- **Erro de terceiro sem dado pessoal pode ir inteiro** — é o caso do log de feriados, que fala com a BrasilAPI.
+- **Antes de plugar telemetria externa** (Sentry, Application Insights ou similar), revise o que o payload leva: `provideBrowserGlobalErrorListeners()` hoje só escreve no console, e passar a enviar para fora é tratamento de dado com outro operador.
+
+> ⚠️ Regra de convenção, não barreira mecânica: o projeto não tem ESLint configurado. Contexto e inventário dos `console` existentes em [docs/roteiro-implementacao/HIGIENE-DEFENSIVA.md](docs/roteiro-implementacao/HIGIENE-DEFENSIVA.md) §2.
+
 ## As três camadas (regra em uma frase)
 
 > **Component (Smart)** decide e exibe → **Facade** detém o estado e orquestra → **Service** fala HTTP e nada mais.
@@ -52,6 +61,7 @@ Aplicam-se a qualquer camada. Quando um disparar, a Skill relevante tem a saída
 4. Vai chamar `obj.subject$.next()` de fora da classe dona? → exponha um método de intenção (Tell, Don't Ask).
 5. Feature nova exige mexer em 3+ arquivos? → acoplamento; considere parameter object.
 6. Escreveu `!` ou `as X`? → promessa não validada em runtime; "se for falsa, onde isto explode?".
+7. Digitou `console.` com uma variável que não é primitiva? → é objeto de domínio? Logue o `id` e a ação, não a ficha. Ver "Log e diagnóstico".
 
 ## Ordem de prioridade quando em dúvida
 

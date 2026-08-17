@@ -13,12 +13,12 @@ export const authErrorInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((erro: HttpErrorResponse) => {
       if (erro.status === 401 && !ehEndpointdeAuth) {
         return auth.renovarSessao().pipe(
-          switchMap(() => next(req)),
           catchError((erroRenovacao) => {
             auth.encerrarSessaoLocal();
             router.navigateByUrl('/login');
             return throwError(() => erroRenovacao);
           }),
+          switchMap(() => next(req)),
         );
       }
 

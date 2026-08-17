@@ -1,15 +1,18 @@
 import { inject, Injectable } from '@angular/core';
 import { AlunoService } from '../services/aluno.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   BehaviorSubject,
   debounceTime,
   distinctUntilChanged,
+  filter,
   map,
   Observable,
   of,
   switchMap,
   tap,
 } from 'rxjs';
+import { AuthFacadeService } from './auth-facade.service';
 import { AlunoAdicionarDTO } from '../../shared/interfaces/dto/aluno-adicionar-dto.interface';
 import { AlunoEditarDTO } from '../../shared/interfaces/dto/aluno-editar-dto.interface';
 import { ImportacaoResultado } from '../../shared/interfaces/dto/importacao-alunos.interface';
@@ -17,11 +20,11 @@ import { FiltroListaInterface } from '../../shared/interfaces/ui/filtro-lista.in
 import { AlunoFiltro } from '../../shared/interfaces/ui/aluno-filtro.interface';
 import { AlunoInterface } from '../../shared/interfaces/entities/aluno.interface';
 import { ResultadoPaginado } from '../../shared/interfaces/ui/resultado-paginado.interface';
-import { SexoEnum } from '../../shared/enums/sexo.enum';
 import { OrdenacaoTabela } from '../../shared/interfaces/ui/ordenaca-tabela.interface';
 import { OrdenacaoAlunoEnum } from '../../shared/enums/ordenacao-aluno.enum';
 import { DirecaoOrdenacaoEnum } from '../../shared/enums/direcao-ordenacao.enum';
-import { CacheStorage } from '../../shared/utils/cache-storage';
+import { CacheMemoria } from '../../shared/utils/cache-memoria';
+import { SexoEnum } from '../../shared/enums/sexo.enum';
 
 @Injectable({
   providedIn: 'root',
@@ -37,43 +40,55 @@ export class AlunoFacadeService {
     ordenacao: null,
     direcao: null,
   };
-  private readonly _paginaState$ = new BehaviorSubject<AlunoFiltro>({ ...this.filtroPadrao });
 
-  private readonly cacheSugestoes = new CacheStorage<AlunoInterface[]>({
-    storage: sessionStorage,
-    namespace: 'alunos:sugestoes',
-    versao: 1,
+  private readonly cacheSugestoes = new CacheMemoria<AlunoInterface[]>({
     ttlMs: 5 * 60 * 1000,
     limite: 50,
   });
 
-  readonly resultado$: Observable<ResultadoPaginado<AlunoInterface>> = this._paginaState$.pipe(
+  private readonly filtros$ = new BehaviorSubject<AlunoFiltro>({ ...this.filtroPadrao });
+
+  readonly resultado$: Observable<ResultadoPaginado<AlunoInterface>> = this.filtros$.pipe(
     debounceTime(0),
-    switchMap((filtro) => this.alunoService.obterTodosOsAlunos(filtro)),
+    switchMap((filtros) => this.alunoService.obterTodosOsAlunos(filtros)),
   );
 
-  readonly ordenacaoAtual$: Observable<OrdenacaoTabela | null> = this._paginaState$.pipe(
-    map((s) =>
-      s.ordenacao != null && s.direcao != null ? { campo: s.ordenacao, direcao: s.direcao } : null,
+  readonly ordenacaoAtual$: Observable<OrdenacaoTabela | null> = this.filtros$.pipe(
+    map((filtros) =>
+      filtros.ordenacao != null && filtros.direcao != null
+        ? { campo: filtros.ordenacao, direcao: filtros.direcao }
+        : null,
     ),
-    distinctUntilChanged((a, b) => a?.campo === b?.campo && a?.direcao === b?.direcao),
+    distinctUntilChanged(
+      (antes, depois) => antes?.campo === depois?.campo && antes?.direcao === depois?.direcao,
+    ),
   );
+
+  constructor() {
+    inject(AuthFacadeService)
+      .estaLogado$.pipe(
+        distinctUntilChanged(),
+        filter((logado) => !logado),
+        takeUntilDestroyed(),
+      )
+      .subscribe(() => this.cacheSugestoes.limpar());
+  }
 
   public aplicarFiltros(filtros: FiltroListaInterface): void {
-    this._paginaState$.next({
-      ...this._paginaState$.value,
-      pagina: 1,
-      pesquisa: filtros.pesquisa ?? '',
+    this.filtros$.next({
+      ...this.filtros$.value,
       sexo: (filtros['sexo'] as SexoEnum | null) ?? null,
       ativo: (filtros['ativo'] as boolean | null) ?? null,
+      pesquisa: filtros.pesquisa,
+      pagina: 1,
     });
   }
 
   public ordenarPor(campo: OrdenacaoAlunoEnum): void {
-    const { ordenacao, direcao } = this._paginaState$.value;
+    const { ordenacao, direcao } = this.filtros$.value;
     const proximo = this.proximaOrdenacao(campo, ordenacao, direcao);
-    this._paginaState$.next({
-      ...this._paginaState$.value,
+    this.filtros$.next({
+      ...this.filtros$.value,
       ordenacao: proximo.ordenacao,
       direcao: proximo.direcao,
       pagina: 1,
@@ -92,10 +107,7 @@ export class AlunoFacadeService {
   }
 
   public mudarPagina(pagina: number): void {
-    this._paginaState$.next({
-      ...this._paginaState$.value,
-      pagina,
-    });
+    this.filtros$.next({ ...this.filtros$.value, pagina: pagina });
   }
 
   public adicionar(dto: AlunoAdicionarDTO): Observable<void> {
@@ -135,6 +147,6 @@ export class AlunoFacadeService {
 
   private aposMutacao(): void {
     this.cacheSugestoes.limpar();
-    this._paginaState$.next({ ...this._paginaState$.value });
+    this.filtros$.next({ ...this.filtros$.value });
   }
 }

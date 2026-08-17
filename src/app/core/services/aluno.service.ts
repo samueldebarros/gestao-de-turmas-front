@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AlunoInterface } from '../../shared/interfaces/entities/aluno.interface';
@@ -17,15 +17,7 @@ export class AlunoService {
   private readonly http = inject(HttpClient);
 
   obterTodosOsAlunos(filtro: AlunoFiltro): Observable<ResultadoPaginado<AlunoInterface>> {
-    const params = this.montarParams(filtro);
-
-    return this.http.get<ResultadoPaginado<AlunoInterface>>(this.apiUrl, { params });
-  }
-
-  private montarParams(filtro: AlunoFiltro): HttpParams {
-    return Object.entries(filtro)
-      .filter(([, valor]) => valor !== null && valor !== undefined && valor !== '')
-      .reduce((params, [chave, valor]) => params.set(chave, String(valor)), new HttpParams());
+    return this.http.post<ResultadoPaginado<AlunoInterface>>(`${this.apiUrl}/buscar`, filtro);
   }
 
   adicionarAluno(aluno: AlunoAdicionarDTO): Observable<void> {

@@ -37,9 +37,9 @@ export class TurmaFacadeService {
 
   readonly estado$: Observable<EstadoLista<TurmaInterface>> = this._paginaState$.pipe(
     debounceTime(0),
-    switchMap((filtro) =>
-      this.turmaService.obterTurmas(filtro).pipe(
-        map((resultado) => ({ status: 'ok', resultado }) as EstadoLista<TurmaInterface>),
+    switchMap((filtros) =>
+      this.turmaService.obterTurmas(filtros).pipe(
+        map((resultado) => ({ status: 'ok', resultado: resultado }) as EstadoLista<TurmaInterface>),
         startWith({ status: 'carregando' } as EstadoLista<TurmaInterface>),
         catchError(() => of({ status: 'erro' } as EstadoLista<TurmaInterface>)),
       ),

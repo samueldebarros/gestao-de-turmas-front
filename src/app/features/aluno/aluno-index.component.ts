@@ -27,7 +27,7 @@ import { FormFieldSelectComponent } from '../../shared/components/form-field-sel
 import { MensagemComponent } from '../../shared/components/mensagem.component/mensagem.component';
 import { AlunoFacadeService } from '../../core/facades/aluno-facade.service.js';
 import { FeriadoFacadeService } from '../../core/facades/feriado-facade.service.js';
-import { Observable, catchError, of, tap } from 'rxjs';
+import { catchError, Observable, of, tap } from 'rxjs';
 import { AsyncPipe, DatePipe } from '@angular/common';
 import { SexoEnum } from '../../shared/enums/sexo.enum.js';
 import { AlunoAdicionarDTO } from '../../shared/interfaces/dto/aluno-adicionar-dto.interface.js';
@@ -35,8 +35,7 @@ import { AlunoEditarDTO } from '../../shared/interfaces/dto/aluno-editar-dto.int
 import { AcaoTabela } from '../../shared/interfaces/ui/acao-tabela.interface.js';
 import { EventoAcaoTabela } from '../../shared/interfaces/ui/evento-acao-tabela.interface.js';
 import { AlunoInterface } from '../../shared/interfaces/entities/aluno.interface.js';
-import { formatarCpfCnpj } from '../../shared/utils/cpf-cnpj.utils';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { formatarCpfCnpj, mascararCpfCnpj } from '../../shared/utils/cpf-cnpj.utils';
 import { SexoFormatPipe } from '../../shared/pipes/sexo-format.pipe.js';
 import { ErrorMessagePipe } from '../../shared/pipes/error-message.pipe';
 import { FiltroListaComponent } from '../../shared/components/filtro-lista.component/filtro-lista.component';
@@ -51,6 +50,7 @@ import { AutocompleteComponent } from '../../shared/components/autocomplete.comp
 import { EstadoModal } from '../../shared/interfaces/ui/estado-modal.interface.js';
 import { ImportarAlunosComponent } from '../../shared/components/importar-alunos.component/importar-alunos.component.js';
 import { ImportacaoResultado } from '../../shared/interfaces/dto/importacao-alunos.interface.js';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-aluno-index',
@@ -98,7 +98,7 @@ export class AlunoIndex implements OnInit {
     {
       chave: 'cpf',
       titulo: 'TABELA.COLUNAS.ALUNO.CPF_CNPJ',
-      formatador: (v) => formatarCpfCnpj(v),
+      formatador: (v) => mascararCpfCnpj(v),
       cssClassCelula: () => 'nowrap',
     },
     {
@@ -108,12 +108,6 @@ export class AlunoIndex implements OnInit {
       chaveOrdenacao: OrdenacaoAlunoEnum.DATA_NASCIMENTO,
     },
     { chave: 'email', titulo: 'TABELA.COLUNAS.ALUNO.EMAIL' },
-    {
-      chave: 'sexo',
-      titulo: 'TABELA.COLUNAS.ALUNO.SEXO',
-      formatador: (v) => this.sexoFormatPipe.transform(v),
-      cssClassCelula: () => '',
-    },
     {
       chave: 'ativo',
       titulo: 'TABELA.COLUNAS.ALUNO.STATUS',
@@ -315,15 +309,15 @@ export class AlunoIndex implements OnInit {
   ): void {
     acao$
       .pipe(
-        takeUntilDestroyed(this.destroyRef),
         tap(() => {
-          aoSucesso?.();
           this.exibirAlertaPagina('sucesso', chaveSucesso);
+          aoSucesso?.();
         }),
         catchError(() => {
           this.exibirAlertaPagina('erro', chaveErro);
           return of(null);
         }),
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe();
   }

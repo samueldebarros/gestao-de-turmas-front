@@ -36,7 +36,7 @@ export class FormFieldSelectComponent implements ControlValueAccessor {
   onTouched: any = () => {};
 
   writeValue(value: any): void {
-    if (value != undefined) this.valorAtual = value;
+    this.valorAtual = value ?? '';
   }
   registerOnChange(fn: any): void {
     this.onChange = fn;

@@ -12,6 +12,7 @@ import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { AuthFacadeService } from './core/facades/auth-facade.service';
 import { credentialsInterceptor } from './core/interceptors/credentials.interceptor';
 import { authErrorInterceptor } from './core/interceptors/auth-error.interceptor';
+import { limparNamespaceStorage } from './shared/utils/limpar-namespace-storage.util';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -21,6 +22,7 @@ export const appConfig: ApplicationConfig = {
       withFetch(),
       withInterceptors([credentialsInterceptor, authErrorInterceptor]),
     ),
+    provideAppInitializer(() => limparNamespaceStorage(sessionStorage, 'alunos:sugestoes')),
     provideAppInitializer(() => inject(AuthFacadeService).restaurarSessao()),
     provideTranslateService({
       loader: provideTranslateHttpLoader({
