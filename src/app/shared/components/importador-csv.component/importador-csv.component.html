@@ -1,0 +1,40 @@
+<app-file-upload
+  [formControl]="planilha"
+  [accept]="accept"
+  [tamanhoMaximoMb]="tamanhoMaximoMb"
+  [label]="label"
+></app-file-upload>
+
+@if (erroGeral()) {
+  <p class="erro-geral">{{ 'IMPORTADOR_CSV.ERRO' | translate }}</p>
+}
+
+@if (excedeuLimite()) {
+  <p class="erro-geral">
+    {{ 'IMPORTADOR_CSV.ERRO_LIMITE' | translate: { qtd: linhas().length, limite: limiteLinhas } }}
+  </p>
+}
+
+@if (linhas().length) {
+  <div class="preview">
+    <p class="preview__titulo">{{ 'IMPORTADOR_CSV.PREVIEW' | translate }}</p>
+    @for (linha of linhas(); track $index) {
+      <div class="preview__linha" [class.invalida]="!linha.valida || !!erroDaLinha($index)">
+        {{ rotuloLinha(linha.dados) }}
+        @if (erroDaLinha($index); as erro) {
+          <span class="preview__erro">{{ prefixoErroLinha + '.' + erro.motivo | translate }}</span>
+        } @else if (!linha.valida && linha.motivo) {
+          <span class="preview__erro">{{ prefixoErroLinha + '.' + linha.motivo | translate }}</span>
+        }
+      </div>
+    }
+    <button
+      type="button"
+      class="preview__confirmar"
+      [disabled]="excedeuLimite()"
+      (click)="confirmar()"
+    >
+      {{ 'IMPORTADOR_CSV.CONFIRMAR' | translate }}
+    </button>
+  </div>
+}

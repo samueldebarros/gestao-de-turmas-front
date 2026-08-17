@@ -1,13 +1,11 @@
 {
-  "IMPORTAR_ALUNOS": {
-    "BOTAO": "Import spreadsheet",
-    "TITULO": "Import students from spreadsheet",
-    "LABEL": "Import students from spreadsheet (CSV)",
+  "IMPORTADOR_CSV": {
     "PREVIEW": "Preview (invalid rows highlighted)",
     "CONFIRMAR": "Confirm import",
-    "SUCESSO": "Students imported successfully",
-    "ERRO": "Failed to import students",
+    "ERRO": "Import failed",
+    "ERRO_LIMITE": "The spreadsheet has {{qtd}} rows and the maximum per import is {{limite}}. Split the file.",
     "ERRO_LINHA": {
+      "COLUNAS_INVALIDAS": "Incorrect number of columns — check for a ';' inside some field",
       "NOME_INVALIDO": "Invalid name",
       "CPF_INVALIDO": "Invalid CPF",
       "CPF_JA_EXISTE": "CPF already registered",
@@ -18,6 +16,12 @@
       "SEXO_INVALIDO": "Invalid sex",
       "DATA_INVALIDA": "Invalid birth date"
     }
+  },
+  "IMPORTAR_ALUNOS": {
+    "BOTAO": "Import spreadsheet",
+    "TITULO": "Import students from spreadsheet",
+    "LABEL": "Import students from spreadsheet (CSV)",
+    "SUCESSO": "Students imported successfully"
   },
   "IDIOMA": {
     "PORTUGUES": "Portuguese",
@@ -182,7 +186,8 @@
     "IDADE_MAXIMA": "Age cannot exceed 120 years.",
     "DOCUMENTO_INVALIDO": "The document must have 11 (CPF) or 14 (CNPJ) digits.",
     "CPF_INVALIDO": "Invalid CPF. Please check the digits entered.",
-    "CNPJ_INVALIDO": "Invalid CNPJ. Please check the digits entered."
+    "CNPJ_INVALIDO": "Invalid CNPJ. Please check the digits entered.",
+    "EM_BRANCO": "The text input cannot be empty."
   },
   "MENSAGEM": {
     "FORMULARIO_INVALIDO": "Invalid Form.",
@@ -210,9 +215,19 @@
     "MENSAGEM": "You don't have permission to access this area.",
     "VOLTAR_INICIO": "Go to home"
   },
-  "DATE_PICKER": { "HOJE": "Today", "LIMPAR": "Clear" },
-  "AUTOCOMPLETE": { "BUSCANDO": "Searching...", "NENHUM_RESULTADO": "No results" },
-  "STEPPER": { "VOLTAR": "Back", "AVANCAR": "Next", "CONCLUIR": "Finish" },
+  "DATE_PICKER": {
+    "HOJE": "Today",
+    "LIMPAR": "Clear"
+  },
+  "AUTOCOMPLETE": {
+    "BUSCANDO": "Searching...",
+    "NENHUM_RESULTADO": "No results"
+  },
+  "STEPPER": {
+    "VOLTAR": "Back",
+    "AVANCAR": "Next",
+    "CONCLUIR": "Finish"
+  },
   "FILE_UPLOAD": {
     "INSTRUCAO": "Drag a file here or click to select",
     "REMOVER": "Remove",

@@ -40,6 +40,13 @@ shared/                           SÓ o genuinamente reutilizável (Dumb compone
     mensagem.component/           DUMB. Toast de alerta. Two-way [(visivel)].
     botao/                        DUMB. variante/tipo/tamanho; emite acaoBotao.
     nav-bar.component/            DUMB de navegação + trocarIdioma() (i18n global via translate.use()).
+    importador-csv.component/     DUMB genérico <T>. MOTOR de importação por planilha: upload → parse → preview →
+                                    confirmar → 422 por linha (traduz índice do lote p/ índice da planilha).
+                                    Estratégias por @Input função: parse/importar/rotuloLinha (padrão do
+                                    autocomplete). Não injeta Facade. i18n próprio em IMPORTADOR_CSV.*.
+    importar-alunos.component/    Adaptador de aluno sobre o motor: fixa T=AlunoAdicionarDTO e liga as estratégias.
+                                    ⚠️ Injeta AlunoFacadeService morando em shared/ — viola a regra de fronteira
+                                    abaixo; ver dívida D10.
   interfaces/                     Contratos de dados, agrupados por papel (ver SKILL-data-modeling-contracts.md):
     dto/                          Contratos de ESCRITA (payload p/ servidor): aluno-adicionar/editar, login.
     entities/                     Domínio (contrato de leitura): entidade-base, aluno, docente-sql, usuario-autenticado.
@@ -74,6 +81,7 @@ Não "corrija" estes itens sem solicitação explícita. Estão listados para qu
 - **D5 — `[control]` como Input coexiste com CVA.** Os form-fields implementam CVA, mas ainda recebem `@Input() control?` para exibir erro. É um híbrido consciente; o caminho-alvo é o componente derivar o estado de erro do próprio CVA/`NgControl`.
 - **D6 — Models concretos sem uso em runtime.** `AlunoModel`/`EntidadeBaseModel` existem mas o domínio flui inteiramente por interfaces e DTOs; nada instancia essas classes. Mantê-las apenas se surgir necessidade real (factory/defaults); caso contrário são candidatas a remoção.
 - **D7 — `apiUrl` hardcoded** no service (`https://localhost:7048/...`). Alvo: mover para `environment`/token de configuração.
+- **D10 — `ImportarAlunosComponent` injeta Facade morando em `shared/`.** Contraria a regra de fronteira desta seção: quem injeta Facade e conhece o domínio deveria estar em `features/<dominio>/`. É o **único** componente de `shared/` acoplado a um facade de domínio (o `nav-bar` usa `AuthFacadeService`, que é transversal). Registrada em 2026-08-17, depois do refactor do importador genérico: ele **reduziu** o problema de ~93 para ~37 linhas e tirou toda a mecânica reutilizável para o `ImportadorCsvComponent` (Dumb, corretamente em `shared/`), mas não o resolveu. ⚠️ Alvo não é óbvio: o componente é consumido por **duas** features (`AlunoIndex` e o wizard de turmas), então mover para `features/aluno/` troca a violação de fronteira por um import feature→feature. Decidir qual das duas é o menor custo antes de mexer.
 
 ## 5. Scripts
 

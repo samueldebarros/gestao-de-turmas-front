@@ -9,6 +9,7 @@ const ERRO_PARA_MENSAGEM: Record<string, string> = {
   cnpjInvalido: 'VALIDACAO.CNPJ_INVALIDO',
   dataFuturaOuPresente: 'VALIDACAO.DATA_FUTURA',
   idadeMaximaExcedida: 'VALIDACAO.IDADE_MAXIMA',
+  emBranco: 'VALIDACAO.EM_BRANCO',
 };
 
 @Pipe({ name: 'errorMessage', standalone: true, pure: false })

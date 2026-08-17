@@ -1,5 +1,7 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
+type ErroDocumento = 'cpfInvalido' | 'cnpjInvalido' | 'documentoInvalido';
+
 export class CpfCnpjValidator {
   static validarCpfCnpj(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -10,20 +12,29 @@ export class CpfCnpjValidator {
         return null;
       }
 
-      const documentoLimpo = String(valor).replaceAll(/\D/g, '');
-
-      // Rotear para o validador apropriado pelo tamanho
-      switch (documentoLimpo.length) {
-        case 11:
-          return CpfCnpjValidator.validarCpfLogica(documentoLimpo) ? null : { cpfInvalido: true };
-
-        case 14:
-          return CpfCnpjValidator.validarCnpjLogica(documentoLimpo) ? null : { cnpjInvalido: true };
-
-        default:
-          return { documentoInvalido: true };
-      }
+      const erro = CpfCnpjValidator.avaliar(String(valor));
+      return erro ? { [erro]: true } : null;
     };
+  }
+
+  static ehValido(valor: string): boolean {
+    return CpfCnpjValidator.avaliar(valor) === null;
+  }
+
+  private static avaliar(valor: string): ErroDocumento | null {
+    const documentoLimpo = valor.replaceAll(/\D/g, '');
+
+    // Rotear para o validador apropriado pelo tamanho
+    switch (documentoLimpo.length) {
+      case 11:
+        return CpfCnpjValidator.validarCpfLogica(documentoLimpo) ? null : 'cpfInvalido';
+
+      case 14:
+        return CpfCnpjValidator.validarCnpjLogica(documentoLimpo) ? null : 'cnpjInvalido';
+
+      default:
+        return 'documentoInvalido';
+    }
   }
 
   // Valida CPF através do Módulo 11 de duas fases
