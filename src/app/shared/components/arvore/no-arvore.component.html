@@ -1,0 +1,30 @@
+<div class="linha" (click)="selecionar()">
+  @if (no.filhos.status === 'folha') {
+    <span class="seta vazia"></span>
+  } @else if (no.filhos.status === 'carregando') {
+    <span class="seta girando">⟳</span>
+  } @else {
+    <button type="button" class="seta" (click)="alternar($event)">
+      {{ no.filhos.status === 'erro' ? '⚠' : aberto() ? '▾' : '▸' }}
+    </button>
+  }
+  <span class="rotulo">{{ no.rotulo }}</span>
+</div>
+
+@if (aberto()) {
+  @if (no.filhos.status === 'carregando') {
+    <p class="aviso">{{ 'TREE_VIEW.CARREGANDO' | translate }}</p>
+  } @else if (no.filhos.status === 'erro') {
+    <p class="aviso erro">{{ 'TREE_VIEW.ERRO_GALHO' | translate }}</p>
+  } @else if (no.filhos.status === 'pronto') {
+    @if (no.filhos.filhos.length === 0) {
+      <p class="aviso">{{ 'TREE_VIEW.SEM_FILHOS' | translate }}</p>
+    } @else {
+      <div class="grupo">
+        @for (filho of no.filhos.filhos; track filho.chave) {
+          <app-no-arvore [no]="filho" [expandidos]="expandidos" (evento)="evento.emit($event)" />
+        }
+      </div>
+    }
+  }
+}

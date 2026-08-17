@@ -26,6 +26,12 @@ export const routes: Routes = [
     loadChildren: () => import('./features/turma/turma.routes.js').then((m) => m.TURMA_ROUTES),
   },
   {
+    path: 'tree-view',
+    canMatch: [autenticadoGuard, papelGuard('Admin', 'Coordenador')],
+    loadChildren: () =>
+      import('./features/tree-view/tree-view.routes.js').then((m) => m.TREE_VIEW_ROUTES),
+  },
+  {
     path: 'login',
     loadComponent: () =>
       import('./features/login/login.component.js').then((m) => m.LoginComponent),

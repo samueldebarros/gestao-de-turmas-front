@@ -31,7 +31,8 @@
     "ALUNOS": "Alunos",
     "DOCENTES": "Docentes",
     "DASHBOARD": "Dashboard",
-    "TURMAS": "Turmas"
+    "TURMAS": "Turmas",
+    "TREE_VIEW": "Tree View"
   },
   "PAPEL": {
     "ESCOLHA_TITULO": "Escolha seu papel",
@@ -235,5 +236,18 @@
       "TIPO_INVALIDO": "Tipo de arquivo não permitido",
       "TAMANHO_EXCEDIDO": "Arquivo maior que {{max}} MB"
     }
+  },
+  "TREE_VIEW": {
+    "TITULO": "Tree View",
+    "ARVORE_1": "Turma, professor e aluno",
+    "ARVORE_2": "Ano, série e turma",
+    "EXPANDIR_TUDO": "Expandir tudo",
+    "COLAPSAR_TUDO": "Colapsar tudo",
+    "CARREGANDO": "Carregando...",
+    "ERRO_RAIZ": "Não foi possível carregar as turmas.",
+    "ERRO_GALHO": "Não foi possível carregar. Clique na seta para tentar de novo.",
+    "SEM_FILHOS": "Nada aqui.",
+    "SELECIONADO": "Nó selecionado",
+    "NENHUM_SELECIONADO": "Clique num nó para ver os detalhes."
   }
 }

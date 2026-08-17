@@ -3,6 +3,8 @@ import { environment } from '../../../environments/environments';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { TurmaFiltro } from '../../shared/interfaces/ui/turma-filtro.interface';
 import { Observable } from 'rxjs';
+import { AlunoInterface } from '../../shared/interfaces/entities/aluno.interface';
+import { DocenteSqlInterface } from '../../shared/interfaces/entities/docente-sql.interface';
 import { TurmaInterface } from '../../shared/interfaces/entities/turma.interface';
 import { ResultadoPaginado } from '../../shared/interfaces/ui/resultado-paginado.interface';
 import { TurmaAdicionarDTO } from '../../shared/interfaces/dto/turma-adicionar-dto.interface';
@@ -18,6 +20,14 @@ export class TurmaService {
     const params = this.montarParams(filtro);
 
     return this.http.get<ResultadoPaginado<TurmaInterface>>(this.apiUrl, { params });
+  }
+
+  obterDocentesDaTurma(turmaId: number): Observable<DocenteSqlInterface[]> {
+    return this.http.get<DocenteSqlInterface[]>(`${this.apiUrl}/${turmaId}/docentes`);
+  }
+
+  obterAlunosDaTurma(turmaId: number): Observable<AlunoInterface[]> {
+    return this.http.get<AlunoInterface[]>(`${this.apiUrl}/${turmaId}/alunos`);
   }
 
   private montarParams(filtro: TurmaFiltro): HttpParams {

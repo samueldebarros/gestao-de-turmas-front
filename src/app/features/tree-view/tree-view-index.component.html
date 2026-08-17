@@ -1,0 +1,58 @@
+<h2>{{ 'TREE_VIEW.TITULO' | translate }}</h2>
+
+@if (statusRaiz() === 'carregando') {
+  <p>{{ 'TREE_VIEW.CARREGANDO' | translate }}</p>
+} @else if (statusRaiz() === 'erro') {
+  <p class="erro">{{ 'TREE_VIEW.ERRO_RAIZ' | translate }}</p>
+} @else {
+  <div class="vitrine">
+    <section>
+      <h3>{{ 'TREE_VIEW.ARVORE_1' | translate }}</h3>
+      <div class="acoes">
+        <button type="button" (click)="controle1.expandirTudo(arvore1())">
+          {{ 'TREE_VIEW.EXPANDIR_TUDO' | translate }}
+        </button>
+        <button type="button" (click)="controle1.colapsarTudo()">
+          {{ 'TREE_VIEW.COLAPSAR_TUDO' | translate }}
+        </button>
+      </div>
+      <app-arvore
+        [nos]="arvore1()"
+        [expandidos]="controle1.expandidos()"
+        (evento)="controle1.aoEvento($event)"
+      />
+    </section>
+
+    <section>
+      <h3>{{ 'TREE_VIEW.ARVORE_2' | translate }}</h3>
+      <div class="acoes">
+        <button type="button" (click)="controle2.expandirTudo(arvore2())">
+          {{ 'TREE_VIEW.EXPANDIR_TUDO' | translate }}
+        </button>
+        <button type="button" (click)="controle2.colapsarTudo()">
+          {{ 'TREE_VIEW.COLAPSAR_TUDO' | translate }}
+        </button>
+      </div>
+      <app-arvore
+        [nos]="arvore2()"
+        [expandidos]="controle2.expandidos()"
+        (evento)="controle2.aoEvento($event)"
+      />
+    </section>
+
+    <aside>
+      @if (selecionado(); as no) {
+        <dl>
+          <dt>{{ 'TREE_VIEW.SELECIONADO' | translate }}</dt>
+          <dd>{{ no.rotulo }}</dd>
+          @if (no.aluno; as aluno) {
+            <dd>{{ aluno.matricula }} · {{ aluno.cpf | cpfCnpjMascarado }}</dd>
+            <dd>{{ aluno.email }}</dd>
+          }
+        </dl>
+      } @else {
+        <p>{{ 'TREE_VIEW.NENHUM_SELECIONADO' | translate }}</p>
+      }
+    </aside>
+  </div>
+}

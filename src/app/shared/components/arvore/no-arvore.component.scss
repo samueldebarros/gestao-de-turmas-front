@@ -1,0 +1,67 @@
+$cor-texto-secundario: #4a4a4a;
+$cor-erro: #b42318;
+$cor-hover-linha: #f3f4f6;
+
+:host {
+  display: block;
+}
+
+.linha {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 2px 4px;
+  border-radius: 4px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: $cor-hover-linha;
+  }
+}
+
+.seta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  padding: 0;
+  border: none;
+  background: none;
+  color: $cor-texto-secundario;
+  font-size: 0.875rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.seta.vazia {
+  cursor: default;
+}
+
+.seta.girando {
+  animation: girar 1s linear infinite;
+}
+
+.rotulo {
+  color: #374151;
+}
+
+.grupo {
+  padding-left: 1.25rem;
+}
+
+.aviso {
+  margin: 2px 0;
+  padding-left: 1.75rem;
+  font-size: 0.875rem;
+  color: $cor-texto-secundario;
+}
+
+.aviso.erro {
+  color: $cor-erro;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -31,7 +31,8 @@
     "ALUNOS": "Students",
     "DOCENTES": "Teachers",
     "DASHBOARD": "Dashboard",
-    "TURMAS": "Classes"
+    "TURMAS": "Classes",
+    "TREE_VIEW": "Tree View"
   },
   "PAPEL": {
     "ESCOLHA_TITULO": "Choose your role",
@@ -235,5 +236,18 @@
       "TIPO_INVALIDO": "File type not allowed",
       "TAMANHO_EXCEDIDO": "File larger than {{max}} MB"
     }
+  },
+  "TREE_VIEW": {
+    "TITULO": "Tree View",
+    "ARVORE_1": "Class, teacher and student",
+    "ARVORE_2": "Year, grade and class",
+    "EXPANDIR_TUDO": "Expand all",
+    "COLAPSAR_TUDO": "Collapse all",
+    "CARREGANDO": "Loading...",
+    "ERRO_RAIZ": "Could not load the classes.",
+    "ERRO_GALHO": "Could not load. Click the arrow to try again.",
+    "SEM_FILHOS": "Nothing here.",
+    "SELECIONADO": "Selected node",
+    "NENHUM_SELECIONADO": "Click a node to see the details."
   }
 }
