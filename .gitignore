@@ -3,6 +3,7 @@
 # Compiled output
 /dist
 /tmp
+/out
 /out-tsc
 /bazel-out
 
@@ -26,11 +27,10 @@ yarn-error.log
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-!.vscode/mcp.json
 .history/*
 
 # Miscellaneous
-/.angular/cache
+/.angular
 .sass-cache/
 /connect.lock
 /coverage
@@ -53,10 +53,13 @@ secrets.json
 *.cer
 credentials.json
 .npmrc
+/certs/
 
-# Angular environment files with secrets (keep environment.ts template tracked)
+# Angular environment files with secrets (keep environments.ts template tracked)
 /src/environments/environment.local.ts
 /src/environments/environment.*.local.ts
+/src/environments/environments.local.ts
+/src/environments/environments.*.local.ts
 
 # Build cache and artifacts
 /.parcel-cache
@@ -95,3 +98,7 @@ config.local.json
 
 # Relatorios de estudo locais
 docs/
+docs-testes/
+
+# Dados de exemplo com dados pessoais
+alunos-exemplo.csv
