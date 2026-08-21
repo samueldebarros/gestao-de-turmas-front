@@ -1,4 +1,14 @@
-<div class="linha" (click)="selecionar()">
+@let marcacao = estadoMarcacao();
+
+<div class="linha" [class.selecionado]="escolhido()" (click)="selecionar($event)">
+  <input
+    type="checkbox"
+    class="marca"
+    [checked]="marcacao === 'marcado'"
+    [indeterminate]="marcacao === 'parcial'"
+    [disabled]="marcacao === 'vazio'"
+    (click)="marcar($event)"
+  />
   @if (no.filhos.status === 'folha') {
     <span class="seta vazia"></span>
   } @else if (no.filhos.status === 'carregando') {
@@ -22,7 +32,14 @@
     } @else {
       <div class="grupo">
         @for (filho of no.filhos.filhos; track filho.chave) {
-          <app-no-arvore [no]="filho" [expandidos]="expandidos" (evento)="evento.emit($event)" />
+          <app-no-arvore
+            [no]="filho"
+            [expandidos]="expandidos"
+            [selecionados]="selecionados"
+            [marcados]="marcados"
+            (evento)="evento.emit($event)"
+            (marcou)="marcou.emit($event)"
+          />
         }
       </div>
     }

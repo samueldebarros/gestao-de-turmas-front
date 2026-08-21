@@ -1,58 +1,82 @@
 <h2>{{ 'TREE_VIEW.TITULO' | translate }}</h2>
 
-@if (statusRaiz() === 'carregando') {
-  <p>{{ 'TREE_VIEW.CARREGANDO' | translate }}</p>
-} @else if (statusRaiz() === 'erro') {
-  <p class="erro">{{ 'TREE_VIEW.ERRO_RAIZ' | translate }}</p>
-} @else {
-  <div class="vitrine">
-    <section>
-      <h3>{{ 'TREE_VIEW.ARVORE_1' | translate }}</h3>
+<label class="modo">
+  <input type="checkbox" [checked]="modoSelecao() === 'multipla'" (change)="alternarModo()" />
+  {{ 'TREE_VIEW.SELECAO_MULTIPLA' | translate }}
+</label>
+
+<div class="vitrine">
+  <section>
+    <h3>{{ 'TREE_VIEW.ARVORE_1' | translate }}</h3>
+    @if (statusRaizTurmas() === 'carregando') {
+      <p>{{ 'TREE_VIEW.CARREGANDO' | translate }}</p>
+    } @else if (statusRaizTurmas() === 'erro') {
+      <p class="erro">{{ 'TREE_VIEW.ERRO_RAIZ' | translate }}</p>
+    } @else {
       <div class="acoes">
-        <button type="button" (click)="controle1.expandirTudo(arvore1())">
+        <button type="button" (click)="exibirTudo(controleTurmas, arvoreTurmas())">
           {{ 'TREE_VIEW.EXPANDIR_TUDO' | translate }}
         </button>
-        <button type="button" (click)="controle1.colapsarTudo()">
+        <button type="button" (click)="controleTurmas.colapsarTudo()">
           {{ 'TREE_VIEW.COLAPSAR_TUDO' | translate }}
         </button>
+        <span class="contagem">
+          {{
+            'TREE_VIEW.TOTAL_SELECIONADO' | translate: { total: selecaoTurmas.selecionadas().size }
+          }}
+          ·
+          {{ 'TREE_VIEW.TOTAL_MARCADO' | translate: { total: marcacaoTurmas.marcados().size } }}
+        </span>
       </div>
       <app-arvore
-        [nos]="arvore1()"
-        [expandidos]="controle1.expandidos()"
-        (evento)="controle1.aoEvento($event)"
+        [nos]="arvoreTurmas()"
+        [expandidos]="controleTurmas.expandidos()"
+        [selecionados]="selecaoTurmas.selecionadas()"
+        [marcados]="marcacaoTurmas.marcados()"
+        (evento)="controleTurmas.aoEvento($event)"
+        (marcou)="marcacaoTurmas.alternar($event.no, $event.marcar)"
       />
-    </section>
+    }
+  </section>
 
-    <section>
-      <h3>{{ 'TREE_VIEW.ARVORE_2' | translate }}</h3>
+  <section>
+    <h3>{{ 'TREE_VIEW.ARVORE_2' | translate }}</h3>
+    @if (statusRaizLocais() === 'carregando') {
+      <p>{{ 'TREE_VIEW.CARREGANDO' | translate }}</p>
+    } @else if (statusRaizLocais() === 'erro') {
+      <p class="erro">{{ 'TREE_VIEW.ERRO_RAIZ_LOCAIS' | translate }}</p>
+    } @else {
       <div class="acoes">
-        <button type="button" (click)="controle2.expandirTudo(arvore2())">
-          {{ 'TREE_VIEW.EXPANDIR_TUDO' | translate }}
-        </button>
-        <button type="button" (click)="controle2.colapsarTudo()">
+        <button type="button" (click)="controleLocais.colapsarTudo()">
           {{ 'TREE_VIEW.COLAPSAR_TUDO' | translate }}
         </button>
+        <span class="contagem">
+          {{
+            'TREE_VIEW.TOTAL_SELECIONADO' | translate: { total: selecaoLocais.selecionadas().size }
+          }}
+          ·
+          {{ 'TREE_VIEW.TOTAL_MARCADO' | translate: { total: marcacaoLocais.marcados().size } }}
+        </span>
       </div>
       <app-arvore
-        [nos]="arvore2()"
-        [expandidos]="controle2.expandidos()"
-        (evento)="controle2.aoEvento($event)"
+        [nos]="arvoreLocais()"
+        [expandidos]="controleLocais.expandidos()"
+        [selecionados]="selecaoLocais.selecionadas()"
+        [marcados]="marcacaoLocais.marcados()"
+        (evento)="controleLocais.aoEvento($event)"
+        (marcou)="marcacaoLocais.alternar($event.no, $event.marcar)"
       />
-    </section>
+    }
+  </section>
 
-    <aside>
-      @if (selecionado(); as no) {
-        <dl>
-          <dt>{{ 'TREE_VIEW.SELECIONADO' | translate }}</dt>
-          <dd>{{ no.rotulo }}</dd>
-          @if (no.aluno; as aluno) {
-            <dd>{{ aluno.matricula }} · {{ aluno.cpf | cpfCnpjMascarado }}</dd>
-            <dd>{{ aluno.email }}</dd>
-          }
-        </dl>
-      } @else {
-        <p>{{ 'TREE_VIEW.NENHUM_SELECIONADO' | translate }}</p>
-      }
-    </aside>
-  </div>
-}
+  <aside>
+    @if (selecionado(); as rotulo) {
+      <dl>
+        <dt>{{ 'TREE_VIEW.SELECIONADO' | translate }}</dt>
+        <dd>{{ rotulo }}</dd>
+      </dl>
+    } @else {
+      <p>{{ 'TREE_VIEW.NENHUM_SELECIONADO' | translate }}</p>
+    }
+  </aside>
+</div>

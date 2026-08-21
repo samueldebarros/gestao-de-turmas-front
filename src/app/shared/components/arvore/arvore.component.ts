@@ -1,5 +1,10 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { ChaveNo, EventoArvore, NoArvore } from '../../interfaces/ui/no-arvore.interface';
+import {
+  ChaveNo,
+  EventoArvore,
+  EventoMarcacao,
+  NoArvore,
+} from '../../interfaces/ui/no-arvore.interface';
 import { NoArvoreComponent } from './no-arvore.component';
 
 @Component({
@@ -12,6 +17,9 @@ import { NoArvoreComponent } from './no-arvore.component';
 export class ArvoreComponent<T> {
   @Input() nos: readonly NoArvore<T>[] = [];
   @Input() expandidos: ReadonlySet<ChaveNo> = new Set<ChaveNo>();
+  @Input() selecionados: ReadonlySet<ChaveNo> = new Set<ChaveNo>();
+  @Input() marcados: ReadonlySet<ChaveNo> = new Set<ChaveNo>();
 
   @Output() evento = new EventEmitter<EventoArvore<T>>();
+  @Output() marcou = new EventEmitter<EventoMarcacao<T>>();
 }

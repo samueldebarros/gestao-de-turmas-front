@@ -1,4 +1,5 @@
 import { TurnoEnum } from '../../enums/turno.enum';
+import { DocenteSqlInterface } from './docente-sql.interface';
 import { EntidadeBaseInterface } from './entidade-base.interface';
 
 export interface TurmaInterface extends EntidadeBaseInterface {
@@ -11,4 +12,5 @@ export interface TurmaInterface extends EntidadeBaseInterface {
   capacidade: number;
   totalAlunos: number;
   totalDisciplinas: number;
+  docentes?: DocenteSqlInterface[] | null;
 }

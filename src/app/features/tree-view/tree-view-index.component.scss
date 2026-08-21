@@ -10,7 +10,17 @@ $cor-erro: #b42318;
 }
 
 h2 {
+  margin-bottom: 8px;
+}
+
+.modo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   margin-bottom: 16px;
+  font-size: 0.875rem;
+  color: $cor-texto-secundario;
+  cursor: pointer;
 }
 
 .erro {
@@ -40,8 +50,15 @@ h3 {
 
 .acoes {
   display: flex;
+  align-items: center;
   gap: 8px;
   margin-bottom: 12px;
+
+  .contagem {
+    margin-left: auto;
+    font-size: 0.875rem;
+    color: $cor-texto-secundario;
+  }
 
   button {
     padding: 4px 10px;

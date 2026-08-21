@@ -9,85 +9,121 @@ import {
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ArvoreFacadeService } from '../../core/facades/arvore-facade.service';
+import { LocalidadeFacadeService } from '../../core/facades/localidade-facade.service';
 import { ArvoreComponent } from '../../shared/components/arvore/arvore.component';
-import { AlunoInterface } from '../../shared/interfaces/entities/aluno.interface';
 import { DocenteSqlInterface } from '../../shared/interfaces/entities/docente-sql.interface';
+import { LocalidadeInterface } from '../../shared/interfaces/entities/localidade.interface';
 import { TurmaInterface } from '../../shared/interfaces/entities/turma.interface';
 import {
   EntidadeArvore,
   EstadoBuscaFilhos,
   IndiceFilhos,
-  NoAgrupamento,
 } from '../../shared/interfaces/ui/arvore-escolar.interface';
-import { ChaveNo, NoArvore } from '../../shared/interfaces/ui/no-arvore.interface';
-import { CpfCnpjPipe } from '../../shared/pipes/cpf-cnpj.pipe';
-import { eAluno, eDocente, eTurma } from '../../shared/utils/entidade-arvore.util';
-import { montarArvoreTurmas } from '../../shared/utils/montar-arvore-turmas.util';
+import {
+  ChaveNo,
+  EstadoBusca,
+  Indice,
+  ModoSelecao,
+  NoArvore,
+} from '../../shared/interfaces/ui/no-arvore.interface';
+import { chaveDocente, chaveTurmaDocentes } from '../../shared/utils/chaves-arvore.util';
+import { eDocente, eTurma } from '../../shared/utils/entidade-arvore.util';
+import { montarArvoreLocalidades } from '../../shared/utils/montar-arvore-localidades.util';
 import { traduzirFilhos } from '../../shared/utils/traduzir-filhos.util';
 import { ControleArvore } from './controle-arvore';
-import { cpfCnpjMascaradoPipe } from '../../shared/pipes/cpf-cnpj-mascarado.pipe';
+import { ControleMarcacao } from './controle-marcacao';
+import { ControleSelecao } from './controle-selecao';
 
 const CARREGANDO: EstadoBuscaFilhos = { status: 'carregando' };
+const CARREGANDO_LOCAIS: EstadoBusca<LocalidadeInterface> = { status: 'carregando' };
 const SEM_TRADUCAO: Record<string, string> = {};
-
-interface NoSelecionado {
-  rotulo: string;
-  aluno: AlunoInterface | null;
-}
 
 @Component({
   selector: 'app-tree-view-index',
-  imports: [ArvoreComponent, TranslatePipe, CpfCnpjPipe, cpfCnpjMascaradoPipe],
+  imports: [ArvoreComponent, TranslatePipe],
   templateUrl: './tree-view-index.component.html',
   styleUrl: './tree-view-index.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TreeViewIndex {
-  private readonly facade = inject(ArvoreFacadeService);
+  private readonly turmasFacade = inject(ArvoreFacadeService);
+  private readonly localidadesFacade = inject(LocalidadeFacadeService);
   private readonly translate = inject(TranslateService);
 
-  private readonly raiz = toSignal(this.facade.raiz$, { initialValue: CARREGANDO });
-  private readonly indice = toSignal(this.facade.filhos$, {
+  private readonly raizTurmas = toSignal(this.turmasFacade.raiz$, { initialValue: CARREGANDO });
+  private readonly indiceTurmas = toSignal(this.turmasFacade.filhos$, {
     initialValue: new Map() as IndiceFilhos,
   });
+
+  private readonly raizLocais = toSignal(this.localidadesFacade.raiz$, {
+    initialValue: CARREGANDO_LOCAIS,
+  });
+  private readonly indiceLocais = toSignal(this.localidadesFacade.filhos$, {
+    initialValue: new Map() as Indice<LocalidadeInterface>,
+  });
+
   private readonly serieRotulos: Signal<Record<string, string>> = toSignal(
     this.translate.stream('TURMA.SERIE'),
     { initialValue: SEM_TRADUCAO },
   );
 
-  protected readonly selecionado = signal<NoSelecionado | null>(null);
+  protected readonly selecionado = signal<string | null>(null);
 
-  protected readonly statusRaiz = computed(() => this.raiz().status);
+  protected readonly statusRaizTurmas = computed(() => this.raizTurmas().status);
+  protected readonly statusRaizLocais = computed(() => this.raizLocais().status);
 
-  protected readonly controle1 = new ControleArvore<EntidadeArvore>(
+  protected readonly modoSelecao = signal<ModoSelecao>('simples');
+
+  protected readonly selecaoTurmas = new ControleSelecao();
+  protected readonly selecaoLocais = new ControleSelecao();
+
+  protected readonly marcacaoTurmas = new ControleMarcacao();
+  protected readonly marcacaoLocais = new ControleMarcacao();
+
+  protected readonly controleTurmas = new ControleArvore<EntidadeArvore>(
     (no) => this.pedirDocentes(no),
-    (no) => this.mostrar(no),
+    (no, alternar) => {
+      this.selecaoTurmas.selecionar(no.chave, alternar, this.modoSelecao());
+      this.selecionado.set(no.rotulo);
+    },
   );
 
-  protected readonly controle2 = new ControleArvore<NoAgrupamento>(
-    (no) => this.pedirAlunos(no),
-    (no) => this.mostrar(no),
+  protected readonly controleLocais = new ControleArvore<LocalidadeInterface>(
+    (no) => this.localidadesFacade.carregarFilhos(no.chave, no.entidade),
+    (no, alternar) => {
+      this.selecaoLocais.selecionar(no.chave, alternar, this.modoSelecao());
+      this.selecionado.set(no.rotulo);
+    },
   );
 
-  protected readonly arvore1 = computed<NoArvore<EntidadeArvore>[]>(() => {
-    const raiz = this.raiz();
+  protected readonly arvoreTurmas = computed<NoArvore<EntidadeArvore>[]>(() => {
+    const raiz = this.raizTurmas();
     if (raiz.status !== 'pronto') return [];
 
-    const indice = this.indice();
+    const indice = this.indiceTurmas();
     return raiz.filhos.filter(eTurma).map((turma) => this.noTurma(turma, indice));
   });
 
-  protected readonly arvore2 = computed<NoArvore<NoAgrupamento>[]>(() => {
-    const raiz = this.raiz();
+  protected readonly arvoreLocais = computed<NoArvore<LocalidadeInterface>[]>(() => {
+    const raiz = this.raizLocais();
     if (raiz.status !== 'pronto') return [];
 
-    return montarArvoreTurmas(raiz.filhos.filter(eTurma), this.indice(), (serie) =>
-      this.rotuloSerie(serie),
-    );
+    return montarArvoreLocalidades(raiz.filhos, this.indiceLocais());
   });
 
+  protected alternarModo(): void {
+    this.modoSelecao.set(this.modoSelecao() === 'multipla' ? 'simples' : 'multipla');
+    this.selecaoTurmas.limpar();
+    this.selecaoLocais.limpar();
+  }
+
+  protected exibirTudo<T>(controle: ControleArvore<T>, nos: readonly NoArvore<T>[]): void {
+    this.turmasFacade.exibirTudo();
+    controle.expandirTudo(nos);
+  }
+
   private noTurma(turma: TurmaInterface, indice: IndiceFilhos): NoArvore<EntidadeArvore> {
-    const chave = `/turma:${turma.id}`;
+    const chave = chaveTurmaDocentes(turma);
 
     return {
       chave,
@@ -101,7 +137,7 @@ export class TreeViewIndex {
 
   private noDocente(chaveTurma: ChaveNo, docente: DocenteSqlInterface): NoArvore<EntidadeArvore> {
     return {
-      chave: `${chaveTurma}/docente:${docente.id}/disciplina:${docente.disciplinaNome}`,
+      chave: chaveDocente(chaveTurma, docente),
       rotulo: `${docente.docenteNome} · ${docente.disciplinaNome}`,
       entidade: docente,
       filhos: { status: 'folha' },
@@ -120,17 +156,6 @@ export class TreeViewIndex {
   }
 
   private pedirDocentes(no: NoArvore<EntidadeArvore>): void {
-    if (eTurma(no.entidade)) this.facade.carregarDocentesDaTurma(no.chave, no.entidade.id);
-  }
-
-  private pedirAlunos(no: NoArvore<NoAgrupamento>): void {
-    if (eTurma(no.entidade)) this.facade.carregarAlunosDaTurma(no.chave, no.entidade.id);
-  }
-
-  private mostrar(no: NoArvore<EntidadeArvore> | NoArvore<NoAgrupamento>): void {
-    this.selecionado.set({
-      rotulo: no.rotulo,
-      aluno: eAluno(no.entidade) ? no.entidade : null,
-    });
+    if (eTurma(no.entidade)) this.turmasFacade.carregarDocentesDaTurma(no.chave, no.entidade.id);
   }
 }

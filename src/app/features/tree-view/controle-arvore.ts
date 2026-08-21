@@ -8,12 +8,12 @@ export class ControleArvore<T> {
 
   constructor(
     private readonly carregar: (no: NoArvore<T>) => void,
-    private readonly selecionar: (no: NoArvore<T>) => void,
+    private readonly selecionar: (no: NoArvore<T>, alternar: boolean) => void,
   ) {}
 
   aoEvento(evento: EventoArvore<T>): void {
     if (evento.tipo === 'selecionou') {
-      this.selecionar(evento.no);
+      this.selecionar(evento.no, evento.alternar);
       return;
     }
     if (this.colapsou(evento.no)) return;
@@ -27,7 +27,6 @@ export class ControleArvore<T> {
       for (const no of irmaos) {
         if (no.filhos.status === 'folha') continue;
         chaves.add(no.chave);
-        this.carregar(no);
         if (no.filhos.status === 'pronto') visitar(no.filhos.filhos);
       }
     };

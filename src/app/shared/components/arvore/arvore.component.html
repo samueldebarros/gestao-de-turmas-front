@@ -1,3 +1,10 @@
 @for (no of nos; track no.chave) {
-  <app-no-arvore [no]="no" [expandidos]="expandidos" (evento)="evento.emit($event)" />
+  <app-no-arvore
+    [no]="no"
+    [expandidos]="expandidos"
+    [selecionados]="selecionados"
+    [marcados]="marcados"
+    (evento)="evento.emit($event)"
+    (marcou)="marcou.emit($event)"
+  />
 }
