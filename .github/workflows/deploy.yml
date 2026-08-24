@@ -1,0 +1,50 @@
+name: deploy-front
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    environment: producao
+    env:
+      VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run test
+
+      - name: Garantir que a URL de dev nao vazou para o bundle
+        run: |
+          npm run build
+          if grep -rq "localhost:7048" dist/; then
+            echo "ERRO: environments.ts de producao ainda aponta para localhost"
+            exit 1
+          fi
+          echo "bundle limpo"
+
+      - run: npx vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      - run: npx vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+      - run: npx vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Verificar que a aplicacao respondeu
+        run: |
+          BASE="https://gestao-turmas-front.vercel.app"
+          TIPO=$(curl -s -o /dev/null -m 60 -w '%{content_type}' "$BASE/i18n/pt-BR.json")
+          echo "i18n content-type: $TIPO"
+          case "$TIPO" in
+            *json*) echo "servindo a aplicacao" ;;
+            *) echo "ERRO: resposta nao e JSON - pode ser Deployment Protection interceptando"; exit 1 ;;
+          esac

@@ -26,7 +26,7 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(() => inject(AuthFacadeService).restaurarSessao()),
     provideTranslateService({
       loader: provideTranslateHttpLoader({
-        prefix: './i18n/',
+        prefix: '/i18n/',
         suffix: '.json',
       }),
       fallbackLang: 'pt-BR',

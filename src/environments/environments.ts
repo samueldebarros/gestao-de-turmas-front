@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://localhost:7048/api',
+  apiUrl: '/api',
   brasilApiUrl: 'https://brasilapi.com.br/api',
 };

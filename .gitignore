@@ -101,4 +101,7 @@ docs/
 docs-testes/
 
 # Dados de exemplo com dados pessoais
-alunos-exemplo.csv
+alunos-exemplo*.csv
+
+.vercel
+.env*
