@@ -33,6 +33,23 @@ jobs:
           fi
           echo "bundle limpo"
 
+      - name: Conferir configuracao da Vercel
+        run: |
+          faltando=0
+          [ -z "$VERCEL_ORG_ID" ] && echo "VERCEL_ORG_ID vazio" && faltando=1
+          [ -z "$VERCEL_PROJECT_ID" ] && echo "VERCEL_PROJECT_ID vazio" && faltando=1
+          [ -z "${{ secrets.VERCEL_TOKEN }}" ] && echo "VERCEL_TOKEN vazio" && faltando=1
+          if [ "$faltando" = "1" ]; then
+            echo "---"
+            echo "Cadastre no environment 'producao' do repositorio:"
+            echo "  Variables: VERCEL_ORG_ID, VERCEL_PROJECT_ID"
+            echo "  Secret:    VERCEL_TOKEN"
+            echo "Sem isso o CLI falha com 'Could not retrieve Project Settings'."
+            exit 1
+          fi
+          echo "org: $VERCEL_ORG_ID"
+          echo "project: $VERCEL_PROJECT_ID"
+
       - run: npx vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
       - run: npx vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
