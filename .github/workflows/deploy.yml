@@ -8,6 +8,7 @@ on:
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     environment: producao
     env:
       VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
@@ -54,7 +55,7 @@ jobs:
 
       - run: npx vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
 
-      - run: npx vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - run: npx vercel deploy --prebuilt --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Verificar que a aplicacao respondeu
         run: |
