@@ -8,7 +8,13 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test --watch=false",
     "test:watch": "ng test --watch",
-    "test:cov": "ng test --coverage --watch=false"
+    "test:cov": "ng test --coverage --watch=false",
+    "verify": "npm run verify:format && npm run verify:conformidade && npm run verify:test && npm run verify:build && node scripts/verify-marcador.mjs",
+    "verify:format": "node scripts/verify-format.mjs",
+    "verify:conformidade": "node scripts/verify-conformidade.mjs",
+    "verify:test": "ng test --watch=false --coverage",
+    "verify:build": "ng build && node scripts/verify-bundle.mjs",
+    "verify:escopo": "ng test --watch=false --configuration escopo"
   },
   "private": true,
   "packageManager": "npm@11.7.0",

@@ -1,6 +1,16 @@
 @if (visivel) {
   <div class="caixa-mensagem" [class]="tipo">
-    <span> {{ texto | translate }} </span>
+    <div class="conteudo-mensagem">
+      <span> {{ texto | translate }} </span>
+
+      @if (detalhes.length > 0) {
+        <ul class="detalhes-mensagem">
+          @for (detalhe of detalhes; track detalhe.campo + detalhe.erro) {
+            <li>{{ detalhe.campo | translate }}: {{ detalhe.erro | translate }}</li>
+          }
+        </ul>
+      }
+    </div>
 
     <button type="button" class="botao-fechar" (click)="fecharMensagem()">X</button>
   </div>

@@ -1,6 +1,117 @@
+<div class="alerta-pagina">
+  <app-mensagem
+    [visivel]="alertaPagina().visivel"
+    (visivelChange)="ocultarAlertaPagina()"
+    [tipo]="alertaPagina().tipo"
+    [texto]="alertaPagina().texto"
+  ></app-mensagem>
+</div>
+
 <div class="container">
-  <app-tabela-generica
-    [colunas]="colunas"
-    [dados]="(docentes$ | async) ?? []"
-  ></app-tabela-generica>
+  <div class="acoes-topo">
+    <app-botao variante="secundario" (acaoBotao)="abrirModalAdicionar()">{{
+      'DOCENTE.BOTOES.ADICIONAR_DOCENTE' | translate
+    }}</app-botao>
+  </div>
+
+  <app-filtro-lista
+    [filtros]="filtrosDocente"
+    (acaoFiltrar)="filtrarTabela($event)"
+  ></app-filtro-lista>
+
+  @if (resultado$ | async; as r) {
+    @if (r.itens.length === 0) {
+      <p class="lista-vazia">{{ 'DOCENTE.LISTA_VAZIA' | translate }}</p>
+    } @else {
+      <app-tabela-generica
+        [dados]="r.itens"
+        [colunas]="colunas"
+        [acoes]="acoesTabela"
+        [ordenacaoAtual]="ordenacaoAtual$ | async"
+        (acaoClicada)="definirAcao($event)"
+        (ordenarPor)="ordenar($event)"
+      ></app-tabela-generica>
+
+      @if (r.totalPaginas > 1) {
+        <div class="rodape-tabela">
+          <div class="paginacao">
+            <app-paginacao
+              [paginaAtual]="r.paginaAtual"
+              [totalPaginas]="r.totalPaginas"
+              (mudarPagina)="mudarPagina($event)"
+            ></app-paginacao>
+          </div>
+        </div>
+      }
+    }
+  }
+
+  <app-modal
+    [titulo]="tituloModal() | translate"
+    [visivel]="modalAberto()"
+    (visivelChange)="fecharModal()"
+  >
+    <app-mensagem
+      [visivel]="alertaModal().visivel"
+      (visivelChange)="ocultarAlertaModal()"
+      [tipo]="alertaModal().tipo"
+      [texto]="alertaModal().texto"
+      [detalhes]="alertaModal().detalhes ?? []"
+    ></app-mensagem>
+
+    <form [formGroup]="docenteForm" (ngSubmit)="salvarDocente()" class="form-docente">
+      <app-form-field-text
+        [label]="'DOCENTE.FORMULARIO.NOME_LABEL' | translate"
+        [placeholder]="'DOCENTE.FORMULARIO.NOME_PLACEHOLDER' | translate"
+        formControlName="nome"
+        [control]="docenteForm.get('nome')"
+        [errorMessage]="docenteForm.get('nome') | errorMessage | translate"
+      ></app-form-field-text>
+
+      @if (modoModal() === 'adicionar') {
+        <app-form-field-text
+          [label]="'DOCENTE.FORMULARIO.CPF_LABEL' | translate"
+          [placeholder]="'DOCENTE.FORMULARIO.CPF_PLACEHOLDER' | translate"
+          formControlName="cpf"
+          [control]="docenteForm.get('cpf')"
+          [errorMessage]="docenteForm.get('cpf') | errorMessage | translate"
+        ></app-form-field-text>
+      }
+
+      <app-form-field-text
+        [label]="'DOCENTE.FORMULARIO.EMAIL_LABEL' | translate"
+        [placeholder]="'DOCENTE.FORMULARIO.EMAIL_PLACEHOLDER' | translate"
+        formControlName="email"
+        [control]="docenteForm.get('email')"
+        [errorMessage]="docenteForm.get('email') | errorMessage | translate"
+      ></app-form-field-text>
+
+      <app-date-picker
+        [label]="'DOCENTE.FORMULARIO.DATA_NASCIMENTO_LABEL' | translate"
+        [placeholder]="'DOCENTE.FORMULARIO.DATA_NASCIMENTO_PLACEHOLDER' | translate"
+        formControlName="dataNascimento"
+        [control]="docenteForm.get('dataNascimento')"
+        [errorMessage]="docenteForm.get('dataNascimento') | errorMessage | translate"
+      ></app-date-picker>
+
+      <app-form-field-select
+        [label]="'DOCENTE.FORMULARIO.DISCIPLINA_LABEL' | translate"
+        [placeholder]="'DOCENTE.FORMULARIO.DISCIPLINA_SELECIONE' | translate"
+        [options]="opcoesDisciplina()"
+        formControlName="disciplinaId"
+        [control]="docenteForm.get('disciplinaId')"
+        [errorMessage]="docenteForm.get('disciplinaId') | errorMessage | translate"
+      ></app-form-field-select>
+
+      <div class="acoes-modal">
+        <app-botao [tipo]="'submit'" [variante]="'primario'">
+          {{ rotuloSubmit() | translate }}
+        </app-botao>
+
+        <app-botao [tipo]="'button'" (acaoBotao)="fecharModal()" [variante]="'perigo'">
+          {{ 'DOCENTE.BOTOES.CANCELAR' | translate }}
+        </app-botao>
+      </div>
+    </form>
+  </app-modal>
 </div>

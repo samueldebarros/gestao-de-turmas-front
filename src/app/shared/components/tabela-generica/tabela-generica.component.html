@@ -53,8 +53,8 @@
               } @else {
                 {{
                   coluna.formatador
-                    ? coluna.formatador($any(item)[coluna.chave])
-                    : $any(item)[coluna.chave]
+                    ? (coluna.formatador($any(item)[coluna.chave]) | translate)
+                    : ($any(item)[coluna.chave] | translate)
                 }}
               }
             </td>

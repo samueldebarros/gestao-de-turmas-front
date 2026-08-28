@@ -3,7 +3,8 @@ import { AbstractControl } from '@angular/forms';
 
 const ERRO_PARA_MENSAGEM: Record<string, string> = {
   required: 'VALIDACAO.OBRIGATORIO',
-  email: 'ALUNO.FORMULARIO.EMAIL_INVALIDO',
+  minlength: 'VALIDACAO.TAMANHO_MINIMO',
+  email: 'VALIDACAO.EMAIL_INVALIDO',
   documentoInvalido: 'VALIDACAO.DOCUMENTO_INVALIDO',
   cpfInvalido: 'VALIDACAO.CPF_INVALIDO',
   cnpjInvalido: 'VALIDACAO.CNPJ_INVALIDO',

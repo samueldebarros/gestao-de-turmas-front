@@ -15,6 +15,10 @@ jobs:
       VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Necessario para o gate de formatacao resolver origin/main. Sem isso
+          # ele sai com codigo 2 (gate quebrado) e derruba o deploy.
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -23,16 +27,12 @@ jobs:
 
       - run: npm ci
 
-      - run: npm run test
-
-      - name: Garantir que a URL de dev nao vazou para o bundle
-        run: |
-          npm run build
-          if grep -rq "localhost:7048" dist/; then
-            echo "ERRO: environments.ts de producao ainda aponta para localhost"
-            exit 1
-          fi
-          echo "bundle limpo"
+      # Suite, cobertura, formatacao e anti-vazamento do bundle vivem no `verify`
+      # (dono unico do gate). Nao duplicar os passos aqui.
+      - name: Verificacao completa
+        env:
+          VERIFY_BASE: origin/main
+        run: npm run verify
 
       - name: Conferir configuracao da Vercel
         run: |

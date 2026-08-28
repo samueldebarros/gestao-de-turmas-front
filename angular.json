@@ -82,6 +82,7 @@
           "builder": "@angular/build:unit-test",
           "options": {
             "providersFile": "src/test-providers.ts",
+            "setupFiles": ["src/test-setup.ts"],
             "coverageInclude": ["src/**/*.ts"],
             "coverageExclude": [
               "src/**/*.interface.ts",
@@ -91,7 +92,31 @@
               "src/environments/**",
               "src/main.ts"
             ],
-            "coverageReporters": ["text-summary", "html"]
+            "coverageReporters": ["text-summary", "html"],
+            "coverageThresholds": {
+              "statements": 32,
+              "branches": 53,
+              "functions": 30,
+              "lines": 32
+            }
+          },
+          "configurations": {
+            "escopo": {
+              "coverage": true,
+              "coverageInclude": [
+                "src/app/core/services/docente.service.ts",
+                "src/app/core/services/disciplina.service.ts",
+                "src/app/core/facades/docente-facade.service.ts",
+                "src/app/core/facades/disciplina-facade.service.ts",
+                "src/app/features/docente/**/*.ts"
+              ],
+              "coverageThresholds": {
+                "statements": 80,
+                "branches": 75,
+                "functions": 80,
+                "lines": 80
+              }
+            }
           }
         }
       }

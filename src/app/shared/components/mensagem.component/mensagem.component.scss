@@ -34,3 +34,19 @@
     }
   }
 }
+
+.conteudo-mensagem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detalhes-mensagem {
+  margin: 0;
+  padding-left: 18px;
+  list-style: disc;
+
+  li {
+    line-height: 1.4;
+  }
+}

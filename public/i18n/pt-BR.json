@@ -173,7 +173,14 @@
         "TRANCADOS_CANCELADOS": "Trancados/Cancelados",
         "PERCENTUAL_EVASAO": "Evasão"
       },
-      "ACOES": "Ações"
+      "ACOES": "Ações",
+      "DOCENTE": {
+        "CODIGO": "Cód.",
+        "NOME": "Nome Completo",
+        "EMAIL": "E-mail",
+        "DISCIPLINA": "Disciplina",
+        "STATUS": "Status"
+      }
     }
   },
   "DASHBOARD": {
@@ -183,6 +190,8 @@
   },
   "VALIDACAO": {
     "OBRIGATORIO": "Este campo é obrigatório.",
+    "TAMANHO_MINIMO": "O texto é curto demais.",
+    "EMAIL_INVALIDO": "E-mail inválido.",
     "DATA_FUTURA": "A data não pode ser hoje ou no futuro.",
     "IDADE_MAXIMA": "A idade não pode ultrapassar 120 anos.",
     "DOCUMENTO_INVALIDO": "O documento deve ter 11 (CPF) ou 14 (CNPJ) números.",
@@ -192,6 +201,7 @@
   },
   "MENSAGEM": {
     "FORMULARIO_INVALIDO": "Formulário inválido.",
+    "CORRIJA_OS_CAMPOS": "Corrija os campos indicados abaixo:",
     "ERRO_CADASTRO_ALUNO": "Ocorreu um erro ao cadastrar o aluno.",
     "ERRO_EDICAO_ALUNO": "Ocorreu um erro ao editar o aluno.",
     "ERRO_INATIVAR_ALUNO": "Ocorreu um erro ao inativar o aluno.",
@@ -199,7 +209,19 @@
     "SUCESSO_CADASTRO_ALUNO": "Aluno cadastrado com sucesso.",
     "SUCESSO_EDICAO_ALUNO": "Aluno editado com sucesso.",
     "SUCESSO_INATIVAR_ALUNO": "Aluno inativado com sucesso.",
-    "SUCESSO_REATIVAR_ALUNO": "Aluno reativado com sucesso."
+    "SUCESSO_REATIVAR_ALUNO": "Aluno reativado com sucesso.",
+    "SUCESSO_INATIVAR_DOCENTE": "Docente inativado com sucesso.",
+    "SUCESSO_REATIVAR_DOCENTE": "Docente reativado com sucesso.",
+    "ERRO_INATIVAR_DOCENTE": "Ocorreu um erro ao inativar o docente.",
+    "ERRO_REATIVAR_DOCENTE": "Ocorreu um erro ao reativar o docente.",
+    "ERRO_CARREGAR_DOCENTES": "Ocorreu um erro ao carregar os docentes.",
+    "SUCESSO_CADASTRO_DOCENTE": "Docente cadastrado com sucesso.",
+    "ERRO_CADASTRO_DOCENTE": "Ocorreu um erro ao cadastrar o docente.",
+    "SUCESSO_EDICAO_DOCENTE": "Docente editado com sucesso.",
+    "ERRO_EDICAO_DOCENTE": "Ocorreu um erro ao editar o docente.",
+    "ERRO_CARREGAR_DOCENTE": "Não foi possível carregar os dados do docente.",
+    "ERRO_CARREGAR_DISCIPLINAS": "Não foi possível carregar a lista de disciplinas.",
+    "ERRO_REGRA_NEGOCIO_DOCENTE": "Não foi possível salvar. Corrija os dados destacados e tente novamente."
   },
   "LOGIN": {
     "TITULO": "Entrar",
@@ -253,5 +275,39 @@
     "SEM_FILHOS": "Nada aqui.",
     "SELECIONADO": "Nó selecionado",
     "NENHUM_SELECIONADO": "Clique num nó para ver os detalhes."
+  },
+  "DOCENTE": {
+    "STATUS_ATIVO": "Ativo",
+    "STATUS_INATIVO": "Inativo",
+    "LISTA_VAZIA": "Nenhum docente encontrado.",
+    "FILTRO": {
+      "PESQUISA_PLACEHOLDER": "Buscar por nome, CPF ou disciplina"
+    },
+    "BOTOES": {
+      "INATIVAR": "Inativar",
+      "REATIVAR": "Reativar",
+      "ADICIONAR_DOCENTE": "Adicionar Docente",
+      "SALVAR_ALTERACOES": "Salvar alterações",
+      "CANCELAR": "Cancelar",
+      "EDITAR": "Editar"
+    },
+    "SEM_DISCIPLINA": "Sem disciplina",
+    "MODAL": {
+      "CADASTRO_TITULO": "Cadastro de Docente",
+      "EDICAO_TITULO": "Editar Docente"
+    },
+    "FORMULARIO": {
+      "NOME_LABEL": "Nome Completo",
+      "NOME_PLACEHOLDER": "Digite o nome",
+      "CPF_LABEL": "CPF/CNPJ",
+      "CPF_PLACEHOLDER": "Digite o CPF/CNPJ",
+      "EMAIL_LABEL": "E-mail",
+      "EMAIL_PLACEHOLDER": "Digite o e-mail",
+      "DATA_NASCIMENTO_LABEL": "Data de Nascimento",
+      "DATA_NASCIMENTO_PLACEHOLDER": "Digite a data de nascimento",
+      "DISCIPLINA_LABEL": "Disciplina",
+      "DISCIPLINA_SELECIONE": "Selecione",
+      "DISCIPLINA_NENHUMA": "Sem disciplina"
+    }
   }
 }

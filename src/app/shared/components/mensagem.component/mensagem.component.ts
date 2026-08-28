@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
+import { DetalheAlerta } from '../../interfaces/ui/detalhe-alerta.interface';
 
 @Component({
   selector: 'app-mensagem',
@@ -14,6 +15,7 @@ export class MensagemComponent {
 
   @Input() tipo: 'sucesso' | 'erro' = 'sucesso';
   @Input() texto: string = '';
+  @Input() detalhes: DetalheAlerta[] = [];
 
   fecharMensagem(): void {
     this.visivel = false;

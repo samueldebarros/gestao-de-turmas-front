@@ -1,0 +1,28 @@
+{
+  "_leia": "Violacoes existentes, congeladas para o gate ficar verde hoje e vermelho em qualquer violacao NOVA. Esta lista so pode encolher. Entrada sem motivo nao entra.",
+  "R2": {
+    "src/app/shared/components/importar-alunos.component/importar-alunos.component.ts": {
+      "max": 1,
+      "divida": "D10",
+      "motivo": "Consumido por AlunoIndex e pelo wizard de turmas. Mover para features/aluno trocaria a violacao de fronteira por um import feature->feature; decidir qual custa menos antes de mexer."
+    },
+    "src/app/shared/components/nav-bar.component/nav-bar.component.ts": {
+      "max": 1,
+      "divida": null,
+      "motivo": "Aceito, nao e divida: AuthFacadeService e transversal (sessao), nao um facade de dominio. A regra nao consegue distinguir os dois."
+    }
+  },
+  "R3": {
+    "src/app/core/facades/feriado-facade.service.ts": {
+      "max": 1,
+      "divida": null,
+      "motivo": "Aceito, nao e divida: erro de terceiro (BrasilAPI) sem dado pessoal. O AGENTS.md libera este caso explicitamente."
+    },
+    "src/main.ts": {
+      "max": 1,
+      "divida": null,
+      "motivo": "Aceito, nao e divida: falha de bootstrap da aplicacao, anterior a existir qualquer dado de dominio."
+    }
+  },
+  "R4": {}
+}

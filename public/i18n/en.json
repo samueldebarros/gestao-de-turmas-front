@@ -173,7 +173,14 @@
         "TRANCADOS_CANCELADOS": "Suspended/Cancelled",
         "PERCENTUAL_EVASAO": "Dropout"
       },
-      "ACOES": "Actions"
+      "ACOES": "Actions",
+      "DOCENTE": {
+        "CODIGO": "Code",
+        "NOME": "Full Name",
+        "EMAIL": "E-mail",
+        "DISCIPLINA": "Subject",
+        "STATUS": "Status"
+      }
     }
   },
   "DASHBOARD": {
@@ -183,6 +190,8 @@
   },
   "VALIDACAO": {
     "OBRIGATORIO": "This field is required.",
+    "TAMANHO_MINIMO": "The text is too short.",
+    "EMAIL_INVALIDO": "Invalid e-mail.",
     "DATA_FUTURA": "The date cannot be today or in the future.",
     "IDADE_MAXIMA": "Age cannot exceed 120 years.",
     "DOCUMENTO_INVALIDO": "The document must have 11 (CPF) or 14 (CNPJ) digits.",
@@ -192,6 +201,7 @@
   },
   "MENSAGEM": {
     "FORMULARIO_INVALIDO": "Invalid Form.",
+    "CORRIJA_OS_CAMPOS": "Please fix the fields listed below:",
     "ERRO_CADASTRO_ALUNO": "An error occurred while registering the student.",
     "ERRO_EDICAO_ALUNO": "An error occurred while editing the student.",
     "ERRO_INATIVAR_ALUNO": "An error occurred while deactivating the student.",
@@ -199,7 +209,19 @@
     "SUCESSO_CADASTRO_ALUNO": "Student registered successfully.",
     "SUCESSO_EDICAO_ALUNO": "Student updated successfully.",
     "SUCESSO_INATIVAR_ALUNO": "Student deactivated successfully.",
-    "SUCESSO_REATIVAR_ALUNO": "Student reactivated successfully."
+    "SUCESSO_REATIVAR_ALUNO": "Student reactivated successfully.",
+    "SUCESSO_INATIVAR_DOCENTE": "Teacher deactivated successfully.",
+    "SUCESSO_REATIVAR_DOCENTE": "Teacher reactivated successfully.",
+    "ERRO_INATIVAR_DOCENTE": "An error occurred while deactivating the teacher.",
+    "ERRO_REATIVAR_DOCENTE": "An error occurred while reactivating the teacher.",
+    "ERRO_CARREGAR_DOCENTES": "An error occurred while loading teachers.",
+    "SUCESSO_CADASTRO_DOCENTE": "Teacher registered successfully.",
+    "ERRO_CADASTRO_DOCENTE": "An error occurred while registering the teacher.",
+    "SUCESSO_EDICAO_DOCENTE": "Teacher updated successfully.",
+    "ERRO_EDICAO_DOCENTE": "An error occurred while updating the teacher.",
+    "ERRO_CARREGAR_DOCENTE": "Could not load the teacher data.",
+    "ERRO_CARREGAR_DISCIPLINAS": "Could not load the subject list.",
+    "ERRO_REGRA_NEGOCIO_DOCENTE": "Could not save. Fix the highlighted data and try again."
   },
   "LOGIN": {
     "TITULO": "Sign in",
@@ -253,5 +275,39 @@
     "SEM_FILHOS": "Nothing here.",
     "SELECIONADO": "Selected node",
     "NENHUM_SELECIONADO": "Click a node to see the details."
+  },
+  "DOCENTE": {
+    "STATUS_ATIVO": "Active",
+    "STATUS_INATIVO": "Inactive",
+    "LISTA_VAZIA": "No teachers found.",
+    "FILTRO": {
+      "PESQUISA_PLACEHOLDER": "Search by name, ID number or subject"
+    },
+    "BOTOES": {
+      "INATIVAR": "Deactivate",
+      "REATIVAR": "Reactivate",
+      "ADICIONAR_DOCENTE": "Add Teacher",
+      "SALVAR_ALTERACOES": "Save changes",
+      "CANCELAR": "Cancel",
+      "EDITAR": "Edit"
+    },
+    "SEM_DISCIPLINA": "No subject",
+    "MODAL": {
+      "CADASTRO_TITULO": "New Teacher",
+      "EDICAO_TITULO": "Edit Teacher"
+    },
+    "FORMULARIO": {
+      "NOME_LABEL": "Full Name",
+      "NOME_PLACEHOLDER": "Enter the name",
+      "CPF_LABEL": "CPF/CNPJ",
+      "CPF_PLACEHOLDER": "Enter the CPF/CNPJ",
+      "EMAIL_LABEL": "E-mail",
+      "EMAIL_PLACEHOLDER": "Enter the e-mail",
+      "DATA_NASCIMENTO_LABEL": "Date of Birth",
+      "DATA_NASCIMENTO_PLACEHOLDER": "Enter the date of birth",
+      "DISCIPLINA_LABEL": "Subject",
+      "DISCIPLINA_SELECIONE": "Select",
+      "DISCIPLINA_NENHUMA": "No subject"
+    }
   }
 }

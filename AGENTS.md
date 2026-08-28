@@ -1,11 +1,11 @@
 ---
 name: gestao-turmas-front-agents
-description: Regras globais de desenvolvimento do front-end Gestão de Turmas. Stack Angular 21 + RxJS 7.8. Define princípios não-negociáveis e roteia o detalhe para os arquivos de SKILL. Leia este arquivo primeiro; ele NÃO repete o conteúdo dos SKILLs.
+description: Regras globais de desenvolvimento do front-end Gestão de Turmas. Stack Angular 21 zoneless + RxJS 7.8 + Vitest. Define princípios não-negociáveis e roteia o detalhe para os arquivos de SKILL. Leia este arquivo primeiro; ele NÃO repete o conteúdo dos SKILLs.
 ---
 
 # Regras Globais — gestao-turmas-front
 
-Stack: Angular 21 (standalone, sem NgModule), TypeScript estrito, RxJS 7.8, SCSS, ngx-translate 17, Vitest.
+Stack: Angular 21 (standalone, sem NgModule), **zoneless** (`zone.js` não está instalado), TypeScript estrito, RxJS 7.8, SCSS, ngx-translate 17, Vitest.
 
 ## Princípios não-negociáveis
 
@@ -17,21 +17,23 @@ Stack: Angular 21 (standalone, sem NgModule), TypeScript estrito, RxJS 7.8, SCSS
 
 ## Convenções de código
 
-- **Injeção:** use `inject()` em campo `private readonly`, não por construtor (resumo; detalhe na Skill `rxjs-reactive-patterns`). O construtor fica reservado para inicialização eager — ex.: `app.ts` configura o i18n no construtor.
-- **Decorators vs. signals (ressalva fixa do projeto):** o contrato de I/O usa `@Input()`/`@Output()` decorators clássicos por exigência externa — não migre para `input()`/`output()`. `signal()`/`computed()` são permitidos apenas para **estado interno** de componente. Detalhe na Skill `component-design`.
-- **Standalone sempre.** Componentes, pipes e diretivas declaram `imports: [...]`; nunca crie NgModule.
-- **Imports relativos carregam extensão `.js`** (`'./x.component.js'`) por config do toolchain — mantenha o padrão existente ao editar imports.
+- **Injeção:** use `inject()` em campo `private readonly`, não por construtor (resumo; detalhe na Skill `rxjs-reactive-patterns`). Para inicialização eager, o lugar é `provideAppInitializer()` no `app.config.ts` — é onde a restauração de sessão e a limpeza de storage já moram. ⚠️ O construtor de `app.ts` ainda configura idioma do i18n, mas `provideTranslateService` no `app.config.ts` já define `lang` e `fallbackLang`: são dois donos da mesma informação, e é dívida, não exemplo a seguir.
+- **Decorators vs. signals (ressalva fixa do projeto):** o contrato de I/O usa `@Input()`/`@Output()` decorators clássicos por exigência externa — não migre para `input()`/`output()`. ⚠️ Restrição registrada em junho/2026 e contrária à direção do framework; confirme que a exigência continua valendo antes de propagá-la para código ou documento novo. Já `signal()`/`computed()` não são concessão: num app zoneless eles são o mecanismo de detecção de mudança. Use-os à vontade para **estado interno** de componente. Detalhe na Skill `component-design`.
+- **Zoneless tem duas consequências práticas:** a detecção de mudança não roda por efeito colateral de `setTimeout`/`Promise` — derive de signal ou de `async pipe`; e em teste **`fakeAsync`/`tick` estouram**, use `vi.useFakeTimers()` + `advanceTimersByTime()` para dirigir `debounceTime`.
+- **Standalone sempre.** Componentes, pipes e diretivas declaram `imports: [...]`; nunca crie NgModule. Não escreva `standalone: true` — é o default desde o Angular 19, e o código está dividido entre quem escreve e quem omite.
+- **Extensão `.js` nos imports — dois padrões distintos, não um só.** Import **dinâmico** de rota (`import('./x.component.js')` em `*.routes.ts`) leva `.js`: são 13 de 13 ocorrências. Import **estático** (`from './x'`) **não** leva: 243 sem contra 28 com, e essas 28 estão concentradas em `app.ts` e `aluno-index.component.ts` como resíduo. Ao criar import estático novo, escreva sem extensão.
 - **Strings de UI sempre via i18n.** Nunca hardcode texto visível. Detalhe e exceções na Skill `data-modeling-contracts`.
 
 ## Nomenclatura
 
-- Arquivos em `kebab-case` com sufixo de papel: `*.component.ts`, `*.service.ts`, `*.facade.service.ts`, `*.pipe.ts`, `*.validator.ts`, `*.interface.ts`, `*.enum.ts`, `*.model.ts`, `*.utils.ts`, `*.routes.ts`.
+- Arquivos em `kebab-case` com sufixo de papel: `*.component.ts`, `*.service.ts`, `*.facade.service.ts`, `*.guard.ts`, `*.interceptor.ts`, `*.pipe.ts`, `*.validator.ts`, `*.interface.ts`, `*.enum.ts`, `*.type.ts`, `*.model.ts`, `*.util.ts`, `*.routes.ts`.
+- ⚠️ Utilitário é **`.util.ts` no singular** (11 arquivos); `cpf-cnpj.utils.ts` é a única exceção e é resíduo. Os caches (`cache-memoria.ts`, `cache-storage.ts`) não têm sufixo — também resíduo, não licença para omitir.
 - Classes e enums em `PascalCase`; variáveis e métodos em `camelCase` (em português, alinhado ao domínio).
 - Interfaces SEM prefixo `I`, COM sufixo `Interface` (`AlunoInterface`). Exceções históricas: DTOs (`AlunoAdicionarDTO`), states (`AlertaState`), enums (`SexoEnum`).
 
 ## Acessibilidade
 
-- Passe AXE. Siga WCAG AA para foco, contraste e ARIA.
+- Siga WCAG AA para foco, contraste e ARIA em componente novo. ⚠️ Isto é convenção, não gate: **não há axe, pa11y ou qualquer ferramenta de a11y no projeto** — nada verifica automaticamente. Exceções conscientes existem e estão registradas (a vitrine `/tree-view` não tem ARIA nem teclado — dívida D9 no `CONTEXT.md`).
 - Prefira elementos nativos semânticos (ex.: `<dialog>` no Modal) a recriar comportamento com `<div>`.
 
 ## Log e diagnóstico
@@ -50,6 +52,7 @@ Stack: Angular 21 (standalone, sem NgModule), TypeScript estrito, RxJS 7.8, SCSS
 - O Service nunca tem estado nem `subscribe`; retorna `Observable` frio tipado.
 - O Facade detém o estado (ex.: filtro/página num `BehaviorSubject`), expõe leitura como `Observable` e expõe mutação como método de intenção.
 - O Component Smart injeta o Facade, liga a leitura no `async pipe` e chama os métodos de intenção. Componentes Dumb não conhecem Facade nem domínio.
+- **Transversais, fora das três camadas:** `core/interceptors/` age entre Service e rede (`credentials` só marca `withCredentials` quando a URL começa com `environment.apiUrl`, para não vazar cookie a terceiro como a BrasilAPI; `auth-error` trata 401 e 403) e `core/guards/` age antes da rota ativar (`autenticado`, `papel`). Regra de fronteira: **interceptor e guard não conhecem domínio** — nada de Aluno ou Docente ali dentro. Nenhuma Skill cobre esses dois; leia o código antes de alterá-los.
 
 ## Reflexos-gatilho (pare e repense ENQUANTO digita)
 
@@ -79,4 +82,6 @@ O detalhe operacional vive em **Skills** (`.claude/skills/<nome>/SKILL.md`). Inv
 | Mexer em estado, Facade, paginação, filtro reativo, fluxo de dados     | `state-and-data-flow`     |
 | Escrever stream RxJS, chamada HTTP, decidir async pipe vs. subscribe   | `rxjs-reactive-patterns`  |
 | Modelar interface, DTO, enum, formulário tipado, validador, i18n       | `data-modeling-contracts` |
+| Escrever um guia técnico ou um roteiro de etapas em `docs/`            | `implementation-docs`     |
+| Escrever doc que ENSINA o fluxo de construção, com tropeços e idas e vindas | `doc-implementacao-incremental` |
 | Entender a estrutura do repo, o que existe e as dívidas técnicas       | leia `CONTEXT.md`         |
