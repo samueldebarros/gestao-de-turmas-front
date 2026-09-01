@@ -15,7 +15,7 @@ export type MotivoInvalidez =
   | 'SEXO_INVALIDO'
   | 'DATA_INVALIDA';
 
-const FORMATO_EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+const FORMATO_EMAIL = /^[^@\s]+@[^@\s.]+(\.[^@\s.]+)+$/;
 
 function separarCampos(linha: string): string[] {
   const campos: string[] = [];

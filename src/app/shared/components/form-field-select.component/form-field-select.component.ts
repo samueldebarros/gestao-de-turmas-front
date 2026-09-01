@@ -38,19 +38,19 @@ export class FormFieldSelectComponent implements ControlValueAccessor {
     return !!this.errorMessage;
   }
 
-  valorAtual: any = '';
+  valorAtual: string | number | boolean | null = '';
   isDisabled: boolean = false;
 
-  onChange: any = () => {};
-  onTouched: any = () => {};
+  onChange: (valor: string | number | boolean | null) => void = () => {};
+  onTouched: () => void = () => {};
 
-  writeValue(value: any): void {
+  writeValue(value: string | number | boolean | null | undefined): void {
     this.valorAtual = value ?? '';
   }
-  registerOnChange(fn: any): void {
+  registerOnChange(fn: (valor: string | number | boolean | null) => void): void {
     this.onChange = fn;
   }
-  registerOnTouched(fn: any): void {
+  registerOnTouched(fn: () => void): void {
     this.onTouched = fn;
   }
   setDisabledState(isDisabled: boolean): void {

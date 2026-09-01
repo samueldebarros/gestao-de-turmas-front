@@ -33,18 +33,18 @@ export class FormFieldTextComponent implements ControlValueAccessor {
   disabled = false;
   inputAtual: string = '';
 
-  onChange: any = () => {};
-  onTouched: any = () => {};
+  onChange: (valor: string | number | null) => void = () => {};
+  onTouched: () => void = () => {};
 
-  writeValue(value: any): void {
-    this.inputAtual = value ?? '';
+  writeValue(value: string | number | null | undefined): void {
+    this.inputAtual = value == null ? '' : String(value);
   }
 
-  registerOnChange(fn: any): void {
+  registerOnChange(fn: (valor: string | number | null) => void): void {
     this.onChange = fn;
   }
 
-  registerOnTouched(fn: any): void {
+  registerOnTouched(fn: () => void): void {
     this.onTouched = fn;
   }
 
