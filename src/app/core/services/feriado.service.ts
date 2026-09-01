@@ -1,6 +1,6 @@
 import { HttpBackend, HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { delay, Observable, retry, throwError, timeout, TimeoutError, timer } from 'rxjs';
+import { Observable, retry, throwError, timeout, TimeoutError, timer } from 'rxjs';
 import { environment } from '../../../environments/environments';
 import { FeriadoInterface } from '../../shared/interfaces/entities/feriado.interface';
 

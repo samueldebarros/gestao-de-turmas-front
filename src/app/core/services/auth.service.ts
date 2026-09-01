@@ -4,7 +4,6 @@ import { environment } from '../../../environments/environments';
 import { LoginDTO } from '../../shared/interfaces/dto/login-dto.interface';
 import { Observable } from 'rxjs';
 import { UsuarioAutenticadoInterface } from '../../shared/interfaces/entities/usuario-autenticado.interface';
-import { PapelUsuario } from '../../shared/types/papel-usuario.type';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {

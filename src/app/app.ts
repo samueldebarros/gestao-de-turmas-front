@@ -7,7 +7,6 @@ import { NavBarComponent } from './shared/components/nav-bar.component/nav-bar.c
   selector: 'app-root',
   imports: [RouterOutlet, NavBarComponent],
   templateUrl: './app.html',
-  styleUrl: './app.scss',
 })
 export class App {
   protected readonly title = signal('gestao-turmas-front');

@@ -22,7 +22,7 @@ export class AuthFacadeService {
   }
 
   logout(): Observable<void> {
-    return this.authService.logout().pipe(tap((u) => this._usuario$.next(null)));
+    return this.authService.logout().pipe(tap(() => this._usuario$.next(null)));
   }
 
   restaurarSessao(): Observable<UsuarioAutenticadoInterface | null> {
