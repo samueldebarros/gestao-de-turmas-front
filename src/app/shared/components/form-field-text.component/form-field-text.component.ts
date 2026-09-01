@@ -1,5 +1,6 @@
 import { Component, forwardRef, Input } from '@angular/core';
 import { AbstractControl, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { ValorCampoTexto } from '../../types/valor-campo.type';
 
 import { gerarIdUnico } from '../../utils/gerar-id-unico.util';
 
@@ -33,14 +34,14 @@ export class FormFieldTextComponent implements ControlValueAccessor {
   disabled = false;
   inputAtual: string = '';
 
-  onChange: (valor: string | number | null) => void = () => {};
+  onChange: (valor: ValorCampoTexto) => void = () => {};
   onTouched: () => void = () => {};
 
-  writeValue(value: string | number | null | undefined): void {
+  writeValue(value: ValorCampoTexto | undefined): void {
     this.inputAtual = value == null ? '' : String(value);
   }
 
-  registerOnChange(fn: (valor: string | number | null) => void): void {
+  registerOnChange(fn: (valor: ValorCampoTexto) => void): void {
     this.onChange = fn;
   }
 

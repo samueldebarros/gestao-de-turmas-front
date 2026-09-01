@@ -1,5 +1,6 @@
 import { Component, forwardRef, Input } from '@angular/core';
 import { SelectOptionInterface } from '../../interfaces/ui/select-option.interface';
+import { ValorCampoSelect } from '../../types/valor-campo.type';
 import {
   AbstractControl,
   ControlValueAccessor,
@@ -38,16 +39,16 @@ export class FormFieldSelectComponent implements ControlValueAccessor {
     return !!this.errorMessage;
   }
 
-  valorAtual: string | number | boolean | null = '';
+  valorAtual: ValorCampoSelect = '';
   isDisabled: boolean = false;
 
-  onChange: (valor: string | number | boolean | null) => void = () => {};
+  onChange: (valor: ValorCampoSelect) => void = () => {};
   onTouched: () => void = () => {};
 
-  writeValue(value: string | number | boolean | null | undefined): void {
+  writeValue(value: ValorCampoSelect | undefined): void {
     this.valorAtual = value ?? '';
   }
-  registerOnChange(fn: (valor: string | number | boolean | null) => void): void {
+  registerOnChange(fn: (valor: ValorCampoSelect) => void): void {
     this.onChange = fn;
   }
   registerOnTouched(fn: () => void): void {
