@@ -1,0 +1,6 @@
+{
+  "sonarlint.connectedMode.project": {
+    "connectionId": "samueldebarros",
+    "projectKey": "samueldebarros_gestao-de-turmas-front"
+  }
+}
