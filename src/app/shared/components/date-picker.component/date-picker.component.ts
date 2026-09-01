@@ -14,6 +14,8 @@ import { AbstractControl, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angul
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { DiaCalendario } from '../../interfaces/ui/dia-calendario.interface';
 
+import { gerarIdUnico } from '../../utils/gerar-id-unico.util';
+
 @Component({
   selector: 'app-date-picker',
   imports: [TranslatePipe],
@@ -24,6 +26,8 @@ import { DiaCalendario } from '../../interfaces/ui/dia-calendario.interface';
   ],
 })
 export class DatePickerComponent implements ControlValueAccessor {
+  protected readonly campoId = gerarIdUnico('date-picker');
+
   private readonly translate = inject(TranslateService);
   private readonly elementRef = inject(ElementRef<HTMLElement>);
   private readonly destroyRef = inject(DestroyRef);

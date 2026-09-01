@@ -26,6 +26,8 @@ import { EntidadeBaseInterface } from '../../interfaces/entities/entidade-base.i
 import { TranslatePipe } from '@ngx-translate/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
+import { gerarIdUnico } from '../../utils/gerar-id-unico.util';
+
 @Component({
   selector: 'app-autocomplete',
   imports: [TranslatePipe],
@@ -33,6 +35,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   styleUrl: './autocomplete.component.scss',
 })
 export class AutocompleteComponent<T extends EntidadeBaseInterface> implements OnInit {
+  protected readonly campoId = gerarIdUnico('autocomplete');
+  protected readonly listaId = gerarIdUnico('autocomplete-lista');
+
   @Input({ required: true }) buscar!: (termo: string) => Observable<T[]>;
   @Input({ required: true }) rotulo!: (item: T) => string;
   @Input() label = '';

@@ -1,6 +1,7 @@
 <div class="form">
-  <label>{{ label }}</label>
+  <label [for]="campoId">{{ label }}</label>
   <select
+    [id]="campoId"
     (change)="onSelectChange($event)"
     (blur)="onTouched()"
     [disabled]="isDisabled"

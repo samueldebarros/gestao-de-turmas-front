@@ -1,6 +1,6 @@
 <div class="file-upload">
   @if (label) {
-    <label class="form-label">{{ label }}</label>
+    <label [for]="campoId" class="form-label">{{ label }}</label>
   }
 
   <div
@@ -11,11 +11,12 @@
   >
     <input
       #inputArquivo
+      [id]="campoId"
       type="file"
       [accept]="accept"
       [disabled]="desabilitado()"
       (change)="aoSelecionar($event)"
-      hidden
+      class="campo-arquivo"
     />
 
     @if (arquivo(); as f) {

@@ -1,4 +1,12 @@
-<article class="card" [class.card--inativo]="turma.ativo === false" (click)="acaoCard.emit(turma)">
+<article
+  class="card"
+  role="button"
+  tabindex="0"
+  [class.card--inativo]="turma.ativo === false"
+  (click)="acaoCard.emit(turma)"
+  (keydown.enter)="acaoCard.emit(turma)"
+  (keydown.space)="aoTeclarEspaco($event)"
+>
   <header class="card__cabecalho">
     <h3 class="card__titulo">{{ turma.serie }}º {{ turma.identificador }}</h3>
     <span

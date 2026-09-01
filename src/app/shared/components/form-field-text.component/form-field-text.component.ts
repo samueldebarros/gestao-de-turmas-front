@@ -1,6 +1,8 @@
 import { Component, forwardRef, Input } from '@angular/core';
 import { AbstractControl, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
+import { gerarIdUnico } from '../../utils/gerar-id-unico.util';
+
 @Component({
   selector: 'app-form-field-text',
   standalone: true,
@@ -15,6 +17,8 @@ import { AbstractControl, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angul
   ],
 })
 export class FormFieldTextComponent implements ControlValueAccessor {
+  protected readonly campoId = gerarIdUnico('form-field-text');
+
   @Input() label: string = '';
   @Input() placeholder: string = '';
   @Input() type: 'text' | 'password' | 'email' | 'date' | 'number' = 'text';

@@ -1,12 +1,14 @@
 <div class="autocomplete">
   @if (label) {
-    <label class="form-label">{{ label }}</label>
+    <label [for]="campoId" class="form-label">{{ label }}</label>
   }
 
   <input
+    [id]="campoId"
     type="text"
     role="combobox"
     [attr.aria-expanded]="aberto()"
+    [attr.aria-controls]="listaId"
     [placeholder]="placeholder"
     [value]="texto()"
     (input)="aoDigitar($event)"
@@ -14,7 +16,7 @@
   />
 
   @if (aberto()) {
-    <ul class="sugestoes" role="listbox">
+    <ul [id]="listaId" class="sugestoes" role="listbox">
       @if (carregando()) {
         <li class="estado">{{ 'AUTOCOMPLETE.BUSCANDO' | translate }}</li>
       } @else if (sugestoes().length === 0) {

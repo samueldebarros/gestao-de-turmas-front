@@ -1,9 +1,10 @@
 <div class="form">
   @if (label) {
-    <label [for]="label" class="form-label">{{ label }}</label>
+    <label [for]="campoId" class="form-label">{{ label }}</label>
   }
 
   <input
+    [id]="campoId"
     [type]="type"
     [placeholder]="placeholder"
     (input)="onInput($event)"

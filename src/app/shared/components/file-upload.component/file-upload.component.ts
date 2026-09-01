@@ -4,6 +4,8 @@ import { TranslatePipe } from '@ngx-translate/core';
 
 export type ErroUpload = 'TIPO_INVALIDO' | 'TAMANHO_EXCEDIDO';
 
+import { gerarIdUnico } from '../../utils/gerar-id-unico.util';
+
 @Component({
   selector: 'app-file-upload',
   imports: [TranslatePipe],
@@ -14,6 +16,8 @@ export type ErroUpload = 'TIPO_INVALIDO' | 'TAMANHO_EXCEDIDO';
   ],
 })
 export class FileUploadComponent implements ControlValueAccessor {
+  protected readonly campoId = gerarIdUnico('file-upload');
+
   @Input() label = '';
   @Input() accept = '';
   @Input() tamanhoMaximoMb = 5;

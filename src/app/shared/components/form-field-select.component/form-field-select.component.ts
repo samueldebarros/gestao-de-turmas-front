@@ -1,7 +1,14 @@
 import { Component, forwardRef, Input } from '@angular/core';
 import { SelectOptionInterface } from '../../interfaces/ui/select-option.interface';
-import { AbstractControl, ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
+import {
+  AbstractControl,
+  ControlValueAccessor,
+  NG_VALUE_ACCESSOR,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
+
+import { gerarIdUnico } from '../../utils/gerar-id-unico.util';
 
 @Component({
   selector: 'app-form-field-select',
@@ -18,6 +25,8 @@ import { TranslateModule } from '@ngx-translate/core';
   ],
 })
 export class FormFieldSelectComponent implements ControlValueAccessor {
+  protected readonly campoId = gerarIdUnico('form-field-select');
+
   @Input() label: string = '';
   @Input() placeholder: string = 'Selecione...';
   @Input() options: SelectOptionInterface[] = [];
