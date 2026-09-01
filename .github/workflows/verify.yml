@@ -23,7 +23,7 @@ jobs:
           node-version: '22.x'
           cache: npm
 
-      - run: npm ci
+      - run: npm ci --ignore-scripts
 
       - name: Verificacao completa
         env:

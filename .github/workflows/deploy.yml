@@ -25,7 +25,7 @@ jobs:
           node-version: '22.x'
           cache: npm
 
-      - run: npm ci
+      - run: npm ci --ignore-scripts
 
       # Suite, cobertura, formatacao e anti-vazamento do bundle vivem no `verify`
       # (dono unico do gate). Nao duplicar os passos aqui.
@@ -35,11 +35,13 @@ jobs:
         run: npm run verify
 
       - name: Conferir configuracao da Vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
           faltando=0
           [ -z "$VERCEL_ORG_ID" ] && echo "VERCEL_ORG_ID vazio" && faltando=1
           [ -z "$VERCEL_PROJECT_ID" ] && echo "VERCEL_PROJECT_ID vazio" && faltando=1
-          [ -z "${{ secrets.VERCEL_TOKEN }}" ] && echo "VERCEL_TOKEN vazio" && faltando=1
+          [ -z "$VERCEL_TOKEN" ] && echo "VERCEL_TOKEN vazio" && faltando=1
           if [ "$faltando" = "1" ]; then
             echo "---"
             echo "Cadastre no environment 'producao' do repositorio:"
@@ -52,7 +54,9 @@ jobs:
           echo "project: $VERCEL_PROJECT_ID"
 
       - name: Publicar na Vercel
-        run: npx vercel deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: npx vercel deploy --prod --yes --token="$VERCEL_TOKEN"
 
       - name: Verificar que a aplicacao respondeu
         run: |
