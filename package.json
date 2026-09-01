@@ -14,7 +14,8 @@
     "verify:conformidade": "node scripts/verify-conformidade.mjs",
     "verify:test": "ng test --watch=false --coverage",
     "verify:build": "ng build && node scripts/verify-bundle.mjs",
-    "verify:escopo": "ng test --watch=false --configuration escopo"
+    "verify:escopo": "ng test --watch=false --configuration escopo",
+    "lint": "ng lint"
   },
   "private": true,
   "packageManager": "npm@11.7.0",
@@ -37,10 +38,15 @@
     "@angular/build": "^21.2.8",
     "@angular/cli": "^21.2.8",
     "@angular/compiler-cli": "^21.2.0",
+    "@eslint/js": "^10.0.1",
     "@vitest/coverage-v8": "^4.1.10",
+    "angular-eslint": "21.4.0",
+    "eslint": "^10.3.0",
     "jsdom": "^28.0.0",
     "prettier": "^3.8.1",
     "typescript": "~5.9.2",
+    "typescript-eslint": "8.59.2",
+    "vercel": "59.10.0",
     "vitest": "^4.0.8"
   }
 }
