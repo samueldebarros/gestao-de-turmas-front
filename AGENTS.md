@@ -33,7 +33,7 @@ Stack: Angular 21 (standalone, sem NgModule), **zoneless** (`zone.js` não está
 
 ## Acessibilidade
 
-- Siga WCAG AA para foco, contraste e ARIA em componente novo. ⚠️ Isto é convenção, não gate: **não há axe, pa11y ou qualquer ferramenta de a11y no projeto** — nada verifica automaticamente. Exceções conscientes existem e estão registradas (a vitrine `/tree-view` não tem ARIA nem teclado — dívida D9 no `CONTEXT.md`).
+- Siga WCAG AA para foco, contraste e ARIA em componente novo. ⚠️ Gate parcial desde 2026-08-31: as regras de template do `angular-eslint` (`templateAccessibility`) checam ARIA, foco e evento de teclado nos `.html`. O **contraste** é checado pelo SonarQube (`css:S7924`), não pelo ESLint. **Continua sem axe e sem pa11y** — navegação real por teclado e leitor de tela seguem sem verificação. Primeira rodada: 13 achados no ESLint e 21 no Sonar, ainda abertos. Exceções conscientes existem e estão registradas (a vitrine `/tree-view` não tem ARIA nem teclado — dívida D9 no `CONTEXT.md`).
 - Prefira elementos nativos semânticos (ex.: `<dialog>` no Modal) a recriar comportamento com `<div>`.
 
 ## Log e diagnóstico
@@ -43,7 +43,45 @@ Stack: Angular 21 (standalone, sem NgModule), **zoneless** (`zone.js` não está
 - **Erro de terceiro sem dado pessoal pode ir inteiro** — é o caso do log de feriados, que fala com a BrasilAPI.
 - **Antes de plugar telemetria externa** (Sentry, Application Insights ou similar), revise o que o payload leva: `provideBrowserGlobalErrorListeners()` hoje só escreve no console, e passar a enviar para fora é tratamento de dado com outro operador.
 
-> ⚠️ Regra de convenção, não barreira mecânica: o projeto não tem ESLint configurado. Contexto e inventário dos `console` existentes em [docs/roteiro-implementacao/HIGIENE-DEFENSIVA.md](docs/roteiro-implementacao/HIGIENE-DEFENSIVA.md) §2.
+> ⚠️ A barreira mecânica desta regra é a **R3 do `verify-conformidade.mjs`**, não o ESLint: nenhuma regra de prateleira sabe o que é objeto de domínio aqui. Contexto e inventário dos `console` existentes em [docs/roteiro-implementacao/HIGIENE-DEFENSIVA.md](docs/roteiro-implementacao/HIGIENE-DEFENSIVA.md) §2.
+
+## Análise estática (ESLint + SonarQube)
+
+Quatro camadas com donos distintos. Não confunda qual delas reprova o quê:
+
+| Camada                 | Ferramenta                                     | Onde reprova                             |
+| ---------------------- | ---------------------------------------------- | ---------------------------------------- |
+| Formatação             | Prettier (`verify:format`)                     | `npm run verify` + CI                    |
+| Regras deste projeto   | `verify-conformidade.mjs` (R1–R4, AST própria) | `npm run verify` + CI                    |
+| Regras de ecossistema  | ESLint (`npm run lint`)                        | `npm run verify` + CI                    |
+| Tendência e duplicação | SonarQube Cloud                                | servidor; Quality Gate sobre código novo |
+
+- ⚠️ **`it.only` não tem captura determinística.** Não há plugin de Vitest no ESLint: um `.only` só é pego de rebote, quando pula testes suficientes para derrubar a cobertura abaixo do threshold. Em spec pequeno, passa.
+- **ESLint não substitui o `verify-conformidade.mjs`.** As regras R1–R4 conhecem as três camadas deste projeto; nenhuma regra de prateleira conhece. Os dois convivem, e a allowlist continua sendo a de lá.
+- **Todo apontamento cai em um de três baldes, e escolher o balde é a tarefa:** (a) corrigir o código; (b) configurar a regra, quando o apontamento é que está errado; (c) aceitar e registrar o motivo. Apontamento não é tarefa automática — `coluna.chaveOrdenacao == null` no `tabela-generica` usa `==` de propósito, para pegar `null` e `undefined`; "corrigir" para `===` introduziria um bug.
+- **Regra desligada tem dono único.** Com o Connected Mode ativo, o `sonarlint.rules` local é ignorado: desligar regra do Sonar é no Quality Profile do servidor; desligar regra do ESLint é no `eslint.config.js`. Quando a regra tem gêmea nos dois (ex.: clique sem equivalente de teclado), a decisão precisa ser tomada nos dois lugares.
+
+### Exceções aceitas no ESLint
+
+Toda exceção escopada em `eslint.config.js` está listada aqui com o motivo. **A lista só pode encolher** — mesma regra do `conformidade-allowlist.json`. Exceção sem motivo nesta lista não entra.
+
+- **`no-inferrable-types` e `no-empty-function`, em `**/\*.component.ts`** — custo estrutural de `ControlValueAccessor` (`onChange = () => {}`) e de tipo explícito em `@Input`. Escopo limitado a componente **de propósito**: o mesmo achado num model é correção real, e foi corrigido como tal.
+- **`no-explicit-any`, em `tabela-coluna.interface.ts` e `acao-tabela.interface.ts`** — dívida **D2** tornada explícita. Tipar de verdade exige `TabelaColuna<T, K extends keyof T>` com o valor amarrado a `T[K]`, porque cada coluna formata um campo de tipo diferente da mesma linha; o ripple são 6 arquivos e 16 callbacks. É fatia própria, não item de faxina.
+- **`click-events-have-key-events` e `interactive-supports-focus`, em três templates** — nos três o apontamento é de escopo da regra, que avalia elemento por elemento:
+  - `no-arvore.component.html` — dívida **D9**: a vitrine `/tree-view` sem ARIA nem teclado é decisão consciente de 2026-08-12.
+  - `autocomplete.component.html` — o teclado existe, no `@HostListener` do host (`arrowdown`, `arrowup`, `enter`, `escape`). No padrão ARIA de combobox a interação mora no input, não em cada `<option>`.
+  - `file-upload.component.html` — o teclado existe no `<input type="file">`, que é focável desde que `hidden` virou classe visualmente oculta. A regra não enxerga o caminho no elemento vizinho.
+
+> ⚠️ **Custo assumido:** exceção por arquivo silencia também violação **nova** no mesmo arquivo. Foi escolha consciente sobre `eslint-disable` inline, que seria preciso por linha mas exigiria comentário justificando dentro do código. Ao mexer nesses arquivos, confira o caso à mão.
+
+### Servidor SonarQube
+
+- Projeto `samueldebarros_gestao-de-turmas-front`, organization `samueldebarros`, região EU (`https://sonarcloud.io`).
+- **Decisão de 2026-08-31: sem Docker neste ambiente.** O MCP do SonarQube só é distribuído como contêiner, então ele não existe aqui — não tente chamar ferramenta `sonarqube`/`mcp__sonarqube__*`. O acesso programático é pela **API REST**, com token em `.env.sonar` (coberto pelo `.gitignore`).
+- **Hotspot de segurança não vem em `/api/issues/search`** — é endpoint separado (`/api/hotspots/search`). Quem lê só issues conclui "limpo" cedo demais. Métricas e duplicação ficam em `/api/measures/component`.
+- Autenticação exige **USER token**. `Not authorized` costuma ser token de projeto, não de usuário.
+- **Depois de corrigir, não confirme pelo servidor**: ele só reflete a próxima análise. Confirme com `npm run lint` e `npm run verify`.
+- O feedback no editor vem do **Connected Mode** da extensão SonarQube for IDE, com `focusOnNewCode` ligado. Ele analisa **só os arquivos abertos** — Problems panel vazio não é prova de projeto limpo.
 
 ## As três camadas (regra em uma frase)
 
@@ -76,12 +114,12 @@ Aplicam-se a qualquer camada. Quando um disparar, a Skill relevante tem a saída
 
 O detalhe operacional vive em **Skills** (`.claude/skills/<nome>/SKILL.md`). Invoque a Skill correspondente ANTES de codar a parte relevante — não confie só nesta tabela.
 
-| Quando você for...                                                     | Invoque a Skill           |
-| ---------------------------------------------------------------------- | ------------------------- |
-| Decidir Smart/Dumb, criar componente, implementar CVA, two-way binding | `component-design`        |
-| Mexer em estado, Facade, paginação, filtro reativo, fluxo de dados     | `state-and-data-flow`     |
-| Escrever stream RxJS, chamada HTTP, decidir async pipe vs. subscribe   | `rxjs-reactive-patterns`  |
-| Modelar interface, DTO, enum, formulário tipado, validador, i18n       | `data-modeling-contracts` |
-| Escrever um guia técnico ou um roteiro de etapas em `docs/`            | `implementation-docs`     |
+| Quando você for...                                                          | Invoque a Skill                 |
+| --------------------------------------------------------------------------- | ------------------------------- |
+| Decidir Smart/Dumb, criar componente, implementar CVA, two-way binding      | `component-design`              |
+| Mexer em estado, Facade, paginação, filtro reativo, fluxo de dados          | `state-and-data-flow`           |
+| Escrever stream RxJS, chamada HTTP, decidir async pipe vs. subscribe        | `rxjs-reactive-patterns`        |
+| Modelar interface, DTO, enum, formulário tipado, validador, i18n            | `data-modeling-contracts`       |
+| Escrever um guia técnico ou um roteiro de etapas em `docs/`                 | `implementation-docs`           |
 | Escrever doc que ENSINA o fluxo de construção, com tropeços e idas e vindas | `doc-implementacao-incremental` |
-| Entender a estrutura do repo, o que existe e as dívidas técnicas       | leia `CONTEXT.md`         |
+| Entender a estrutura do repo, o que existe e as dívidas técnicas            | leia `CONTEXT.md`               |

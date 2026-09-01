@@ -49,10 +49,30 @@ module.exports = defineConfig([
     },
   },
   {
+    files: [
+      '**/interfaces/ui/tabela-coluna.interface.ts',
+      '**/interfaces/ui/acao-tabela.interface.ts',
+    ],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
+  {
     files: ['**/*.html'],
     extends: [angular.configs.templateRecommended, angular.configs.templateAccessibility],
     rules: {
       '@angular-eslint/template/eqeqeq': ['error', { allowNullOrUndefined: true }],
+    },
+  },
+  {
+    files: [
+      '**/arvore/no-arvore.component.html',
+      '**/autocomplete.component/autocomplete.component.html',
+      '**/file-upload.component/file-upload.component.html',
+    ],
+    rules: {
+      '@angular-eslint/template/click-events-have-key-events': 'off',
+      '@angular-eslint/template/interactive-supports-focus': 'off',
     },
   },
 ]);
