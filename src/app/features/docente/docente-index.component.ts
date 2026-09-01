@@ -22,6 +22,7 @@ import { MensagemComponent } from '../../shared/components/mensagem.component/me
 import { Modal } from '../../shared/components/modal/modal.component';
 import { PaginacaoComponent } from '../../shared/components/paginacao.component/paginacao.component';
 import { TabelaGenerica } from '../../shared/components/tabela-generica/tabela-generica.component';
+import { SEM_DISCIPLINA, TODAS_DISCIPLINAS } from '../../shared/constants/disciplina-filtro.const';
 import { OrdenacaoDocenteEnum } from '../../shared/enums/ordenacao-docente.enum';
 import { DocenteAdicionarDTO } from '../../shared/interfaces/dto/docente-adicionar-dto.interface';
 import { DocenteEditarDTO } from '../../shared/interfaces/dto/docente-editar-dto.interface';
@@ -41,8 +42,6 @@ import { extrairMensagemDeRegra } from '../../shared/utils/mensagem-regra-negoci
 import { ErrorMessagePipe } from '../../shared/pipes/error-message.pipe';
 import { CpfCnpjValidator } from '../../shared/validators/cpf-cnpj.validator';
 import { IdadeValidator } from '../../shared/validators/idade.validator';
-
-const SEM_DISCIPLINA = 0;
 
 const ROTULO_DO_CAMPO: Record<string, string> = {
   nome: 'DOCENTE.FORMULARIO.NOME_LABEL',
@@ -170,14 +169,26 @@ export class DocenteIndexComponent {
     { value: false, label: 'DOCENTE.STATUS_INATIVO' },
   ];
 
-  public filtrosDocente: SelectFilterInterface[] = [
+  public readonly filtrosDocente = computed<SelectFilterInterface[]>(() => [
     {
       controlName: 'ativo',
       label: '',
       placeholder: 'TABELA.COLUNAS.DOCENTE.STATUS',
       options: this.opcoesStatus,
     },
-  ];
+    {
+      controlName: 'disciplinaId',
+      label: '',
+      placeholder: 'DOCENTE.FILTRO.DISCIPLINA_PLACEHOLDER',
+      options: [
+        { value: TODAS_DISCIPLINAS, label: 'DOCENTE.FILTRO.DISCIPLINA_TODAS' },
+        { value: SEM_DISCIPLINA, label: 'DOCENTE.SEM_DISCIPLINA' },
+        ...this.disciplinas()
+          .filter((disciplina) => disciplina.ativo)
+          .map((disciplina) => ({ value: disciplina.id, label: disciplina.nome })),
+      ],
+    },
+  ]);
 
   public acoesTabela: AcaoTabela[] = [
     {

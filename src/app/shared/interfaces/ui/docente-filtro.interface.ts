@@ -8,4 +8,5 @@ export interface DocenteFiltro {
   ativo: boolean | null;
   ordenacao: OrdenacaoDocenteEnum | null;
   direcao: DirecaoOrdenacaoEnum | null;
+  disciplinaId: number | null;
 }

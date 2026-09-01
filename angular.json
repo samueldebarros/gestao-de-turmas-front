@@ -95,10 +95,10 @@
             ],
             "coverageReporters": ["text-summary", "html"],
             "coverageThresholds": {
-              "statements": 32,
+              "statements": 33,
               "branches": 53,
-              "functions": 30,
-              "lines": 32
+              "functions": 31,
+              "lines": 33
             }
           },
           "configurations": {
@@ -109,7 +109,8 @@
                 "src/app/core/services/disciplina.service.ts",
                 "src/app/core/facades/docente-facade.service.ts",
                 "src/app/core/facades/disciplina-facade.service.ts",
-                "src/app/features/docente/**/*.ts"
+                "src/app/features/docente/**/*.ts",
+                "src/app/shared/constants/**/*.ts"
               ],
               "coverageThresholds": {
                 "statements": 80,

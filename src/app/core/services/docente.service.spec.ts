@@ -21,6 +21,7 @@ const FILTRO_PADRAO: DocenteFiltro = {
   ativo: null,
   ordenacao: null,
   direcao: null,
+  disciplinaId: null,
 };
 
 const PAGINA_CAPTURADA: ResultadoPaginado<DocenteListaInterface> = {

@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, of, Subject, throwError } from 'rxjs';
 import type { Mock } from 'vitest';
 import { OrdenacaoTabela } from '../../shared/interfaces/ui/ordenaca-tabela.interface';
 import { DisciplinaFacadeService } from '../../core/facades/disciplina-facade.service';
@@ -10,6 +10,7 @@ import { OrdenacaoDocenteEnum } from '../../shared/enums/ordenacao-docente.enum'
 import { DocenteListaInterface } from '../../shared/interfaces/entities/docente-lista.interface';
 import { FiltroListaInterface } from '../../shared/interfaces/ui/filtro-lista.interface';
 import { ResultadoPaginado } from '../../shared/interfaces/ui/resultado-paginado.interface';
+import { SEM_DISCIPLINA, TODAS_DISCIPLINAS } from '../../shared/constants/disciplina-filtro.const';
 import { DocenteIndexComponent } from './docente-index.component';
 
 const ATIVO: DocenteListaInterface = {
@@ -679,6 +680,83 @@ describe('DocenteIndexComponent', () => {
 
       expect(facade.adicionar).toHaveBeenCalled();
       expect(facade.adicionar.mock.calls[0][0].disciplinaId).toBeNull();
+    });
+  });
+
+  describe('filtro de disciplina', () => {
+    const DISCIPLINAS_FILTRO: DisciplinaInterface[] = [
+      { id: 2, nome: 'Programação', ativo: true },
+      { id: 5, nome: 'Química', ativo: true },
+      { id: 8, nome: 'Geografia', ativo: false },
+      { id: 10, nome: 'História', ativo: false },
+    ];
+
+    const filtroDisciplina = () =>
+      componente.filtrosDocente().find((filtro) => filtro.controlName === 'disciplinaId');
+
+    it('traz Todas, Sem disciplina e só as ativas, nessa ordem, sem as inativas', () => {
+      disciplinaFacade = { disciplinas$: of(DISCIPLINAS_FILTRO) };
+      montar();
+
+      expect(filtroDisciplina()?.options).toEqual([
+        { value: TODAS_DISCIPLINAS, label: 'DOCENTE.FILTRO.DISCIPLINA_TODAS' },
+        { value: SEM_DISCIPLINA, label: 'DOCENTE.SEM_DISCIPLINA' },
+        { value: 2, label: 'Programação' },
+        { value: 5, label: 'Química' },
+      ]);
+    });
+
+    it('placeholder é chave i18n; os labels das opções fixas são exatamente as chaves esperadas', () => {
+      montar();
+
+      const filtro = filtroDisciplina();
+
+      expect(filtro?.placeholder).toMatch(/^[A-Z0-9_]+(\.[A-Z0-9_]+)*$/);
+      expect(filtro?.options[0]).toEqual({
+        value: TODAS_DISCIPLINAS,
+        label: 'DOCENTE.FILTRO.DISCIPLINA_TODAS',
+      });
+      expect(filtro?.options[1]).toEqual({
+        value: SEM_DISCIPLINA,
+        label: 'DOCENTE.SEM_DISCIPLINA',
+      });
+    });
+  });
+
+  describe('CA-11 — as opções de disciplina realmente chegam ao DOM', () => {
+    const selectDisciplina = () =>
+      fixture.nativeElement.querySelectorAll('app-filtro-lista select')[1] as HTMLSelectElement;
+
+    const opcoesAlemDoPlaceholder = (select: HTMLSelectElement) =>
+      select.querySelectorAll('option:not([disabled])');
+
+    it('sem emissão mostra só as 2 opções fixas; após emitir, mostra 2+N; a busca digitada chega intacta ao Facade', () => {
+      vi.useFakeTimers();
+      const disciplinas$ = new Subject<DisciplinaInterface[]>();
+      disciplinaFacade = { disciplinas$ };
+      montar();
+
+      expect(opcoesAlemDoPlaceholder(selectDisciplina())).toHaveLength(2);
+
+      const campoPesquisa = fixture.nativeElement.querySelector(
+        'app-filtro-lista input',
+      ) as HTMLInputElement;
+      campoPesquisa.value = 'ana';
+      campoPesquisa.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+
+      disciplinas$.next(DISCIPLINAS);
+      fixture.detectChanges();
+
+      expect(opcoesAlemDoPlaceholder(selectDisciplina())).toHaveLength(4);
+
+      vi.advanceTimersByTime(300);
+
+      expect(facade.aplicarFiltros).toHaveBeenCalledWith(
+        expect.objectContaining({ pesquisa: 'ana' }),
+      );
+
+      vi.useRealTimers();
     });
   });
 

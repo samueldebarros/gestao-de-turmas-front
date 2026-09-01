@@ -15,7 +15,7 @@
   </div>
 
   <app-filtro-lista
-    [filtros]="filtrosDocente"
+    [filtros]="filtrosDocente()"
     (acaoFiltrar)="filtrarTabela($event)"
   ></app-filtro-lista>
 

@@ -9,6 +9,7 @@ import {
   switchMap,
   tap,
 } from 'rxjs';
+import { TODAS_DISCIPLINAS } from '../../shared/constants/disciplina-filtro.const';
 import { DirecaoOrdenacaoEnum } from '../../shared/enums/direcao-ordenacao.enum';
 import { OrdenacaoDocenteEnum } from '../../shared/enums/ordenacao-docente.enum';
 import { DocenteAdicionarDTO } from '../../shared/interfaces/dto/docente-adicionar-dto.interface';
@@ -34,6 +35,7 @@ export class DocenteFacadeService {
     ativo: null,
     ordenacao: null,
     direcao: null,
+    disciplinaId: null,
   };
 
   public readonly docentes$ = this.docenteService
@@ -64,6 +66,7 @@ export class DocenteFacadeService {
       ...this.filtros$.value,
       pesquisa: filtros.pesquisa,
       ativo: (filtros['ativo'] as boolean | null) ?? null,
+      disciplinaId: this.traduzirDisciplinaId(filtros['disciplinaId']),
       pagina: 1,
     });
   }
@@ -96,6 +99,11 @@ export class DocenteFacadeService {
 
   public reativar(id: number): Observable<void> {
     return this.docenteService.reativarDocente(id).pipe(tap(() => this.aposMutacao()));
+  }
+
+  private traduzirDisciplinaId(valor: unknown): number | null {
+    const disciplinaId = (valor as number | null) ?? null;
+    return disciplinaId === TODAS_DISCIPLINAS ? null : disciplinaId;
   }
 
   private proximaOrdenacao(

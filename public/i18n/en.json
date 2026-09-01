@@ -281,7 +281,9 @@
     "STATUS_INATIVO": "Inactive",
     "LISTA_VAZIA": "No teachers found.",
     "FILTRO": {
-      "PESQUISA_PLACEHOLDER": "Search by name, ID number or subject"
+      "PESQUISA_PLACEHOLDER": "Search by name, ID number or subject",
+      "DISCIPLINA_PLACEHOLDER": "Subject",
+      "DISCIPLINA_TODAS": "All subjects"
     },
     "BOTOES": {
       "INATIVAR": "Deactivate",

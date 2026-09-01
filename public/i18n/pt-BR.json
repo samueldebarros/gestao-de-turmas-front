@@ -281,7 +281,9 @@
     "STATUS_INATIVO": "Inativo",
     "LISTA_VAZIA": "Nenhum docente encontrado.",
     "FILTRO": {
-      "PESQUISA_PLACEHOLDER": "Buscar por nome, CPF ou disciplina"
+      "PESQUISA_PLACEHOLDER": "Buscar por nome, CPF ou disciplina",
+      "DISCIPLINA_PLACEHOLDER": "Disciplina",
+      "DISCIPLINA_TODAS": "Todas as disciplinas"
     },
     "BOTOES": {
       "INATIVAR": "Inativar",

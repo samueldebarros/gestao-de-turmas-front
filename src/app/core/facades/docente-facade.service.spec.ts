@@ -10,6 +10,7 @@ import { DocenteEditarDTO } from '../../shared/interfaces/dto/docente-editar-dto
 import { DocenteDetalheInterface } from '../../shared/interfaces/entities/docente-detalhe.interface';
 import { DocenteListaInterface } from '../../shared/interfaces/entities/docente-lista.interface';
 import { DocenteSqlInterface } from '../../shared/interfaces/entities/docente-sql.interface';
+import { SEM_DISCIPLINA, TODAS_DISCIPLINAS } from '../../shared/constants/disciplina-filtro.const';
 import { DocenteFiltro } from '../../shared/interfaces/ui/docente-filtro.interface';
 import { FiltroListaInterface } from '../../shared/interfaces/ui/filtro-lista.interface';
 import { ResultadoPaginado } from '../../shared/interfaces/ui/resultado-paginado.interface';
@@ -129,10 +130,12 @@ describe('DocenteFacadeService', () => {
       return filtro;
     };
 
+    let filtroInicial: DocenteFiltro;
+
     beforeEach(() => {
       vi.useFakeTimers();
       inscricoes.add(facade.resultado$.subscribe());
-      proximaBusca();
+      filtroInicial = proximaBusca();
     });
 
     afterEach(() => {
@@ -147,6 +150,10 @@ describe('DocenteFacadeService', () => {
       expect(filtro.ativo).toBeNull();
     });
 
+    it('CA-7: a primeira busca (filtro padrão) leva disciplinaId nulo', () => {
+      expect(filtroInicial.disciplinaId).toBeNull();
+    });
+
     it('aplicarFiltros leva o termo adiante e volta para a primeira página', () => {
       facade.mudarPagina(4);
       proximaBusca();
@@ -156,6 +163,40 @@ describe('DocenteFacadeService', () => {
       const filtro = proximaBusca();
       expect(filtro.pesquisa).toBe('ana');
       expect(filtro.pagina).toBe(1);
+    });
+
+    it('CA-8: aplicarFiltros traduz disciplinaId e reseta a página, preservando a pesquisa', () => {
+      facade.mudarPagina(4);
+      proximaBusca();
+
+      facade.aplicarFiltros({ pesquisa: 'x', disciplinaId: 3 } as FiltroListaInterface);
+
+      const filtro = proximaBusca();
+      expect(filtro.disciplinaId).toBe(3);
+      expect(filtro.pagina).toBe(1);
+      expect(filtro.pesquisa).toBe('x');
+    });
+
+    it('aplicarFiltros com SEM_DISCIPLINA (0) leva disciplinaId 0, nunca null', () => {
+      facade.aplicarFiltros({
+        pesquisa: '',
+        disciplinaId: SEM_DISCIPLINA,
+      } as FiltroListaInterface);
+
+      const filtro = proximaBusca();
+      expect(filtro.disciplinaId).toBe(0);
+      expect(filtro.disciplinaId).not.toBeNull();
+    });
+
+    it('CA-9: aplicarFiltros converte a sentinela TODAS_DISCIPLINAS em null, nunca -1', () => {
+      facade.aplicarFiltros({
+        pesquisa: '',
+        disciplinaId: TODAS_DISCIPLINAS,
+      } as FiltroListaInterface);
+
+      const filtro = proximaBusca();
+      expect(filtro.disciplinaId).toBeNull();
+      expect(filtro.disciplinaId).not.toBe(-1);
     });
 
     it('mudarPagina troca a página sem perder filtro nem ordenação', () => {
