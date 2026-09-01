@@ -95,7 +95,7 @@ function arquivosTs(dir) {
   return readdirSync(dir).flatMap((nome) => {
     const caminho = join(dir, nome);
     if (statSync(caminho).isDirectory()) return arquivosTs(caminho);
-    return caminho.endsWith('.ts') ? [caminho.split('\\').join('/')] : [];
+    return caminho.endsWith('.ts') ? [caminho.replaceAll('\\', '/')] : [];
   });
 }
 

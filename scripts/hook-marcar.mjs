@@ -18,7 +18,7 @@ process.stdin.on('end', () => {
   const caminho = entrada.tool_response?.filePath ?? entrada.tool_input?.file_path;
   if (!caminho || !EXTENSOES.test(caminho)) process.exit(0);
 
-  const relativo = relative(process.cwd(), resolve(caminho)).split('\\').join('/');
+  const relativo = relative(process.cwd(), resolve(caminho)).replaceAll('\\', '/');
   if (!relativo.startsWith('src/')) process.exit(0);
 
   try {
