@@ -72,6 +72,13 @@ Toda exceção escopada em `eslint.config.js` está listada aqui com o motivo. *
   - `autocomplete.component.html` — o teclado existe, no `@HostListener` do host (`arrowdown`, `arrowup`, `enter`, `escape`). No padrão ARIA de combobox a interação mora no input, não em cada `<option>`.
   - `file-upload.component.html` — o teclado existe no `<input type="file">`, que é focável desde que `hidden` virou classe visualmente oculta. A regra não enxerga o caminho no elemento vizinho.
 
+### Achados aceitos no SonarQube
+
+O servidor tem **0 issues abertas** desde 2026-09-02: 7 marcadas como _False Positive_ (a regra está errada sobre o código) e 17 como _Accept_ (a regra está certa e a decisão foi não corrigir). A distinção entre as duas resoluções é deliberada — trocar uma pela outra apaga a diferença entre erro de ferramenta e dívida assumida.
+
+- ⚠️ **`javascript:S7718` reincide.** Ela exige `catch (error_)` e colide com a nomenclatura em português. Desligá-la exigiria copiar o perfil built-in `Sonar way`, que é somente leitura, e trocar o perfil do projeto — 5 passos para uma ocorrência. Ficou como _Accept_, então **volta a acusar a cada `catch (erro)` novo em arquivo `.mjs`**. Vale criar perfil próprio quando houver a segunda regra a desligar.
+- ⚠️ **`turma-card` tem 2 achados aceitos que apontam um problema real.** O `role="button"` no `<article>` faz o nome acessível do controle ser todo o conteúdo do card, e tira o `<h3>` da navegação por cabeçalhos. O teclado funciona; o anúncio é ruim. A correção é o padrão de botão interno com `::after` esticado, e está reservada para fatia própria.
+
 > ⚠️ **Custo assumido:** exceção por arquivo silencia também violação **nova** no mesmo arquivo. Foi escolha consciente sobre `eslint-disable` inline, que seria preciso por linha mas exigiria comentário justificando dentro do código. Ao mexer nesses arquivos, confira o caso à mão.
 
 ### Servidor SonarQube
