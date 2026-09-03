@@ -48,8 +48,45 @@ jobs:
 
       - name: Analise SonarQube Cloud
         uses: SonarSource/sonarqube-scan-action@22918119ff8e1ca75a623e15c8296b6ea4fbe28f
-        with:
-          args: >
-            -Dsonar.qualityGate.wait=true
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Conferir o quality gate
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          RELATORIO=.scannerwork/report-task.txt
+          if [ ! -s "$RELATORIO" ]; then
+            echo "ERRO: $RELATORIO nao existe - o scanner nao registrou a tarefa de analise."
+            exit 1
+          fi
+          SERVIDOR=$(grep '^serverUrl=' "$RELATORIO" | cut -d= -f2-)
+          TAREFA=$(grep '^ceTaskUrl=' "$RELATORIO" | cut -d= -f2-)
+          echo "tarefa: $TAREFA"
+          ANALISE=""
+          for _ in $(seq 1 30); do
+            RESPOSTA=$(curl -sS -H "Authorization: Bearer $SONAR_TOKEN" "$TAREFA")
+            ESTADO=$(echo "$RESPOSTA" | jq -r '.task.status')
+            echo "estado da analise: $ESTADO"
+            if [ "$ESTADO" = "SUCCESS" ]; then
+              ANALISE=$(echo "$RESPOSTA" | jq -r '.task.analysisId')
+              break
+            fi
+            if [ "$ESTADO" = "FAILED" ] || [ "$ESTADO" = "CANCELED" ]; then
+              echo "ERRO: a analise terminou como $ESTADO."
+              exit 1
+            fi
+            sleep 5
+          done
+          if [ -z "$ANALISE" ] || [ "$ANALISE" = "null" ]; then
+            echo "ERRO: a analise nao concluiu dentro do tempo previsto."
+            exit 1
+          fi
+          STATUS=$(curl -sS -H "Authorization: Bearer $SONAR_TOKEN" \
+            "$SERVIDOR/api/qualitygates/project_status?analysisId=$ANALISE" \
+            | jq -r '.projectStatus.status')
+          echo "QUALITY GATE: $STATUS"
+          if [ "$STATUS" != "OK" ]; then
+            echo "Reprovado. Detalhes em $(grep '^dashboardUrl=' "$RELATORIO" | cut -d= -f2-)"
+            exit 1
+          fi
