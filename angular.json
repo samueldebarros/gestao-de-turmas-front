@@ -93,7 +93,7 @@
               "src/environments/**",
               "src/main.ts"
             ],
-            "coverageReporters": ["text-summary", "html"],
+            "coverageReporters": ["text-summary", "html", "lcovonly"],
             "coverageThresholds": {
               "statements": 33,
               "branches": 53,
