@@ -54,7 +54,7 @@ Quatro camadas com donos distintos. Não confunda qual delas reprova o quê:
 | Formatação             | Prettier (`verify:format`)                     | `npm run verify` + CI                    |
 | Regras deste projeto   | `verify-conformidade.mjs` (R1–R4, AST própria) | `npm run verify` + CI                    |
 | Regras de ecossistema  | ESLint (`npm run lint`)                        | `npm run verify` + CI                    |
-| Tendência e duplicação | SonarQube Cloud                                | servidor; Quality Gate sobre código novo |
+| Tendência e duplicação | SonarQube Cloud                                | job `sonar` no CI; bloqueia o merge do PR |
 
 - ⚠️ **`it.only` não tem captura determinística.** Não há plugin de Vitest no ESLint: um `.only` só é pego de rebote, quando pula testes suficientes para derrubar a cobertura abaixo do threshold. Em spec pequeno, passa.
 - **ESLint não substitui o `verify-conformidade.mjs`.** As regras R1–R4 conhecem as três camadas deste projeto; nenhuma regra de prateleira conhece. Os dois convivem, e a allowlist continua sendo a de lá.
@@ -89,6 +89,17 @@ O servidor tem **0 issues abertas** desde 2026-09-02: 7 marcadas como _False Pos
 - Autenticação exige **USER token**. `Not authorized` costuma ser token de projeto, não de usuário.
 - **Depois de corrigir, não confirme pelo servidor**: ele só reflete a próxima análise. Confirme com `npm run lint` e `npm run verify`.
 - O feedback no editor vem do **Connected Mode** da extensão SonarQube for IDE, com `focusOnNewCode` ligado. Ele analisa **só os arquivos abertos** — Problems panel vazio não é prova de projeto limpo.
+
+## Fluxo de trabalho — `main` protegida
+
+Desde 2026-09-03 a `main` é protegida no servidor. **`git push origin main` é recusado pelo GitHub**, para você e para qualquer ferramenta que empurre em seu nome. Todo trabalho entra por pull request: `git switch -c`, commit, push, PR, merge.
+
+Dois checks são obrigatórios — **`verify`** e **`sonar`** — e enquanto os dois não fecharem verde o botão de merge não existe. Não há exigência de aprovação: você faz o merge do seu próprio PR. O merge dispara o `deploy-front`, então publicar continua sendo consequência de entrar na `main`.
+
+- ⚠️ **Quem reprova pelo Quality Gate é o passo `Conferir o quality gate` do `sonar.yml`, não a flag do scanner.** `sonar.qualityGate.wait` foi testada nas três formas possíveis (`args` com `>`, `args` escalar, e no `sonar-project.properties`) e nas três o gate deu `ERROR` com o job saindo `success`, **sem erro nem aviso**. O passo próprio lê o `.scannerwork/report-task.txt` e consulta a API pelo `analysisId`. Não troque um pelo outro achando que simplifica.
+- ⚠️ **Não dispare o `sonar` numa branch.** Análise de branch é recurso pago: existem apenas `main` e pull requests. Um `workflow_dispatch` apontado para outra branch **grava a análise como `main`** e contamina a base — e os achados plantados passam a contar como pré-existentes, fazendo o gate do PR aprovar por engano.
+- ⚠️ **`New Code` está em `Number of days = 1`** (decisão de 2026-09-03, tomada porque Quality Gate customizado é pago). **Não aumente esse número tão cedo:** valores maiores trazem de volta o passivo de cobertura de 01/09 para dentro da janela. Em PR isso não se aplica — a análise de PR mede o diff do PR e cobra 80% do que ele mesmo escreve.
+- **Violação proposital para testar o gate vai fora de `src/`.** Dentro dele o `npm run verify` reprova no lint e o hook de parada bloqueia o turno, e aí quem reprovou foi o gate local, não o remoto.
 
 ## As três camadas (regra em uma frase)
 
