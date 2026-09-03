@@ -1,4 +1,4 @@
-export function rotularSituacao(ativo: boolean): string {
+export function rotularSituacao(ativo) {
   if (ativo) {
     return 'ok';
   } else {
@@ -6,7 +6,7 @@ export function rotularSituacao(ativo: boolean): string {
   }
 }
 
-export function ajustarValor(valor: number): number {
+export function ajustarValor(valor) {
   let resultado = valor;
   resultado = resultado;
   return resultado;
