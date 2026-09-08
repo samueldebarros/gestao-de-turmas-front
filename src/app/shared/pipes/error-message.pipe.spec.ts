@@ -5,6 +5,7 @@ const NAMESPACES_DE_DOMINIO = ['ALUNO.', 'DOCENTE.', 'TURMA.', 'DASHBOARD.', 'LO
 
 const TODOS_OS_ERROS = [
   { erro: 'required', chave: 'VALIDACAO.OBRIGATORIO' },
+  { erro: 'minlength', chave: 'VALIDACAO.TAMANHO_MINIMO' },
   { erro: 'email', chave: 'VALIDACAO.EMAIL_INVALIDO' },
   { erro: 'documentoInvalido', chave: 'VALIDACAO.DOCUMENTO_INVALIDO' },
   { erro: 'cpfInvalido', chave: 'VALIDACAO.CPF_INVALIDO' },
