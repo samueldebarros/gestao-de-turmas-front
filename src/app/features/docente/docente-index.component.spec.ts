@@ -29,15 +29,12 @@ const INATIVO: DocenteListaInterface = {
   ativo: false,
 };
 
-// Do CONTRATO-DOCENTES-CADASTRO-CAPTURADO.md §1 — Geografia e Historia sao as
-// duas inativas que o servidor devolve de proposito.
 const DISCIPLINAS: DisciplinaInterface[] = [
   { id: 2, nome: 'Programação', ativo: true },
   { id: 5, nome: 'Química', ativo: true },
   { id: 8, nome: 'Geografia', ativo: false },
 ];
 
-// §4 do contrato — docente 3, com disciplinaId numerico preenchido.
 const DETALHE_COM_DISCIPLINA: DocenteDetalheInterface = {
   id: 3,
   nome: 'Leandro Professor',
@@ -147,7 +144,7 @@ describe('DocenteIndexComponent', () => {
       expect(coluna?.formatador?.('Física')).toBe('Física');
     });
 
-    it('nenhum título de coluna é texto cru — todos são chave i18n', () => {
+    it('nenhum título de coluna é texto cru, todos são chave i18n', () => {
       montar();
 
       for (const coluna of componente.colunas) {
@@ -168,7 +165,7 @@ describe('DocenteIndexComponent', () => {
     });
   });
 
-  describe('orquestração — traduz evento genérico em intenção concreta', () => {
+  describe('orquestração: traduz evento genérico em intenção concreta', () => {
     it('repassa filtro, página e ordenação ao Facade', () => {
       montar();
       const filtro = { pesquisa: 'ana' } as FiltroListaInterface;
@@ -289,10 +286,7 @@ describe('DocenteIndexComponent', () => {
       expect(componente.docenteForm.value.nome).toBe(DETALHE_COM_DISCIPLINA.nome);
     });
 
-    // ⚠️ O GET /docentes/{id} responde 404 para docente inativo, porque o
-    // repositorio filtra Ativo. Se o modal abrisse antes da resposta, o usuario
-    // veria um formulario vazio e um alerta — dois estados contraditorios na tela.
-    it('falha ao carregar o detalhe mostra alerta de página e NÃO abre o modal', () => {
+    it('falha ao carregar o detalhe mostra alerta de página e não abre o modal', () => {
       facade.carregarDetalhe = vi.fn(() => throwError(() => ({ status: 404 })));
       montar();
 
@@ -306,7 +300,7 @@ describe('DocenteIndexComponent', () => {
       });
     });
 
-    it('a ação Editar só aparece para docente ativo — o servidor recusa o inativo', () => {
+    it('a ação Editar só aparece para docente ativo, porque o servidor recusa o inativo', () => {
       montar();
 
       const editar = componente.acoesTabela.find((acao) => acao.id === 'editar');
@@ -328,12 +322,7 @@ describe('DocenteIndexComponent', () => {
     });
   });
 
-  describe('o campo CPF existe em adicionar e NÃO existe em editar', () => {
-    // O EditarDocenteDTO nao tem Cpf: o campo e imutavel. Exibi-lo desabilitado —
-    // como o AlunoIndex faz — traria dado pessoal ao navegador sem que ninguem
-    // pudesse agir sobre ele. A asserção e sobre o DOM RENDERIZADO, e nao sobre
-    // configuracao: na Fatia A um defeito passou porque todos os gates conferiam
-    // configuracao e nenhum olhava o que a tela desenha.
+  describe('o campo CPF existe em adicionar e não existe em editar', () => {
     it('em adicionar, o campo CPF está no DOM', () => {
       montar();
 
@@ -343,7 +332,7 @@ describe('DocenteIndexComponent', () => {
       expect(campoCpf()).not.toBeNull();
     });
 
-    it('em editar, o campo CPF NÃO está no DOM', () => {
+    it('em editar, o campo CPF não está no DOM', () => {
       montar();
 
       componente.definirAcao({ acaoId: 'editar', item: ATIVO });
@@ -388,9 +377,6 @@ describe('DocenteIndexComponent', () => {
       expect(componente.alertaModal().texto).toBe('MENSAGEM.CORRIJA_OS_CAMPOS');
     });
 
-    // ⚠️ O `exibirErro` dos tres componentes de campo e `invalid && touched`.
-    // Sem o markAllAsTouched, submeter um formulario intocado acende ZERO
-    // mensagens de campo — o usuario ve so o alerta e nenhuma indicacao de ONDE.
     it('submeter intocado marca todos os campos como touched, para os erros acenderem', () => {
       montar();
       componente.abrirModalAdicionar();
@@ -431,8 +417,6 @@ describe('DocenteIndexComponent', () => {
       ]);
     });
 
-    // A causa de cada campo e a DELE, nao uma frase unica para todos: aqui o nome
-    // e curto demais, o CPF e invalido e a data e futura — tres erros diferentes.
     it('causas diferentes em campos diferentes produzem mensagens diferentes', () => {
       montar();
       componente.abrirModalAdicionar();
@@ -480,9 +464,6 @@ describe('DocenteIndexComponent', () => {
       }
     });
 
-    // Guarda a duplicacao aceita: o rotulo de cada campo vive em DOIS lugares —
-    // no template e no mapa ROTULO_DO_CAMPO. Se um controle novo entrar no form
-    // sem entrada no mapa, a causa dele apareceria com o nome cru do controle.
     it('todo controle do formulário tem rótulo mapeado', () => {
       montar();
       componente.abrirModalAdicionar();
@@ -526,7 +507,7 @@ describe('DocenteIndexComponent', () => {
       });
     });
 
-    it('"Sem disciplina" vira disciplinaId null — não 0, não string vazia', () => {
+    it('"Sem disciplina" vira disciplinaId null, não 0 nem string vazia', () => {
       montar();
       componente.abrirModalAdicionar();
       preencherFormularioValido();
@@ -551,9 +532,6 @@ describe('DocenteIndexComponent', () => {
       expect(facade.adicionar.mock.calls[0][0].email).toBeNull();
     });
 
-    // `Validators.email` deixa passar string vazia mas reprova texto que nao e
-    // e-mail — inclusive so-espacos. Este teste fixa a fronteira: "sem e-mail" e
-    // um estado valido, "e-mail mal escrito" nao.
     it('e-mail só com espaços reprova, e nenhuma requisição sai', () => {
       montar();
       componente.abrirModalAdicionar();
@@ -566,7 +544,7 @@ describe('DocenteIndexComponent', () => {
       expect(facade.adicionar).not.toHaveBeenCalled();
     });
 
-    it('editar envia o id do docente carregado e NÃO envia cpf', () => {
+    it('editar envia o id do docente carregado e não envia cpf', () => {
       montar();
       componente.definirAcao({ acaoId: 'editar', item: ATIVO });
 
@@ -577,9 +555,6 @@ describe('DocenteIndexComponent', () => {
       expect(enviado).not.toHaveProperty('cpf');
     });
 
-    // ⚠️ O servidor faz `docenteExistente.DisciplinaId = docente.DisciplinaId`
-    // INCONDICIONALMENTE. Omitir a chave nao significa "nao mexi": o vinculo e
-    // APAGADO e o servidor ainda responde 204 de sucesso.
     it('editar sempre envia disciplinaId, inclusive quando o campo não foi tocado', () => {
       montar();
       componente.definirAcao({ acaoId: 'editar', item: ATIVO });
@@ -591,9 +566,6 @@ describe('DocenteIndexComponent', () => {
       expect(enviado.disciplinaId).toBe(DETALHE_COM_DISCIPLINA.disciplinaId);
     });
 
-    // O back usa DateOnly, que serializa "1997-07-16" — ja e o contrato do
-    // date-picker. Este teste guarda a AUSENCIA de conversao: se alguem
-    // acrescentar um DatePipe "por simetria com o AlunoIndex", ele reprova.
     it('a data de nascimento atravessa sem conversão nenhuma', () => {
       montar();
       componente.definirAcao({ acaoId: 'editar', item: ATIVO });
@@ -636,9 +608,6 @@ describe('DocenteIndexComponent', () => {
       expect(ids).not.toContain(8);
     });
 
-    // ⚠️ O outro lado da moeda. Se o docente ESTIVER vinculado a uma disciplina
-    // inativa, ela tem de aparecer: sem isso o select perde o valor vigente em
-    // silencio, e salvar desvincularia o docente sem ninguem pedir.
     it('mas exibe a inativa quando é o vínculo atual do docente em edição', () => {
       facade.carregarDetalhe = vi.fn(() => of(DETALHE_COM_DISCIPLINA_INATIVA));
       montar();
@@ -723,7 +692,7 @@ describe('DocenteIndexComponent', () => {
     });
   });
 
-  describe('CA-11 — as opções de disciplina realmente chegam ao DOM', () => {
+  describe('CA-11: as opções de disciplina realmente chegam ao DOM', () => {
     const selectDisciplina = () =>
       fixture.nativeElement.querySelectorAll('app-filtro-lista select')[1] as HTMLSelectElement;
 
@@ -776,11 +745,10 @@ describe('DocenteIndexComponent', () => {
       });
     });
 
-    // ⚠️ Fechar o modal no erro apagaria da tela tudo que o usuario digitou.
     it.each([
       { rotulo: 'cadastro', metodo: 'adicionar', chave: 'MENSAGEM.ERRO_CADASTRO_DOCENTE' },
       { rotulo: 'edição', metodo: 'editar', chave: 'MENSAGEM.ERRO_EDICAO_DOCENTE' },
-    ] as const)('falha de $rotulo alerta no modal e NÃO fecha', ({ metodo, chave }) => {
+    ] as const)('falha de $rotulo alerta no modal e não fecha', ({ metodo, chave }) => {
       facade[metodo] = vi.fn(() => throwError(() => ({ status: 500 })));
       montar();
       if (metodo === 'adicionar') {
@@ -801,10 +769,6 @@ describe('DocenteIndexComponent', () => {
       });
     });
 
-    // O 422 e regra de negocio: CPF duplicado, disciplina inativa, idade > 120.
-    // O servidor manda a razao exata em text/plain, e ela e a UNICA informacao
-    // que diz ao usuario qual campo corrigir. Mostrar um texto generico no lugar
-    // faz erros diferentes parecerem o mesmo erro.
     it.each([
       { formato: 'corpo em string', error: 'A disciplina informada não existe ou está inativa.' },
       {
@@ -814,7 +778,7 @@ describe('DocenteIndexComponent', () => {
           text: 'A disciplina informada não existe ou está inativa.',
         },
       },
-    ])('422 mostra a razão que o servidor mandou — $formato', ({ error }) => {
+    ])('422 mostra a razão que o servidor mandou no formato $formato', ({ error }) => {
       facade.adicionar = vi.fn(() => throwError(() => ({ status: 422, error })));
       montar();
       componente.abrirModalAdicionar();
@@ -895,7 +859,7 @@ describe('DocenteIndexComponent', () => {
     });
   });
 
-  describe('i18n — nenhuma chave emprestada de outro domínio', () => {
+  describe('i18n: nenhuma chave emprestada de outro domínio', () => {
     const NAMESPACES_PERMITIDOS = /^(DOCENTE|MENSAGEM|VALIDACAO|TABELA)\./;
 
     it('todo título de coluna é chave i18n do namespace certo', () => {
@@ -914,8 +878,6 @@ describe('DocenteIndexComponent', () => {
       }
     });
 
-    // A divida D4 nasceu de o docente reusar chaves de ALUNO. O gate R4 confere
-    // titulo de coluna; estes dois asseveram o resto da superficie do componente.
     it('título do modal, rótulo do submit e alertas são do namespace de docente', () => {
       montar();
 

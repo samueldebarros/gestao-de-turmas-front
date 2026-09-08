@@ -19,8 +19,6 @@ describe('DisciplinaFacadeService', () => {
   let inscricoes: Subscription;
 
   beforeEach(() => {
-    // Recriada a cada teste: Subscription fechada nunca reabre, e todo add()
-    // posterior cancelaria a assinatura na hora, sem disparar HTTP nenhum.
     inscricoes = new Subscription();
     TestBed.configureTestingModule({
       providers: [provideHttpClient(), provideHttpClientTesting()],
@@ -34,7 +32,7 @@ describe('DisciplinaFacadeService', () => {
     http.verify();
   });
 
-  it('dois assinantes simultâneos disparam UMA requisição, não duas', () => {
+  it('dois assinantes simultâneos disparam uma requisição, não duas', () => {
     inscricoes.add(facade.disciplinas$.subscribe());
     inscricoes.add(facade.disciplinas$.subscribe());
 
@@ -52,15 +50,7 @@ describe('DisciplinaFacadeService', () => {
     http.expectNone(URL_ESPERADA);
   });
 
-  // ⚠️ Este teste documenta um LIMITE, nao uma qualidade. `refCount: true` so
-  // descarta a fonte enquanto ela esta em voo; requisicao HTTP completa depois de
-  // emitir, entao o valor fica cacheado pelo resto da vida da aplicacao.
-  // Isso e ACEITAVEL aqui porque disciplina nao muda por acao do usuario nesta
-  // fatia. No dia em que esta tela ganhar cadastro de disciplina, este cache passa
-  // a MENTIR — o select nunca veria a disciplina nova — e este teste tera de ser
-  // reescrito junto com o sabor do stream. E o mesmo erro que o resultado$ de
-  // docente evitou por nao copiar o docentes$.
-  it('não refaz a busca depois que a fonte completou, mesmo sem assinante vivo', () => {
+  it('caracterização: não refaz a busca depois que a fonte completou, mesmo sem assinante vivo', () => {
     const primeira = facade.disciplinas$.subscribe();
     http.expectOne(URL_ESPERADA).flush(DISCIPLINAS);
     primeira.unsubscribe();
@@ -72,7 +62,7 @@ describe('DisciplinaFacadeService', () => {
     http.expectNone(URL_ESPERADA);
   });
 
-  it('expõe a lista inteira, inativas inclusas — quem filtra é a tela', () => {
+  it('expõe a lista inteira, inativas inclusas, porque quem filtra é a tela', () => {
     let recebido: DisciplinaInterface[] | undefined;
     inscricoes.add(facade.disciplinas$.subscribe((d) => (recebido = d)));
 

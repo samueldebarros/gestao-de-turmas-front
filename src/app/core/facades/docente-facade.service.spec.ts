@@ -68,8 +68,6 @@ describe('DocenteFacadeService', () => {
   let inscricoes: Subscription;
 
   beforeEach(() => {
-    // Precisa ser recriado a cada teste: Subscription fechada nunca reabre, e
-    // todo add() posterior cancelaria a assinatura na hora, sem disparar HTTP.
     inscricoes = new Subscription();
     TestBed.configureTestingModule({
       providers: [provideHttpClient(), provideHttpClientTesting()],
@@ -83,8 +81,8 @@ describe('DocenteFacadeService', () => {
     http.verify();
   });
 
-  describe('docentes$ — o contrato do shareReplay', () => {
-    it('dois assinantes simultâneos disparam UMA requisição, não duas', () => {
+  describe('docentes$: o contrato do shareReplay', () => {
+    it('dois assinantes simultâneos disparam uma requisição, não duas', () => {
       inscricoes.add(facade.docentes$.subscribe());
       inscricoes.add(facade.docentes$.subscribe());
 
@@ -102,13 +100,7 @@ describe('DocenteFacadeService', () => {
       http.expectNone(URL_ESPERADA);
     });
 
-    // ⚠️ Contra-intuitivo, e é o ponto deste teste: `refCount: true` NAO refaz a
-    // busca aqui. Ele so descarta a fonte quando ela ainda esta em voo; requisicao
-    // HTTP completa depois de emitir, entao o valor fica cacheado pelo resto da
-    // vida da aplicacao. Consequencia real: esta lista nao atualiza sem recarregar
-    // a pagina — o que basta para uma tela read-only e NAO basta quando houver
-    // mutacao (inativar/reativar) mexendo nela.
-    it('não refaz a busca depois que a fonte completou, mesmo sem assinante vivo', () => {
+    it('caracterização: não refaz a busca depois que a fonte completou, mesmo sem assinante vivo', () => {
       const primeira = facade.docentes$.subscribe();
       http.expectOne(URL_ESPERADA).flush(DOCENTES);
       primeira.unsubscribe();
@@ -121,7 +113,7 @@ describe('DocenteFacadeService', () => {
     });
   });
 
-  describe('resultado$ — o estado paginado', () => {
+  describe('resultado$: o estado paginado', () => {
     const proximaBusca = (): DocenteFiltro => {
       vi.advanceTimersByTime(0);
       const requisicao = http.expectOne(URL_BUSCA);
@@ -213,7 +205,7 @@ describe('DocenteFacadeService', () => {
       expect(filtro.ordenacao).toBe(OrdenacaoDocenteEnum.DISCIPLINA);
     });
 
-    describe('ordenarPor — o ciclo de três estados', () => {
+    describe('ordenarPor e o ciclo de três estados', () => {
       it('primeiro clique ordena ascendente', () => {
         facade.ordenarPor(OrdenacaoDocenteEnum.NOME);
 
@@ -298,10 +290,7 @@ describe('DocenteFacadeService', () => {
         expect(proximaBusca().pesquisa).toBe('ana');
       });
 
-      // O `aposMutacao()` vive dentro de um `tap`, que nao roda no caminho de erro.
-      // Recarregar depois de falhar seria pior do que inutil: apagaria da tela o
-      // estado que o usuario precisa ver para entender que nada foi salvo.
-      it('mutação que falha NÃO recarrega a lista', () => {
+      it('mutação que falha não recarrega a lista', () => {
         inscricoes.add(facade.adicionar(NOVO_DOCENTE).subscribe({ error: () => undefined }));
         http
           .expectOne({ method: 'POST', url: URL_ESPERADA })
@@ -312,7 +301,7 @@ describe('DocenteFacadeService', () => {
       });
     });
 
-    describe('carregarDetalhe — leitura, não mutação', () => {
+    describe('carregarDetalhe é leitura, não mutação', () => {
       it('busca o detalhe no endpoint por id', () => {
         let recebido: DocenteDetalheInterface | undefined;
         inscricoes.add(facade.carregarDetalhe(16).subscribe((d) => (recebido = d)));
@@ -322,9 +311,6 @@ describe('DocenteFacadeService', () => {
         expect(recebido).toEqual(DETALHE);
       });
 
-      // Abrir o modal de edicao e leitura. Se `carregarDetalhe` re-emitisse o
-      // filtro, cada clique em Editar dispararia uma busca inteira da lista —
-      // trafego e piscada de tela por nada.
       it('não re-emite o filtro: clicar em Editar não recarrega a lista', () => {
         inscricoes.add(facade.carregarDetalhe(16).subscribe());
         http.expectOne(`${URL_ESPERADA}/16`).flush(DETALHE);
