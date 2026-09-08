@@ -3,7 +3,7 @@ import { TextoValidator } from './texto.validator';
 
 const validar = TextoValidator.naoEmBranco();
 
-describe('TextoValidator.naoEmBranco — texto em branco', () => {
+describe('TextoValidator.naoEmBranco: texto em branco', () => {
   it.each([
     { rotulo: 'espaços', valor: '   ' },
     { rotulo: 'tabulação', valor: '\t\t' },
@@ -14,7 +14,7 @@ describe('TextoValidator.naoEmBranco — texto em branco', () => {
   });
 });
 
-describe('TextoValidator.naoEmBranco — texto com conteúdo', () => {
+describe('TextoValidator.naoEmBranco: texto com conteúdo', () => {
   it('aprova texto preenchido', () => {
     const control = new FormControl('Maria');
 
@@ -32,7 +32,7 @@ describe('TextoValidator.naoEmBranco — texto com conteúdo', () => {
   });
 });
 
-describe('TextoValidator.naoEmBranco — fronteira de contrato', () => {
+describe('TextoValidator.naoEmBranco: fronteira de contrato', () => {
   it.each([
     { rotulo: 'string vazia', valor: '' },
     { rotulo: 'null', valor: null },

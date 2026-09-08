@@ -40,7 +40,7 @@ describe('MensagemComponent', () => {
     });
   });
 
-  describe('detalhes — a lista de causas', () => {
+  describe('detalhes, a lista de causas', () => {
     it('sem detalhes, nenhuma lista é renderizada', () => {
       componente.visivel = true;
       componente.texto = 'MENSAGEM.CORRIJA_OS_CAMPOS';
@@ -49,9 +49,6 @@ describe('MensagemComponent', () => {
       expect(fixture.nativeElement.querySelector('.detalhes-mensagem')).toBeNull();
     });
 
-    // ⚠️ Este e o teste que a Fatia A nao tinha: ele confere o TEXTO RENDERIZADO,
-    // nao a configuracao. O defeito que escapou lá era exatamente uma chave i18n
-    // chegando crua à tela porque nenhum gate olhava o que o template desenha.
     it('cada detalhe renderiza uma linha, com campo e erro traduzidos', () => {
       componente.visivel = true;
       componente.texto = 'MENSAGEM.CORRIJA_OS_CAMPOS';

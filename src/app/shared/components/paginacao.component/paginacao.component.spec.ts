@@ -44,7 +44,7 @@ describe('PaginacaoComponent', () => {
     });
   });
 
-  describe('o que o componente emite — o contrato de saída', () => {
+  describe('o que o componente emite', () => {
     it('emite a página pedida quando ela é válida e diferente da atual', () => {
       montar(2, 5);
 
