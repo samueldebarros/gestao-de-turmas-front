@@ -31,7 +31,7 @@ describe('extrairMensagemDeRegra', () => {
       expect(extrairMensagemDeRegra(erro)).toBeNull();
     });
 
-    it('recusa página HTML — o handler global redireciona e devolve markup', () => {
+    it('recusa página HTML, que o handler global devolve ao redirecionar', () => {
       const erro = { status: 422, error: '<!DOCTYPE html><html><body>Erro</body></html>' };
 
       expect(extrairMensagemDeRegra(erro)).toBeNull();

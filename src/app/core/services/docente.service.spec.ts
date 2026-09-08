@@ -55,8 +55,6 @@ const PAGINA_VAZIA_CAPTURADA: ResultadoPaginado<DocenteListaInterface> = {
   tamanhoPagina: 10,
 };
 
-// Colado do CONTRATO-DOCENTES-CADASTRO-CAPTURADO.md §2.1 — resposta literal do
-// servidor para o docente 16, que nao tem disciplina.
 const DETALHE_CAPTURADO: DocenteDetalheInterface = {
   id: 16,
   nome: 'Teste Docente Sem Disciplina',
@@ -152,7 +150,7 @@ describe('DocenteService', () => {
   });
 
   describe('buscarDocentes', () => {
-    it('chama POST em /buscar levando o filtro no CORPO, nunca na query string', () => {
+    it('chama POST em /buscar levando o filtro no corpo, e não na query string', () => {
       service.buscarDocentes(FILTRO_PADRAO).subscribe();
 
       const requisicao = http.expectOne(URL_BUSCA);
@@ -213,7 +211,7 @@ describe('DocenteService', () => {
       expect(recebido).toEqual(DETALHE_CAPTURADO);
     });
 
-    it('o detalhe NÃO traz cpf — o campo é imutável e não trafega', () => {
+    it('o detalhe não traz cpf, porque o campo é imutável e não trafega', () => {
       let recebido: DocenteDetalheInterface | undefined;
       service.obterDocentePorId(16).subscribe((docente) => (recebido = docente));
 
@@ -230,10 +228,6 @@ describe('DocenteService', () => {
       expect(recebido).not.toHaveProperty('cpf');
     });
 
-    // O servidor usa DateOnly, que serializa "1985-11-22" — sem hora, sem T e sem
-    // timezone. E o contrato do date-picker deste projeto e exatamente yyyy-MM-dd,
-    // entao o valor entra no formulario sem conversao. Este teste guarda o drop-in:
-    // se o back trocar DateOnly por DateTime, a data chega com hora e ele reprova.
     it('dataNascimento chega como yyyy-MM-dd puro, pronto para o date-picker', () => {
       let recebido: DocenteDetalheInterface | undefined;
       service.obterDocentePorId(16).subscribe((docente) => (recebido = docente));
@@ -243,7 +237,7 @@ describe('DocenteService', () => {
       expect(recebido?.dataNascimento).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     });
 
-    it('sem vínculo, disciplinaId vem presente e null — não ausente, não 0', () => {
+    it('sem vínculo, disciplinaId vem presente e null, não ausente nem 0', () => {
       let recebido: DocenteDetalheInterface | undefined;
       service.obterDocentePorId(16).subscribe((docente) => (recebido = docente));
 
@@ -284,9 +278,6 @@ describe('DocenteService', () => {
       expect(completou).toBe(true);
     });
 
-    // 422 e status novo nesta fatia: CPF duplicado, disciplina inativa e idade
-    // acima de 120 caem nele, com corpo em text/plain. O service nao traduz nada —
-    // quem decide a mensagem e quem orquestra, e decide pelo status.
     it('deixa subir o 422 de regra de negócio, que vem em texto puro', () => {
       let status: number | undefined;
       service.adicionarDocente(NOVO_DOCENTE).subscribe({ error: (erro) => (status = erro.status) });
@@ -316,12 +307,7 @@ describe('DocenteService', () => {
       requisicao.flush(null, { status: 204, statusText: 'No Content' });
     });
 
-    // ⚠️ O servidor faz `docenteExistente.DisciplinaId = docente.DisciplinaId`
-    // INCONDICIONALMENTE. Omitir a chave no corpo nao significa "nao mexi": o
-    // binding a deixa null e o vinculo e APAGADO, com 204 de sucesso. Por isso
-    // `disciplinaId` e obrigatorio no DTO — o compilador impede a omissao — e este
-    // teste guarda a chave chegando ao corpo mesmo quando o valor e null.
-    it('leva disciplinaId no corpo mesmo quando é null — omitir apagaria o vínculo', () => {
+    it('leva disciplinaId no corpo mesmo quando é null, porque omitir apagaria o vínculo', () => {
       service.editarDocente({ ...EDICAO, disciplinaId: null }).subscribe();
 
       const requisicao = http.expectOne(`${URL_ESPERADA}/${EDICAO.id}`);

@@ -7,8 +7,6 @@ import { DisciplinaService } from './disciplina.service';
 
 const URL_ESPERADA = `${environment.apiUrl}/disciplinas`;
 
-// Colado do CONTRATO-DOCENTES-CADASTRO-CAPTURADO.md §1 — recorte da resposta
-// literal, preservando as duas inativas que o servidor devolve de proposito.
 const CAPTURADO: DisciplinaInterface[] = [
   { id: 3, nome: 'Biologia', ativo: true },
   { id: 8, nome: 'Geografia', ativo: false },
@@ -61,11 +59,7 @@ describe('DisciplinaService', () => {
     }
   });
 
-  // O servidor devolve as inativas de proposito: se um docente estiver vinculado a
-  // uma delas, o formulario de edicao precisa conseguir exibir a disciplina atual.
-  // Quem esconde do select e o componente, nao o servidor e nao esta camada — um
-  // filtro aqui faria o select perder o valor vigente em silencio.
-  it('não filtra: as disciplinas inativas chegam ao assinante', () => {
+  it('não filtra as inativas, porque a edição precisa exibir o vínculo atual', () => {
     let recebido: DisciplinaInterface[] | undefined;
     service.obterDisciplinas().subscribe((disciplinas) => (recebido = disciplinas));
 
