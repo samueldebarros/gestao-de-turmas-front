@@ -101,6 +101,21 @@ Dois checks são obrigatórios — **`verify`** e **`sonar`** — e enquanto os 
 - ⚠️ **`New Code` está em `Number of days = 1`** (decisão de 2026-09-03, tomada porque Quality Gate customizado é pago). **Não aumente esse número tão cedo:** valores maiores trazem de volta o passivo de cobertura de 01/09 para dentro da janela. Em PR isso não se aplica — a análise de PR mede o diff do PR e cobra 80% do que ele mesmo escreve.
 - **Violação proposital para testar o gate vai fora de `src/`.** Dentro dele o `npm run verify` reprova no lint e o hook de parada bloqueia o turno, e aí quem reprovou foi o gate local, não o remoto.
 
+## Feature flags
+
+A fonte é o [public/flags.json](public/flags.json), servido junto com a aplicação e carregado no bootstrap por `provideAppInitializer`; o `environment.flags` é o valor de partida e o fallback. Quem responde é o `FeatureFlagsService`, sempre como `Signal<boolean>`. **Nunca leia `environment.flags` direto num componente** — é o que faz trocar a fonte deixar de ser refactor. Ligar ou desligar é editar o JSON e publicar: não recompila a lógica, mas ainda passa pelo deploy.
+
+- **A flag decide no ponto de ENTRADA, não no de implementação.** Esconder o conteúdo e desligar a funcionalidade são coisas diferentes: um `@if` dentro do componente escondido deixaria o botão de pé abrindo um modal vazio. O componente atrás da flag nunca a conhece.
+- **O ramo desligado tem de ser um caminho válido, não um erro.** Se desligar cria beco sem saída, a flag está no nível errado — é a tela inteira, não o atalho.
+- **Falha ao carregar mantém o valor do build**, e o merge é parcial (`{ ...environment.flags, ...remotas }`): flag ausente no arquivo não vira `undefined`, que é falsy e desligaria por omissão.
+- ⚠️ **A busca usa `HttpBackend`, não `HttpClient`.** O `authErrorInterceptor` é URL-blind para 401/403; com o client normal, um arquivo de configuração falhando no bootstrap dispararia renovação de sessão ou redirecionaria para `/sem-permissao`. Mesmo motivo do `feriado.service.ts`.
+- ⚠️ **`/flags.json` tem `Cache-Control: no-store` no [vercel.json](vercel.json).** Sem isso o kill switch fica preso no cache do CDN. Conferir com `curl -sI` depois do deploy.
+- **Todo `@if` de flag é provado por mutação:** apagá-lo tem de deixar um teste vermelho. Flag ligada por padrão faz a suíte inteira passar sem exercitar o ramo desligado uma única vez.
+
+### Flags em uso
+
+- **`importarCsv`** — **kill switch permanente**, sem data de morte: **não apague**. Cobre a importação de alunos por planilha, que depende de `POST /alunos/importar`. Desligada, some o botão de importar na tela de alunos e o atalho no passo de alunos do wizard de turmas; cadastrar aluno a aluno segue funcionando nos dois lugares. São **três** pontos de decisão — botão e modal em `aluno-index.component.html`, atalho em `turma-cadastro.component.html`.
+
 ## As três camadas (regra em uma frase)
 
 > **Component (Smart)** decide e exibe → **Facade** detém o estado e orquestra → **Service** fala HTTP e nada mais.
