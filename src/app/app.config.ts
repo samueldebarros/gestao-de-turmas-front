@@ -10,6 +10,7 @@ import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/
 import { provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { AuthFacadeService } from './core/facades/auth-facade.service';
+import { FeatureFlagsService } from './core/services/feature-flags.service';
 import { credentialsInterceptor } from './core/interceptors/credentials.interceptor';
 import { authErrorInterceptor } from './core/interceptors/auth-error.interceptor';
 import { limparNamespaceStorage } from './shared/utils/limpar-namespace-storage.util';
@@ -22,6 +23,7 @@ export const appConfig: ApplicationConfig = {
       withFetch(),
       withInterceptors([credentialsInterceptor, authErrorInterceptor]),
     ),
+    provideAppInitializer(() => inject(FeatureFlagsService).carregar()),
     provideAppInitializer(() => limparNamespaceStorage(sessionStorage, 'alunos:sugestoes')),
     provideAppInitializer(() => inject(AuthFacadeService).restaurarSessao()),
     provideTranslateService({
