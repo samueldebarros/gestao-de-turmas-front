@@ -32,7 +32,9 @@
         ></app-passo-disciplinas>
       }
       @case (2) {
-        <app-importar-alunos (importado)="preSelecionarImportados($event)"></app-importar-alunos>
+        @if (importarCsvLigado()) {
+          <app-importar-alunos (importado)="preSelecionarImportados($event)"></app-importar-alunos>
+        }
         @if (alunosPagina$ | async; as pagina) {
           <app-passo-alunos
             [pagina]="pagina"

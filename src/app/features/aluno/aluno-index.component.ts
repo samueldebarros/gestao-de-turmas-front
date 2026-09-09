@@ -26,6 +26,7 @@ import { SelectOptionInterface } from '../../shared/interfaces/ui/select-option.
 import { FormFieldSelectComponent } from '../../shared/components/form-field-select.component/form-field-select.component.js';
 import { MensagemComponent } from '../../shared/components/mensagem.component/mensagem.component';
 import { AlunoFacadeService } from '../../core/facades/aluno-facade.service.js';
+import { FeatureFlagsService } from '../../core/services/feature-flags.service';
 import { FeriadoFacadeService } from '../../core/facades/feriado-facade.service.js';
 import { catchError, Observable, of, tap } from 'rxjs';
 import { AsyncPipe, DatePipe } from '@angular/common';
@@ -86,6 +87,9 @@ export class AlunoIndex implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly datePipe = inject(DatePipe);
   private readonly translate = inject(TranslateService);
+  private readonly featureFlags = inject(FeatureFlagsService);
+
+  protected readonly importarCsvLigado = this.featureFlags.importarCsv;
 
   public colunas: TabelaColuna[] = [
     { chave: 'id', titulo: 'TABELA.COLUNAS.ALUNO.CODIGO' },

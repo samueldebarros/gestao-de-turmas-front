@@ -22,6 +22,7 @@ import { TurmaAdicionarDTO } from '../../../shared/interfaces/dto/turma-adiciona
 import { MensagemComponent } from '../../../shared/components/mensagem.component/mensagem.component';
 import { ImportacaoResultado } from '../../../shared/interfaces/dto/importacao-alunos.interface';
 import { ImportarAlunosComponent } from '../../../shared/components/importar-alunos.component/importar-alunos.component';
+import { FeatureFlagsService } from '../../../core/services/feature-flags.service';
 
 @Component({
   selector: 'app-turma-cadastro',
@@ -48,6 +49,9 @@ export class TurmaCadastroComponent {
   private readonly alunoFacade = inject(AlunoFacadeService);
   private readonly turmaFacade = inject(TurmaFacadeService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly featureFlags = inject(FeatureFlagsService);
+
+  protected readonly importarCsvLigado = this.featureFlags.importarCsv;
 
   readonly alerta = signal<AlertaState>({ visivel: false, tipo: 'erro', texto: '' });
 
