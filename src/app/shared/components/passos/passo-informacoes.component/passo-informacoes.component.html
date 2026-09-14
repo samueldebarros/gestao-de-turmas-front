@@ -4,7 +4,11 @@
     [control]="formGroup.get('identificador')"
     [label]="'TURMA.FORMULARIO.IDENTIFICADOR_LABEL' | translate"
     [placeholder]="'TURMA.FORMULARIO.IDENTIFICADOR_PLACEHOLDER' | translate"
-    [errorMessage]="'VALIDACAO.OBRIGATORIO' | translate"
+    [errorMessage]="
+      formGroup.get('identificador')
+        | errorMessage
+        | translate: (formGroup.get('identificador') | errorParams)
+    "
   ></app-form-field-text>
 
   <app-form-field-select
@@ -13,7 +17,9 @@
     [options]="opcoesSerie"
     [label]="'TURMA.FORMULARIO.SERIE_LABEL' | translate"
     [placeholder]="'TURMA.FORMULARIO.SELECIONE' | translate"
-    [errorMessage]="'VALIDACAO.OBRIGATORIO' | translate"
+    [errorMessage]="
+      formGroup.get('serie') | errorMessage | translate: (formGroup.get('serie') | errorParams)
+    "
   ></app-form-field-select>
 
   <app-form-field-text
@@ -22,7 +28,11 @@
     [control]="formGroup.get('anoLetivo')"
     [label]="'TURMA.FORMULARIO.ANO_LETIVO_LABEL' | translate"
     [placeholder]="'TURMA.FORMULARIO.ANO_LETIVO_PLACEHOLDER' | translate"
-    [errorMessage]="'VALIDACAO.OBRIGATORIO' | translate"
+    [errorMessage]="
+      formGroup.get('anoLetivo')
+        | errorMessage
+        | translate: (formGroup.get('anoLetivo') | errorParams)
+    "
   ></app-form-field-text>
 
   <app-form-field-text
@@ -31,7 +41,11 @@
     [control]="formGroup.get('capacidade')"
     [label]="'TURMA.FORMULARIO.CAPACIDADE_LABEL' | translate"
     [placeholder]="'TURMA.FORMULARIO.CAPACIDADE_PLACEHOLDER' | translate"
-    [errorMessage]="'VALIDACAO.OBRIGATORIO' | translate"
+    [errorMessage]="
+      formGroup.get('capacidade')
+        | errorMessage
+        | translate: (formGroup.get('capacidade') | errorParams)
+    "
   ></app-form-field-text>
 
   <app-form-field-select
@@ -40,6 +54,8 @@
     [options]="opcoesTurno"
     [label]="'TURMA.FORMULARIO.TURNO_LABEL' | translate"
     [placeholder]="'TURMA.FORMULARIO.SELECIONE' | translate"
-    [errorMessage]="'VALIDACAO.OBRIGATORIO' | translate"
+    [errorMessage]="
+      formGroup.get('turno') | errorMessage | translate: (formGroup.get('turno') | errorParams)
+    "
   ></app-form-field-select>
 </div>

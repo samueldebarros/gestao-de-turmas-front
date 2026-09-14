@@ -5,10 +5,19 @@ import { TurnoEnum } from '../../../enums/turno.enum';
 import { FormFieldTextComponent } from '../../form-field-text.component/form-field-text.component';
 import { FormFieldSelectComponent } from '../../form-field-select.component/form-field-select.component';
 import { TranslatePipe } from '@ngx-translate/core';
+import { ErrorMessagePipe } from '../../../pipes/error-message.pipe';
+import { ErrorParamsPipe } from '../../../pipes/error-params.pipe';
 
 @Component({
   selector: 'app-passo-informacoes',
-  imports: [FormFieldTextComponent, FormFieldSelectComponent, TranslatePipe, ReactiveFormsModule],
+  imports: [
+    FormFieldTextComponent,
+    FormFieldSelectComponent,
+    TranslatePipe,
+    ReactiveFormsModule,
+    ErrorMessagePipe,
+    ErrorParamsPipe,
+  ],
   templateUrl: './passo-informacoes.component.html',
   styleUrl: './passo-informacoes.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

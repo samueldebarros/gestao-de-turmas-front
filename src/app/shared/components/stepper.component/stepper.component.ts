@@ -13,7 +13,6 @@ import { Botao } from '../botao/botao.component';
 export class StepperComponent {
   @Input({ required: true }) passos: PassoStepper[] = [];
   @Input() passoAtual = 0;
-  @Input() podeAvancar = true;
 
   @Output() voltar = new EventEmitter<void>();
   @Output() avancar = new EventEmitter<void>();

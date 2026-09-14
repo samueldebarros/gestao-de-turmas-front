@@ -4,6 +4,7 @@ import { of } from 'rxjs';
 import { AlunoFacadeService } from '../../../core/facades/aluno-facade.service';
 import { DocenteFacadeService } from '../../../core/facades/docente-facade.service';
 import { TurmaFacadeService } from '../../../core/facades/turma-facade.service';
+import { TurnoEnum } from '../../../shared/enums/turno.enum';
 import { TurmaCadastroComponent } from './turma-cadastro.component';
 
 const PAGINA_VAZIA = {
@@ -121,5 +122,48 @@ describe('TurmaCadastro: navegação e seleção', () => {
 
     expect(turmaFacadeFake.adicionar).not.toHaveBeenCalled();
     expect(componente.cadastroForm.touched).toBe(true);
+  });
+
+  it('não aceita capacidade acima do limite máximo', () => {
+    const controle = componente.informacoesGroup.get('capacidade');
+    controle?.setValue(300);
+
+    expect(controle?.valid).toBe(false);
+  });
+
+  it('não aceita identificador com mais de um caractere', () => {
+    const controle = componente.informacoesGroup.get('identificador');
+    controle?.setValue('AB');
+
+    expect(controle?.valid).toBe(false);
+  });
+
+  it('não aceita ano letivo abaixo do mínimo permitido', () => {
+    const controle = componente.informacoesGroup.get('anoLetivo');
+    controle?.setValue(1999);
+
+    expect(controle?.valid).toBe(false);
+  });
+
+  it('marca os controles do passo e informa as causas quando as informações estão inválidas', () => {
+    componente.avancar();
+
+    expect(componente.passoAtual).toBe(PASSO_INFORMACOES);
+    expect(componente.informacoesGroup.touched).toBe(true);
+    expect(componente.alerta().detalhes?.length).toBeGreaterThan(0);
+  });
+
+  it('avança quando as informações da turma são válidas', () => {
+    componente.informacoesGroup.setValue({
+      identificador: 'A',
+      serie: 1,
+      anoLetivo: 2026,
+      capacidade: 30,
+      turno: TurnoEnum.MATUTINO,
+    });
+
+    componente.avancar();
+
+    expect(componente.passoAtual).toBe(PASSO_DISCIPLINAS);
   });
 });

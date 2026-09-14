@@ -3,6 +3,7 @@
     [visivel]="alerta().visivel"
     [tipo]="alerta().tipo"
     [texto]="alerta().texto"
+    [detalhes]="alerta().detalhes ?? []"
     (visivelChange)="fecharAlerta()"
   ></app-mensagem>
   <header class="wizard__cabecalho">
@@ -15,7 +16,6 @@
   <app-stepper
     [passos]="passos"
     [passoAtual]="passoAtual"
-    [podeAvancar]="podeAvancar"
     (voltar)="voltar()"
     (avancar)="avancar()"
     (concluir)="concluir()"
