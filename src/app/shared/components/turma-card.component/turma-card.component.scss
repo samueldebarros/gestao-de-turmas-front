@@ -3,16 +3,10 @@
   border-radius: 8px;
   padding: 1rem 1.25rem;
   background: #fff;
-  cursor: pointer;
   transition: box-shadow 0.15s ease;
 
   &:hover {
     box-shadow: 0 2px 8px rgba(28, 83, 185, 0.15);
-  }
-
-  &:focus-visible {
-    outline: 2px solid #1c53b9;
-    outline-offset: 2px;
   }
 
   &--inativo {
@@ -45,6 +39,53 @@
       margin: 0;
       font-weight: 600;
     }
+  }
+
+  &__rodape {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+
+  &__acao {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: #555;
+    cursor: pointer;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
+
+    &:hover {
+      background: rgba(28, 83, 185, 0.1);
+      color: #1c53b9;
+    }
+  }
+
+  &__icone {
+    width: 1.1rem;
+    height: 1.1rem;
+    fill: currentColor;
+  }
+
+  &__rotulo-oculto {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
   }
 }
 
