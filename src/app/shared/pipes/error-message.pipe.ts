@@ -11,6 +11,9 @@ const ERRO_PARA_MENSAGEM: Record<string, string> = {
   dataFuturaOuPresente: 'VALIDACAO.DATA_FUTURA',
   idadeMaximaExcedida: 'VALIDACAO.IDADE_MAXIMA',
   emBranco: 'VALIDACAO.EM_BRANCO',
+  maxlength: 'VALIDACAO.TAMANHO_MAXIMO',
+  min: 'VALIDACAO.VALOR_MINIMO',
+  max: 'VALIDACAO.VALOR_MAXIMO',
 };
 
 @Pipe({ name: 'errorMessage', standalone: true, pure: false })
