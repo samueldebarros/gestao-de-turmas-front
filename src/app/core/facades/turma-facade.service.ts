@@ -14,9 +14,11 @@ import {
 } from 'rxjs';
 import { TurmaInterface } from '../../shared/interfaces/entities/turma.interface';
 import { EstadoLista } from '../../shared/interfaces/ui/estado-lista.interface';
+import { ResultadoPaginado } from '../../shared/interfaces/ui/resultado-paginado.interface';
 import { FiltroListaInterface } from '../../shared/interfaces/ui/filtro-lista.interface';
 import { TurnoEnum } from '../../shared/enums/turno.enum';
 import { TurmaAdicionarDTO } from '../../shared/interfaces/dto/turma-adicionar-dto.interface';
+import { TurmaEditarDTO } from '../../shared/interfaces/dto/turma-editar-dto.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -39,6 +41,7 @@ export class TurmaFacadeService {
     debounceTime(0),
     switchMap((filtros) =>
       this.turmaService.obterTurmas(filtros).pipe(
+        tap((resultado) => this.reconciliarPagina(filtros, resultado)),
         map((resultado) => ({ status: 'ok', resultado: resultado }) as EstadoLista<TurmaInterface>),
         startWith({ status: 'carregando' } as EstadoLista<TurmaInterface>),
         catchError(() => of({ status: 'erro' } as EstadoLista<TurmaInterface>)),
@@ -65,5 +68,30 @@ export class TurmaFacadeService {
     return this.turmaService
       .adicionarTurma(dto)
       .pipe(tap(() => this._paginaState$.next({ ...this._paginaState$.value, pagina: 1 })));
+  }
+
+  editar(dto: TurmaEditarDTO): Observable<void> {
+    return this.turmaService.editarTurma(dto).pipe(tap(() => this.aposMutacao()));
+  }
+
+  inativar(id: number): Observable<void> {
+    return this.turmaService.inativarTurma(id).pipe(tap(() => this.aposMutacao()));
+  }
+
+  reativar(id: number): Observable<void> {
+    return this.turmaService.reativarTurma(id).pipe(tap(() => this.aposMutacao()));
+  }
+
+  private aposMutacao(): void {
+    this._paginaState$.next({ ...this._paginaState$.value });
+  }
+
+  private reconciliarPagina(
+    filtros: TurmaFiltro,
+    resultado: ResultadoPaginado<TurmaInterface>,
+  ): void {
+    if (resultado.itens.length === 0 && filtros.pagina > 1) {
+      this._paginaState$.next({ ...filtros, pagina: 1 });
+    }
   }
 }
