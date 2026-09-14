@@ -75,7 +75,11 @@
         [placeholder]="'TURMA.FORMULARIO.IDENTIFICADOR_PLACEHOLDER' | translate"
         formControlName="identificador"
         [control]="turmaForm.get('identificador')"
-        [errorMessage]="turmaForm.get('identificador') | errorMessage | translate"
+        [errorMessage]="
+          turmaForm.get('identificador')
+            | errorMessage
+            | translate: (turmaForm.get('identificador') | errorParams)
+        "
       ></app-form-field-text>
 
       <app-form-field-select
@@ -84,7 +88,9 @@
         [options]="opcoesSerie"
         [label]="'TURMA.FORMULARIO.SERIE_LABEL' | translate"
         [placeholder]="'TURMA.FORMULARIO.SELECIONE' | translate"
-        [errorMessage]="turmaForm.get('serie') | errorMessage | translate"
+        [errorMessage]="
+          turmaForm.get('serie') | errorMessage | translate: (turmaForm.get('serie') | errorParams)
+        "
       ></app-form-field-select>
 
       <app-form-field-text
@@ -93,7 +99,11 @@
         [control]="turmaForm.get('anoLetivo')"
         [label]="'TURMA.FORMULARIO.ANO_LETIVO_LABEL' | translate"
         [placeholder]="'TURMA.FORMULARIO.ANO_LETIVO_PLACEHOLDER' | translate"
-        [errorMessage]="turmaForm.get('anoLetivo') | errorMessage | translate"
+        [errorMessage]="
+          turmaForm.get('anoLetivo')
+            | errorMessage
+            | translate: (turmaForm.get('anoLetivo') | errorParams)
+        "
       ></app-form-field-text>
 
       <app-form-field-select
@@ -102,7 +112,9 @@
         [options]="opcoesTurno"
         [label]="'TURMA.FORMULARIO.TURNO_LABEL' | translate"
         [placeholder]="'TURMA.FORMULARIO.SELECIONE' | translate"
-        [errorMessage]="turmaForm.get('turno') | errorMessage | translate"
+        [errorMessage]="
+          turmaForm.get('turno') | errorMessage | translate: (turmaForm.get('turno') | errorParams)
+        "
       ></app-form-field-select>
 
       <app-form-field-text
@@ -111,7 +123,11 @@
         [control]="turmaForm.get('capacidade')"
         [label]="'TURMA.FORMULARIO.CAPACIDADE_LABEL' | translate"
         [placeholder]="'TURMA.FORMULARIO.CAPACIDADE_PLACEHOLDER' | translate"
-        [errorMessage]="turmaForm.get('capacidade') | errorMessage | translate"
+        [errorMessage]="
+          turmaForm.get('capacidade')
+            | errorMessage
+            | translate: (turmaForm.get('capacidade') | errorParams)
+        "
       ></app-form-field-text>
 
       <div class="acoes-modal">
