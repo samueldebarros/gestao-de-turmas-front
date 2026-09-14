@@ -1,3 +1,12 @@
+.alerta-pagina {
+  position: fixed;
+  bottom: 65px;
+  right: 12px;
+  z-index: 1000;
+  min-width: 300px;
+  max-width: 480px;
+}
+
 .container {
   width: 100%;
   max-width: 1100px;
@@ -28,4 +37,29 @@
 .rodape-tabela {
   display: flex;
   justify-content: center;
+}
+
+.form-turma {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+
+  input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+
+  input.ng-invalid.ng-touched,
+  select.ng-invalid.ng-touched {
+    border: 1px solid red;
+    outline-color: red;
+  }
+}
+
+.acoes-modal {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
 }

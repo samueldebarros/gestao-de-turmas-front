@@ -13,6 +13,9 @@ const TODOS_OS_ERROS = [
   { erro: 'dataFuturaOuPresente', chave: 'VALIDACAO.DATA_FUTURA' },
   { erro: 'idadeMaximaExcedida', chave: 'VALIDACAO.IDADE_MAXIMA' },
   { erro: 'emBranco', chave: 'VALIDACAO.EM_BRANCO' },
+  { erro: 'maxlength', chave: 'VALIDACAO.TAMANHO_MAXIMO' },
+  { erro: 'min', chave: 'VALIDACAO.VALOR_MINIMO' },
+  { erro: 'max', chave: 'VALIDACAO.VALOR_MAXIMO' },
 ] as const;
 
 const comErros = (erros: Record<string, boolean>): FormControl => {

@@ -84,7 +84,14 @@
   "TURMA": {
     "BOTOES": {
       "CADASTRAR": "Cadastrar turma",
-      "CANCELAR": "Cancelar"
+      "CANCELAR": "Cancelar",
+      "EDITAR": "Editar",
+      "INATIVAR": "Inativar",
+      "REATIVAR": "Reativar",
+      "SALVAR_ALTERACOES": "Salvar alterações"
+    },
+    "MODAL": {
+      "EDICAO_TITULO": "Editar Turma"
     },
     "FILTRO": {
       "ANO_LETIVO": "Ano letivo",
@@ -197,7 +204,10 @@
     "DOCUMENTO_INVALIDO": "O documento deve ter 11 (CPF) ou 14 (CNPJ) números.",
     "CPF_INVALIDO": "CPF inválido. Verifique os números digitados.",
     "CNPJ_INVALIDO": "CNPJ inválido. Verifique os números digitados.",
-    "EM_BRANCO": "O campo de texto não pode estar vazio."
+    "EM_BRANCO": "O campo de texto não pode estar vazio.",
+    "TAMANHO_MAXIMO": "O texto é longo demais.",
+    "VALOR_MINIMO": "O valor é menor que o permitido.",
+    "VALOR_MAXIMO": "O valor é maior que o permitido."
   },
   "MENSAGEM": {
     "FORMULARIO_INVALIDO": "Formulário inválido.",
@@ -221,7 +231,14 @@
     "ERRO_EDICAO_DOCENTE": "Ocorreu um erro ao editar o docente.",
     "ERRO_CARREGAR_DOCENTE": "Não foi possível carregar os dados do docente.",
     "ERRO_CARREGAR_DISCIPLINAS": "Não foi possível carregar a lista de disciplinas.",
-    "ERRO_REGRA_NEGOCIO_DOCENTE": "Não foi possível salvar. Corrija os dados destacados e tente novamente."
+    "ERRO_REGRA_NEGOCIO_DOCENTE": "Não foi possível salvar. Corrija os dados destacados e tente novamente.",
+    "SUCESSO_EDICAO_TURMA": "Turma editada com sucesso.",
+    "ERRO_EDICAO_TURMA": "Ocorreu um erro ao editar a turma.",
+    "SUCESSO_INATIVAR_TURMA": "Turma inativada com sucesso.",
+    "ERRO_INATIVAR_TURMA": "Ocorreu um erro ao inativar a turma.",
+    "SUCESSO_REATIVAR_TURMA": "Turma reativada com sucesso.",
+    "ERRO_REATIVAR_TURMA": "Ocorreu um erro ao reativar a turma.",
+    "ERRO_REGRA_NEGOCIO_TURMA": "Não foi possível salvar. Corrija os dados destacados e tente novamente."
   },
   "LOGIN": {
     "TITULO": "Entrar",

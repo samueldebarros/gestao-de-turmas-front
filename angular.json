@@ -3,7 +3,9 @@
   "version": 1,
   "cli": {
     "packageManager": "npm",
-    "schematicCollections": ["angular-eslint"]
+    "schematicCollections": [
+      "angular-eslint"
+    ]
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -30,7 +32,9 @@
                 "input": "public"
               }
             ],
-            "styles": ["src/styles.scss"]
+            "styles": [
+              "src/styles.scss"
+            ]
           },
           "configurations": {
             "production": {
@@ -83,8 +87,12 @@
           "builder": "@angular/build:unit-test",
           "options": {
             "providersFile": "src/test-providers.ts",
-            "setupFiles": ["src/test-setup.ts"],
-            "coverageInclude": ["src/**/*.ts"],
+            "setupFiles": [
+              "src/test-setup.ts"
+            ],
+            "coverageInclude": [
+              "src/**/*.ts"
+            ],
             "coverageExclude": [
               "src/**/*.interface.ts",
               "src/**/*.enum.ts",
@@ -93,24 +101,26 @@
               "src/environments/**",
               "src/main.ts"
             ],
-            "coverageReporters": ["text-summary", "html", "lcovonly"],
+            "coverageReporters": [
+              "text-summary",
+              "html",
+              "lcovonly"
+            ],
             "coverageThresholds": {
-              "statements": 65.9,
-              "branches": 79.4,
-              "functions": 63,
-              "lines": 66.1
+              "statements": 72.7,
+              "branches": 81.7,
+              "functions": 69.1,
+              "lines": 72.5
             }
           },
           "configurations": {
             "escopo": {
               "coverage": true,
               "coverageInclude": [
-                "src/app/core/services/docente.service.ts",
-                "src/app/core/services/disciplina.service.ts",
-                "src/app/core/facades/docente-facade.service.ts",
-                "src/app/core/facades/disciplina-facade.service.ts",
-                "src/app/features/docente/**/*.ts",
-                "src/app/shared/constants/**/*.ts"
+                "src/app/core/services/turma.service.ts",
+                "src/app/core/facades/turma-facade.service.ts",
+                "src/app/features/turma/turma-index.component.ts",
+                "src/app/shared/components/turma-card.component/**/*.ts"
               ],
               "coverageThresholds": {
                 "statements": 80,
@@ -124,7 +134,10 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
           }
         }
       }

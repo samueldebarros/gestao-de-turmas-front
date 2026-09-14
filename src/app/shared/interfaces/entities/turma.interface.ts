@@ -3,6 +3,7 @@ import { DocenteSqlInterface } from './docente-sql.interface';
 import { EntidadeBaseInterface } from './entidade-base.interface';
 
 export interface TurmaInterface extends EntidadeBaseInterface {
+  ativo: boolean;
   identificador: string;
   serie: number;
   serieDescricao?: string;

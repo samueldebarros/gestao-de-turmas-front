@@ -11,10 +11,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 })
 export class TurmaCardComponent {
   @Input({ required: true }) turma!: TurmaInterface;
-  @Output() acaoCard = new EventEmitter<TurmaInterface>();
-
-  protected aoTeclarEspaco(evento: Event): void {
-    evento.preventDefault();
-    this.acaoCard.emit(this.turma);
-  }
+  @Input() comandoEmVoo = false;
+  @Output() editar = new EventEmitter<TurmaInterface>();
+  @Output() alternarStatus = new EventEmitter<TurmaInterface>();
 }
