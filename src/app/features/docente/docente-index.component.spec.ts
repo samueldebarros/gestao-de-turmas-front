@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TranslateService } from '@ngx-translate/core';
 import { Observable, of, Subject, throwError } from 'rxjs';
 import type { Mock } from 'vitest';
 import { OrdenacaoTabela } from '../../shared/interfaces/ui/ordenaca-tabela.interface';
@@ -887,6 +888,27 @@ describe('DocenteIndexComponent', () => {
 
       componente.definirAcao({ acaoId: 'inativar', item: ATIVO });
       expect(componente.alertaPagina().texto).toMatch(NAMESPACES_PERMITIDOS);
+    });
+  });
+
+  describe('T-19: mensagem de erro com placeholder interpola, não exibe cru', () => {
+    it('nome com menos de 3 caracteres mostra o requiredLength interpolado, não {{requiredLength}}', () => {
+      montar();
+      const translate = TestBed.inject(TranslateService);
+      translate.setTranslation('pt-BR', {
+        VALIDACAO: { TAMANHO_MINIMO: 'Use ao menos {{requiredLength}} caracteres.' },
+      });
+      translate.use('pt-BR');
+
+      componente.abrirModalAdicionar();
+      componente.docenteForm.patchValue({ nome: 'ab' });
+      componente.docenteForm.controls.nome.markAsTouched();
+      fixture.detectChanges();
+
+      const texto = fixture.nativeElement.querySelector('.error-message')?.textContent ?? '';
+
+      expect(texto).not.toContain('{{requiredLength}}');
+      expect(texto).toContain('3');
     });
   });
 });

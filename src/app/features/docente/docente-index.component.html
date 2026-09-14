@@ -65,7 +65,11 @@
         [placeholder]="'DOCENTE.FORMULARIO.NOME_PLACEHOLDER' | translate"
         formControlName="nome"
         [control]="docenteForm.get('nome')"
-        [errorMessage]="docenteForm.get('nome') | errorMessage | translate"
+        [errorMessage]="
+          docenteForm.get('nome')
+            | errorMessage
+            | translate: (docenteForm.get('nome') | errorParams)
+        "
       ></app-form-field-text>
 
       @if (modoModal() === 'adicionar') {
@@ -74,7 +78,11 @@
           [placeholder]="'DOCENTE.FORMULARIO.CPF_PLACEHOLDER' | translate"
           formControlName="cpf"
           [control]="docenteForm.get('cpf')"
-          [errorMessage]="docenteForm.get('cpf') | errorMessage | translate"
+          [errorMessage]="
+            docenteForm.get('cpf')
+              | errorMessage
+              | translate: (docenteForm.get('cpf') | errorParams)
+          "
         ></app-form-field-text>
       }
 
@@ -83,7 +91,11 @@
         [placeholder]="'DOCENTE.FORMULARIO.EMAIL_PLACEHOLDER' | translate"
         formControlName="email"
         [control]="docenteForm.get('email')"
-        [errorMessage]="docenteForm.get('email') | errorMessage | translate"
+        [errorMessage]="
+          docenteForm.get('email')
+            | errorMessage
+            | translate: (docenteForm.get('email') | errorParams)
+        "
       ></app-form-field-text>
 
       <app-date-picker
@@ -91,7 +103,11 @@
         [placeholder]="'DOCENTE.FORMULARIO.DATA_NASCIMENTO_PLACEHOLDER' | translate"
         formControlName="dataNascimento"
         [control]="docenteForm.get('dataNascimento')"
-        [errorMessage]="docenteForm.get('dataNascimento') | errorMessage | translate"
+        [errorMessage]="
+          docenteForm.get('dataNascimento')
+            | errorMessage
+            | translate: (docenteForm.get('dataNascimento') | errorParams)
+        "
       ></app-date-picker>
 
       <app-form-field-select
@@ -100,7 +116,11 @@
         [options]="opcoesDisciplina()"
         formControlName="disciplinaId"
         [control]="docenteForm.get('disciplinaId')"
-        [errorMessage]="docenteForm.get('disciplinaId') | errorMessage | translate"
+        [errorMessage]="
+          docenteForm.get('disciplinaId')
+            | errorMessage
+            | translate: (docenteForm.get('disciplinaId') | errorParams)
+        "
       ></app-form-field-select>
 
       <div class="acoes-modal">
