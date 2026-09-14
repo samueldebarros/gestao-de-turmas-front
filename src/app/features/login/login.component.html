@@ -7,7 +7,11 @@
       type="email"
       [label]="'LOGIN.EMAIL_LABEL' | translate"
       [control]="loginForm.controls.email"
-      [errorMessage]="'LOGIN.EMAIL_INVALIDO' | translate"
+      [errorMessage]="
+        loginForm.controls.email
+          | errorMessage
+          | translate: (loginForm.controls.email | errorParams)
+      "
     ></app-form-field-text>
 
     <app-form-field-text
@@ -15,7 +19,11 @@
       type="password"
       [label]="'LOGIN.SENHA_LABEL' | translate"
       [control]="loginForm.controls.senha"
-      [errorMessage]="'LOGIN.SENHA_OBRIGATORIA' | translate"
+      [errorMessage]="
+        loginForm.controls.senha
+          | errorMessage
+          | translate: (loginForm.controls.senha | errorParams)
+      "
     ></app-form-field-text>
 
     @if (alerta(); as a) {

@@ -2,6 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { TranslateService } from '@ngx-translate/core';
 import { environment } from '../../../environments/environments';
 import { SexoEnum } from '../../shared/enums/sexo.enum';
 import { AlunoIndex } from './aluno-index.component';
@@ -136,5 +137,36 @@ describe('AlunoIndex: cadastro ponta a ponta', () => {
       'MENSAGEM.FORMULARIO_INVALIDO',
     );
     expect(dialogCadastro().open).toBe(true);
+  });
+
+  it('nome com menos de 3 caracteres mostra a mensagem de tamanho mínimo, não a de campo obrigatório', () => {
+    const translate = TestBed.inject(TranslateService);
+    translate.setTranslation('pt-BR', {
+      VALIDACAO: { TAMANHO_MINIMO: 'Use ao menos {{requiredLength}} caracteres.' },
+    });
+    translate.use('pt-BR');
+
+    abrirModalDeCadastro();
+    preencher(campoTexto('ALUNO.FORMULARIO.NOME_PLACEHOLDER'), 'ab');
+
+    const erroNome = fixture.debugElement
+      .queryAll(By.css('form.formAluno app-form-field-text .error-message'))
+      .map((e) => (e.nativeElement as HTMLElement).textContent?.trim())[0];
+
+    expect(erroNome).toContain('3');
+    expect(erroNome).not.toContain('{{requiredLength}}');
+    expect(erroNome).not.toMatch(/obrigat/i);
+  });
+
+  it('email vazio tocado mostra a mensagem de campo obrigatório, não a de email inválido', () => {
+    abrirModalDeCadastro();
+    campoTexto('ALUNO.FORMULARIO.EMAIL_PLACEHOLDER').dispatchEvent(new Event('blur'));
+    fixture.detectChanges();
+
+    const erroEmail = fixture.debugElement
+      .queryAll(By.css('form.formAluno app-form-field-text .error-message'))
+      .map((e) => (e.nativeElement as HTMLElement).textContent?.trim())[0];
+
+    expect(erroEmail).toBe('VALIDACAO.OBRIGATORIO');
   });
 });

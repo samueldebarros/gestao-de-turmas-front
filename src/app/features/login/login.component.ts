@@ -14,10 +14,19 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormFieldTextComponent } from '../../shared/components/form-field-text.component/form-field-text.component';
 import { Botao } from '../../shared/components/botao/botao.component';
 import { TranslatePipe } from '@ngx-translate/core';
+import { ErrorMessagePipe } from '../../shared/pipes/error-message.pipe';
+import { ErrorParamsPipe } from '../../shared/pipes/error-params.pipe';
 
 @Component({
   selector: 'app-login',
-  imports: [FormFieldTextComponent, Botao, TranslatePipe, ReactiveFormsModule],
+  imports: [
+    FormFieldTextComponent,
+    Botao,
+    TranslatePipe,
+    ReactiveFormsModule,
+    ErrorMessagePipe,
+    ErrorParamsPipe,
+  ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })

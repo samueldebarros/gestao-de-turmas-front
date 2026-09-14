@@ -39,6 +39,7 @@ import { AlunoInterface } from '../../shared/interfaces/entities/aluno.interface
 import { formatarCpfCnpj, mascararCpfCnpj } from '../../shared/utils/cpf-cnpj.utils';
 import { SexoFormatPipe } from '../../shared/pipes/sexo-format.pipe.js';
 import { ErrorMessagePipe } from '../../shared/pipes/error-message.pipe';
+import { ErrorParamsPipe } from '../../shared/pipes/error-params.pipe';
 import { FiltroListaComponent } from '../../shared/components/filtro-lista.component/filtro-lista.component';
 import { SelectFilterInterface } from '../../shared/interfaces/ui/select-filter.interface.js';
 import { FiltroListaInterface } from '../../shared/interfaces/ui/filtro-lista.interface';
@@ -67,6 +68,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     MensagemComponent,
     AsyncPipe,
     ErrorMessagePipe,
+    ErrorParamsPipe,
     FiltroListaComponent,
     PaginacaoComponent,
     DatePickerComponent,
@@ -328,6 +330,7 @@ export class AlunoIndex implements OnInit {
 
   private adicionarAluno() {
     if (this.alunoForm.invalid) {
+      this.alunoForm.markAllAsTouched();
       this.exibirAlertaModal('erro', 'MENSAGEM.FORMULARIO_INVALIDO');
       return;
     }
@@ -343,6 +346,7 @@ export class AlunoIndex implements OnInit {
 
   private editarAluno(aluno: AlunoInterface): void {
     if (this.alunoForm.invalid) {
+      this.alunoForm.markAllAsTouched();
       this.exibirAlertaModal('erro', 'MENSAGEM.FORMULARIO_INVALIDO');
       return;
     }

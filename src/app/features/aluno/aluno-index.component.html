@@ -73,7 +73,9 @@
         [placeholder]="'ALUNO.FORMULARIO.NOME_PLACEHOLDER' | translate"
         formControlName="nome"
         [control]="alunoForm.get('nome')"
-        [errorMessage]="'VALIDACAO.OBRIGATORIO' | translate"
+        [errorMessage]="
+          alunoForm.get('nome') | errorMessage | translate: (alunoForm.get('nome') | errorParams)
+        "
       ></app-form-field-text>
 
       <app-form-field-text
@@ -81,7 +83,9 @@
         [placeholder]="'ALUNO.FORMULARIO.CPF_PLACEHOLDER' | translate"
         formControlName="cpf"
         [control]="alunoForm.get('cpf')"
-        [errorMessage]="alunoForm.get('cpf') | errorMessage | translate"
+        [errorMessage]="
+          alunoForm.get('cpf') | errorMessage | translate: (alunoForm.get('cpf') | errorParams)
+        "
       ></app-form-field-text>
 
       <app-form-field-text
@@ -89,7 +93,9 @@
         [placeholder]="'ALUNO.FORMULARIO.EMAIL_PLACEHOLDER' | translate"
         formControlName="email"
         [control]="alunoForm.get('email')"
-        [errorMessage]="'ALUNO.FORMULARIO.EMAIL_INVALIDO' | translate"
+        [errorMessage]="
+          alunoForm.get('email') | errorMessage | translate: (alunoForm.get('email') | errorParams)
+        "
       ></app-form-field-text>
 
       <app-date-picker
@@ -97,7 +103,11 @@
         [placeholder]="'ALUNO.FORMULARIO.DATA_NASCIMENTO_PLACEHOLDER' | translate"
         formControlName="dataNascimento"
         [control]="alunoForm.get('dataNascimento')"
-        [errorMessage]="alunoForm.get('dataNascimento') | errorMessage | translate"
+        [errorMessage]="
+          alunoForm.get('dataNascimento')
+            | errorMessage
+            | translate: (alunoForm.get('dataNascimento') | errorParams)
+        "
         [feriados]="(feriados$ | async) ?? []"
       ></app-date-picker>
 
@@ -108,7 +118,9 @@
         [options]="opcoesSexo"
         formControlName="sexo"
         [control]="alunoForm.get('sexo')"
-        [errorMessage]="'VALIDACAO.OBRIGATORIO' | translate"
+        [errorMessage]="
+          alunoForm.get('sexo') | errorMessage | translate: (alunoForm.get('sexo') | errorParams)
+        "
       ></app-form-field-select>
 
       <app-botao [tipo]="'submit'" [variante]="'primario'">
