@@ -3,6 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 import { environment } from '../../../environments/environments';
 import { TurnoEnum } from '../../shared/enums/turno.enum';
+import { TurmaEditarDTO } from '../../shared/interfaces/dto/turma-editar-dto.interface';
 import { TurmaFiltro } from '../../shared/interfaces/ui/turma-filtro.interface';
 import { TurmaService } from './turma.service';
 
@@ -88,5 +89,61 @@ describe('TurmaService: a query string montada pelo montarParams', () => {
     expect(requisicao.request.method).toBe('GET');
     expect(requisicao.request.body).toBeNull();
     requisicao.flush(PAGINA_VAZIA);
+  });
+});
+
+describe('TurmaService: os três verbos novos', () => {
+  let service: TurmaService;
+  let http: HttpTestingController;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
+    service = TestBed.inject(TurmaService);
+    http = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => {
+    http.verify();
+  });
+
+  it('editarTurma faz PUT em /turmas/{id} com o DTO no corpo, sem alocacoes, alunosIds ou ativo', () => {
+    const dto: TurmaEditarDTO = {
+      id: 7,
+      identificador: 'A',
+      serie: 2,
+      anoLetivo: 2026,
+      turno: TurnoEnum.NOTURNO,
+      capacidade: 25,
+    };
+
+    service.editarTurma(dto).subscribe();
+
+    const requisicao = http.expectOne(`${URL_TURMAS}/7`);
+    expect(requisicao.request.method).toBe('PUT');
+    expect(requisicao.request.body).toEqual(dto);
+    expect(requisicao.request.body).not.toHaveProperty('alocacoes');
+    expect(requisicao.request.body).not.toHaveProperty('alunosIds');
+    expect(requisicao.request.body).not.toHaveProperty('ativo');
+    requisicao.flush(null);
+  });
+
+  it('inativarTurma faz PATCH em /turmas/{id}/inativar com corpo vazio', () => {
+    service.inativarTurma(1).subscribe();
+
+    const requisicao = http.expectOne(`${URL_TURMAS}/1/inativar`);
+    expect(requisicao.request.method).toBe('PATCH');
+    expect(requisicao.request.body).toEqual({});
+    requisicao.flush(null);
+  });
+
+  it('reativarTurma faz PATCH em /turmas/{id}/reativar com corpo vazio', () => {
+    service.reativarTurma(1).subscribe();
+
+    const requisicao = http.expectOne(`${URL_TURMAS}/1/reativar`);
+    expect(requisicao.request.method).toBe('PATCH');
+    expect(requisicao.request.body).toEqual({});
+    requisicao.flush(null);
   });
 });

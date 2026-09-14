@@ -8,6 +8,7 @@ import { DocenteSqlInterface } from '../../shared/interfaces/entities/docente-sq
 import { TurmaInterface } from '../../shared/interfaces/entities/turma.interface';
 import { ResultadoPaginado } from '../../shared/interfaces/ui/resultado-paginado.interface';
 import { TurmaAdicionarDTO } from '../../shared/interfaces/dto/turma-adicionar-dto.interface';
+import { TurmaEditarDTO } from '../../shared/interfaces/dto/turma-editar-dto.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -38,5 +39,17 @@ export class TurmaService {
 
   adicionarTurma(dto: TurmaAdicionarDTO): Observable<void> {
     return this.http.post<void>(this.apiUrl, dto);
+  }
+
+  editarTurma(dto: TurmaEditarDTO): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${dto.id}`, dto);
+  }
+
+  inativarTurma(id: number): Observable<void> {
+    return this.http.patch<void>(`${this.apiUrl}/${id}/inativar`, {});
+  }
+
+  reativarTurma(id: number): Observable<void> {
+    return this.http.patch<void>(`${this.apiUrl}/${id}/reativar`, {});
   }
 }
