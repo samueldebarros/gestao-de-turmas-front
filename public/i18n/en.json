@@ -84,7 +84,14 @@
   "TURMA": {
     "BOTOES": {
       "CADASTRAR": "Add class",
-      "CANCELAR": "Cancel"
+      "CANCELAR": "Cancel",
+      "EDITAR": "Edit",
+      "INATIVAR": "Deactivate",
+      "REATIVAR": "Reactivate",
+      "SALVAR_ALTERACOES": "Save changes"
+    },
+    "MODAL": {
+      "EDICAO_TITULO": "Edit Class"
     },
     "FILTRO": {
       "ANO_LETIVO": "School year",
@@ -197,7 +204,10 @@
     "DOCUMENTO_INVALIDO": "The document must have 11 (CPF) or 14 (CNPJ) digits.",
     "CPF_INVALIDO": "Invalid CPF. Please check the digits entered.",
     "CNPJ_INVALIDO": "Invalid CNPJ. Please check the digits entered.",
-    "EM_BRANCO": "The text input cannot be empty."
+    "EM_BRANCO": "The text input cannot be empty.",
+    "TAMANHO_MAXIMO": "The text is too long.",
+    "VALOR_MINIMO": "The value is below the allowed minimum.",
+    "VALOR_MAXIMO": "The value is above the allowed maximum."
   },
   "MENSAGEM": {
     "FORMULARIO_INVALIDO": "Invalid Form.",
@@ -221,7 +231,14 @@
     "ERRO_EDICAO_DOCENTE": "An error occurred while updating the teacher.",
     "ERRO_CARREGAR_DOCENTE": "Could not load the teacher data.",
     "ERRO_CARREGAR_DISCIPLINAS": "Could not load the subject list.",
-    "ERRO_REGRA_NEGOCIO_DOCENTE": "Could not save. Fix the highlighted data and try again."
+    "ERRO_REGRA_NEGOCIO_DOCENTE": "Could not save. Fix the highlighted data and try again.",
+    "SUCESSO_EDICAO_TURMA": "Class updated successfully.",
+    "ERRO_EDICAO_TURMA": "An error occurred while editing the class.",
+    "SUCESSO_INATIVAR_TURMA": "Class deactivated successfully.",
+    "ERRO_INATIVAR_TURMA": "An error occurred while deactivating the class.",
+    "SUCESSO_REATIVAR_TURMA": "Class reactivated successfully.",
+    "ERRO_REATIVAR_TURMA": "An error occurred while reactivating the class.",
+    "ERRO_REGRA_NEGOCIO_TURMA": "Could not save. Fix the highlighted data and try again."
   },
   "LOGIN": {
     "TITULO": "Sign in",
