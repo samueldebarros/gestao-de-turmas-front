@@ -197,7 +197,7 @@
   },
   "VALIDACAO": {
     "OBRIGATORIO": "Este campo é obrigatório.",
-    "TAMANHO_MINIMO": "O texto é curto demais.",
+    "TAMANHO_MINIMO": "Use ao menos {{requiredLength}} caracteres.",
     "EMAIL_INVALIDO": "E-mail inválido.",
     "DATA_FUTURA": "A data não pode ser hoje ou no futuro.",
     "IDADE_MAXIMA": "A idade não pode ultrapassar 120 anos.",
@@ -205,9 +205,9 @@
     "CPF_INVALIDO": "CPF inválido. Verifique os números digitados.",
     "CNPJ_INVALIDO": "CNPJ inválido. Verifique os números digitados.",
     "EM_BRANCO": "O campo de texto não pode estar vazio.",
-    "TAMANHO_MAXIMO": "O texto é longo demais.",
-    "VALOR_MINIMO": "O valor é menor que o permitido.",
-    "VALOR_MAXIMO": "O valor é maior que o permitido."
+    "TAMANHO_MAXIMO": "Use no máximo {{requiredLength}} caractere(s).",
+    "VALOR_MINIMO": "O valor não pode ser menor que {{min}}.",
+    "VALOR_MAXIMO": "O valor não pode passar de {{max}}."
   },
   "MENSAGEM": {
     "FORMULARIO_INVALIDO": "Formulário inválido.",

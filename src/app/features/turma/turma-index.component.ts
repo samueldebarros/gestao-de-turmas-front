@@ -21,6 +21,11 @@ import { MensagemComponent } from '../../shared/components/mensagem.component/me
 import { Modal } from '../../shared/components/modal/modal.component';
 import { PaginacaoComponent } from '../../shared/components/paginacao.component/paginacao.component';
 import { TurmaCardComponent } from '../../shared/components/turma-card.component/turma-card.component';
+import {
+  validadoresAnoLetivoTurma,
+  validadoresCapacidadeTurma,
+  validadoresIdentificadorTurma,
+} from '../../shared/constants/limites-turma.const';
 import { TurnoEnum } from '../../shared/enums/turno.enum';
 import { TurmaEditarDTO } from '../../shared/interfaces/dto/turma-editar-dto.interface';
 import { TurmaInterface } from '../../shared/interfaces/entities/turma.interface';
@@ -30,8 +35,8 @@ import { FiltroListaInterface } from '../../shared/interfaces/ui/filtro-lista.in
 import { SelectFilterInterface } from '../../shared/interfaces/ui/select-filter.interface';
 import { SelectOptionInterface } from '../../shared/interfaces/ui/select-option.interface';
 import { ErrorMessagePipe } from '../../shared/pipes/error-message.pipe';
+import { ErrorParamsPipe } from '../../shared/pipes/error-params.pipe';
 import { extrairMensagemDeRegra } from '../../shared/utils/mensagem-regra-negocio.util';
-import { TextoValidator } from '../../shared/validators/texto.validator';
 
 @Component({
   selector: 'app-turma-index',
@@ -46,6 +51,7 @@ import { TextoValidator } from '../../shared/validators/texto.validator';
     FormFieldTextComponent,
     FormFieldSelectComponent,
     ErrorMessagePipe,
+    ErrorParamsPipe,
     TranslatePipe,
     AsyncPipe,
     RouterLink,
@@ -115,16 +121,12 @@ export class TurmaIndexComponent {
   readonly turmaForm = this.fb.group({
     identificador: new FormControl<string>('', {
       nonNullable: true,
-      validators: [Validators.required, TextoValidator.naoEmBranco(), Validators.maxLength(1)],
+      validators: validadoresIdentificadorTurma,
     }),
     serie: new FormControl<number | null>(null, Validators.required),
-    anoLetivo: new FormControl<number | null>(null, Validators.required),
+    anoLetivo: new FormControl<number | null>(null, validadoresAnoLetivoTurma),
     turno: new FormControl<TurnoEnum | null>(null, Validators.required),
-    capacidade: new FormControl<number | null>(null, [
-      Validators.required,
-      Validators.min(1),
-      Validators.max(255),
-    ]),
+    capacidade: new FormControl<number | null>(null, validadoresCapacidadeTurma),
   });
 
   filtrar(filtro: FiltroListaInterface): void {

@@ -160,6 +160,20 @@ describe('TurmaIndexComponent', () => {
       expect(facade.editar).not.toHaveBeenCalled();
     });
 
+    it('anoLetivo fora da faixa 2000-2100 invalida o form, e 2026 é válido', () => {
+      montar();
+      componente.abrirModalEdicao(TURMA_ATIVA);
+
+      componente.turmaForm.patchValue({ anoLetivo: 1999 });
+      expect(componente.turmaForm.invalid).toBe(true);
+
+      componente.turmaForm.patchValue({ anoLetivo: 2101 });
+      expect(componente.turmaForm.invalid).toBe(true);
+
+      componente.turmaForm.patchValue({ anoLetivo: 2026 });
+      expect(componente.turmaForm.valid).toBe(true);
+    });
+
     it('formulário inválido marca todos os campos como touched para revelar as mensagens de erro', () => {
       montar();
       componente.abrirModalEdicao(TURMA_ATIVA);

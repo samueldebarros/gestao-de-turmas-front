@@ -38,8 +38,10 @@ import { FiltroListaInterface } from '../../shared/interfaces/ui/filtro-lista.in
 import { SelectFilterInterface } from '../../shared/interfaces/ui/select-filter.interface';
 import { SelectOptionInterface } from '../../shared/interfaces/ui/select-option.interface';
 import { TabelaColuna } from '../../shared/interfaces/ui/tabela-coluna.interface';
+import { causasDeInvalidez } from '../../shared/utils/causas-de-invalidez.util';
 import { extrairMensagemDeRegra } from '../../shared/utils/mensagem-regra-negocio.util';
 import { ErrorMessagePipe } from '../../shared/pipes/error-message.pipe';
+import { ErrorParamsPipe } from '../../shared/pipes/error-params.pipe';
 import { CpfCnpjValidator } from '../../shared/validators/cpf-cnpj.validator';
 import { IdadeValidator } from '../../shared/validators/idade.validator';
 
@@ -67,6 +69,7 @@ const ROTULO_DO_CAMPO: Record<string, string> = {
     AsyncPipe,
     TranslatePipe,
     ErrorMessagePipe,
+    ErrorParamsPipe,
   ],
   templateUrl: './docente-index.component.html',
   styleUrl: './docente-index.component.scss',
@@ -77,7 +80,6 @@ export class DocenteIndexComponent {
   private readonly disciplinaFacade = inject(DisciplinaFacadeService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly fb = inject(FormBuilder);
-  private readonly erroMessagePipe = new ErrorMessagePipe();
 
   public readonly resultado$ = this.docentesFacade.resultado$;
   public readonly ordenacaoAtual$ = this.docentesFacade.ordenacaoAtual$;
@@ -422,13 +424,7 @@ export class DocenteIndexComponent {
   }
 
   public causasDeInvalidez(): DetalheAlerta[] {
-    return Object.entries(this.docenteForm.controls)
-      .filter(([, controle]) => controle.enabled && controle.invalid)
-      .map(([nome, controle]) => ({
-        campo: ROTULO_DO_CAMPO[nome] ?? nome,
-        erro: this.erroMessagePipe.transform(controle),
-      }))
-      .filter((detalhe) => detalhe.erro !== '');
+    return causasDeInvalidez(this.docenteForm, ROTULO_DO_CAMPO);
   }
 
   private recusarFormularioInvalido(): void {

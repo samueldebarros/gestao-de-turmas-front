@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TranslateService } from '@ngx-translate/core';
 import { DetalheAlerta } from '../../interfaces/ui/detalhe-alerta.interface';
 import { MensagemComponent } from './mensagem.component';
 
@@ -81,6 +82,30 @@ describe('MensagemComponent', () => {
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent).toContain('MENSAGEM.CORRIJA_OS_CAMPOS');
+    });
+
+    it('detalhe com params interpola o placeholder em vez de exibi-lo literal', () => {
+      const translate = TestBed.inject(TranslateService);
+      translate.setTranslation('pt-BR', {
+        VALIDACAO: { VALOR_MAXIMO: 'O valor não pode passar de {{max}}.' },
+      });
+      translate.use('pt-BR');
+
+      componente.visivel = true;
+      componente.texto = 'MENSAGEM.CORRIJA_OS_CAMPOS';
+      componente.detalhes = [
+        {
+          campo: 'DOCENTE.FORMULARIO.IDADE_LABEL',
+          erro: 'VALIDACAO.VALOR_MAXIMO',
+          params: { max: 255 },
+        },
+      ];
+      fixture.detectChanges();
+
+      const linha = itens()[0]?.textContent ?? '';
+
+      expect(linha).not.toContain('{{max}}');
+      expect(linha).toContain('255');
     });
   });
 });

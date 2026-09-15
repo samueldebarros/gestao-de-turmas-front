@@ -1,5 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
+import { primeiroErroDe } from '../utils/primeiro-erro-de.util';
 
 const ERRO_PARA_MENSAGEM: Record<string, string> = {
   required: 'VALIDACAO.OBRIGATORIO',
@@ -19,8 +20,8 @@ const ERRO_PARA_MENSAGEM: Record<string, string> = {
 @Pipe({ name: 'errorMessage', standalone: true, pure: false })
 export class ErrorMessagePipe implements PipeTransform {
   transform(control: AbstractControl | null | undefined): string {
-    if (!control?.errors) return '';
-    const primeiraChave = Object.keys(control.errors)[0];
-    return ERRO_PARA_MENSAGEM[primeiraChave] ?? '';
+    const primeiroErro = primeiroErroDe(control);
+    if (!primeiroErro) return '';
+    return ERRO_PARA_MENSAGEM[primeiroErro.chave] ?? '';
   }
 }

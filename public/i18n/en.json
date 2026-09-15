@@ -197,7 +197,7 @@
   },
   "VALIDACAO": {
     "OBRIGATORIO": "This field is required.",
-    "TAMANHO_MINIMO": "The text is too short.",
+    "TAMANHO_MINIMO": "Use at least {{requiredLength}} characters.",
     "EMAIL_INVALIDO": "Invalid e-mail.",
     "DATA_FUTURA": "The date cannot be today or in the future.",
     "IDADE_MAXIMA": "Age cannot exceed 120 years.",
@@ -205,9 +205,9 @@
     "CPF_INVALIDO": "Invalid CPF. Please check the digits entered.",
     "CNPJ_INVALIDO": "Invalid CNPJ. Please check the digits entered.",
     "EM_BRANCO": "The text input cannot be empty.",
-    "TAMANHO_MAXIMO": "The text is too long.",
-    "VALOR_MINIMO": "The value is below the allowed minimum.",
-    "VALOR_MAXIMO": "The value is above the allowed maximum."
+    "TAMANHO_MAXIMO": "Use at most {{requiredLength}} character(s).",
+    "VALOR_MINIMO": "The value cannot be less than {{min}}.",
+    "VALOR_MAXIMO": "The value cannot be greater than {{max}}."
   },
   "MENSAGEM": {
     "FORMULARIO_INVALIDO": "Invalid Form.",

@@ -116,6 +116,14 @@ describe('AlunoIndex: orquestração do cadastro', () => {
       expect(facadeFake.adicionar).not.toHaveBeenCalled();
       expect(componente.alertaModal().texto).toBe('MENSAGEM.FORMULARIO_INVALIDO');
     });
+
+    it('submeter inválido marca todo o formulário como touched, para os campos exibirem erro', () => {
+      componente.abrirModal();
+
+      componente.salvarAluno();
+
+      expect(componente.alunoForm.touched).toBe(true);
+    });
   });
 
   describe('cadastro bem-sucedido', () => {

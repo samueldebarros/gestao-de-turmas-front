@@ -151,5 +151,12 @@ describe('FormFieldSelectComponent: o contrato do CVA', () => {
       expect(erro()).not.toBeNull();
       expect(select().className).toContain('select-error');
     });
+
+    it('a mensagem de erro é anunciada por leitor de tela', () => {
+      select().dispatchEvent(new Event('blur'));
+      fixture.detectChanges();
+
+      expect(erro().nativeElement.getAttribute('role')).toBe('alert');
+    });
   });
 });

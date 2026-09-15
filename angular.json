@@ -107,20 +107,27 @@
               "lcovonly"
             ],
             "coverageThresholds": {
-              "statements": 72.7,
-              "branches": 81.7,
-              "functions": 69.1,
-              "lines": 72.5
+              "statements": 73.9,
+              "branches": 82.6,
+              "functions": 69.5,
+              "lines": 73.7
             }
           },
           "configurations": {
             "escopo": {
               "coverage": true,
               "coverageInclude": [
-                "src/app/core/services/turma.service.ts",
-                "src/app/core/facades/turma-facade.service.ts",
+                "src/app/shared/pipes/error-message.pipe.ts",
+                "src/app/shared/pipes/error-params.pipe.ts",
+                "src/app/shared/utils/primeiro-erro-de.util.ts",
+                "src/app/shared/utils/causas-de-invalidez.util.ts",
+                "src/app/shared/constants/limites-turma.const.ts",
+                "src/app/shared/components/mensagem.component/**/*.ts",
+                "src/app/shared/components/form-field-select.component/**/*.ts",
+                "src/app/shared/components/stepper.component/**/*.ts",
+                "src/app/shared/components/passos/passo-informacoes.component/**/*.ts",
                 "src/app/features/turma/turma-index.component.ts",
-                "src/app/shared/components/turma-card.component/**/*.ts"
+                "src/app/features/turma/turma-cadastro.component/turma-cadastro.component.ts"
               ],
               "coverageThresholds": {
                 "statements": 80,

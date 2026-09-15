@@ -24,11 +24,11 @@
     }
 
     @if (!ehUltimo) {
-      <app-botao variante="primario" [desabilitado]="!podeAvancar" (acaoBotao)="avancar.emit()">
+      <app-botao variante="primario" (acaoBotao)="avancar.emit()">
         {{ 'STEPPER.AVANCAR' | translate }}
       </app-botao>
     } @else {
-      <app-botao variante="sucesso" [desabilitado]="!podeAvancar" (acaoBotao)="concluir.emit()">
+      <app-botao variante="sucesso" (acaoBotao)="concluir.emit()">
         {{ 'STEPPER.CONCLUIR' | translate }}
       </app-botao>
     }

@@ -6,7 +6,7 @@
       @if (detalhes.length > 0) {
         <ul class="detalhes-mensagem">
           @for (detalhe of detalhes; track detalhe.campo + detalhe.erro) {
-            <li>{{ detalhe.campo | translate }}: {{ detalhe.erro | translate }}</li>
+            <li>{{ detalhe.campo | translate }}: {{ detalhe.erro | translate: detalhe.params }}</li>
           }
         </ul>
       }

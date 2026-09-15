@@ -1,7 +1,11 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { TextoValidator } from '../../../shared/validators/texto.validator';
 import { TurnoEnum } from '../../../shared/enums/turno.enum';
+import {
+  validadoresAnoLetivoTurma,
+  validadoresCapacidadeTurma,
+  validadoresIdentificadorTurma,
+} from '../../../shared/constants/limites-turma.const';
 import { Router } from '@angular/router';
 import { PassoStepper } from '../../../shared/interfaces/ui/passo-stepper.interface';
 import { StepperComponent } from '../../../shared/components/stepper.component/stepper.component';
@@ -23,6 +27,16 @@ import { MensagemComponent } from '../../../shared/components/mensagem.component
 import { ImportacaoResultado } from '../../../shared/interfaces/dto/importacao-alunos.interface';
 import { ImportarAlunosComponent } from '../../../shared/components/importar-alunos.component/importar-alunos.component';
 import { FeatureFlagsService } from '../../../core/services/feature-flags.service';
+import { DetalheAlerta } from '../../../shared/interfaces/ui/detalhe-alerta.interface';
+import { causasDeInvalidez } from '../../../shared/utils/causas-de-invalidez.util';
+
+const ROTULO_DO_CAMPO: Record<string, string> = {
+  identificador: 'TURMA.FORMULARIO.IDENTIFICADOR_LABEL',
+  serie: 'TURMA.FORMULARIO.SERIE_LABEL',
+  anoLetivo: 'TURMA.FORMULARIO.ANO_LETIVO_LABEL',
+  capacidade: 'TURMA.FORMULARIO.CAPACIDADE_LABEL',
+  turno: 'TURMA.FORMULARIO.TURNO_LABEL',
+};
 
 @Component({
   selector: 'app-turma-cadastro',
@@ -67,11 +81,11 @@ export class TurmaCadastroComponent {
     informacoes: this.fb.group({
       identificador: new FormControl<string>('', {
         nonNullable: true,
-        validators: [Validators.required, TextoValidator.naoEmBranco()],
+        validators: validadoresIdentificadorTurma,
       }),
       serie: new FormControl<number | null>(null, Validators.required),
-      anoLetivo: new FormControl<number | null>(null, Validators.required),
-      capacidade: new FormControl<number | null>(null, [Validators.required, Validators.min(1)]),
+      anoLetivo: new FormControl<number | null>(null, validadoresAnoLetivoTurma),
+      capacidade: new FormControl<number | null>(null, validadoresCapacidadeTurma),
       turno: new FormControl<TurnoEnum | null>(null, Validators.required),
     }),
     alocacoes: new FormControl<number[]>([], {
@@ -101,7 +115,15 @@ export class TurmaCadastroComponent {
   }
 
   avancar(): void {
-    if (this.podeAvancar && this.passoAtual < this.passos.length - 1) this.passoAtual++;
+    const grupoAtual = this.cadastroForm.get(this.ordemGrupos[this.passoAtual])!;
+    if (grupoAtual.invalid) {
+      grupoAtual.markAllAsTouched();
+      this.exibirAlertaInvalido(
+        grupoAtual instanceof FormGroup ? causasDeInvalidez(grupoAtual, ROTULO_DO_CAMPO) : [],
+      );
+      return;
+    }
+    if (this.passoAtual < this.passos.length - 1) this.passoAtual++;
   }
 
   voltar(): void {
@@ -131,6 +153,7 @@ export class TurmaCadastroComponent {
   concluir(): void {
     if (this.cadastroForm.invalid) {
       this.cadastroForm.markAllAsTouched();
+      this.exibirAlertaInvalido(causasDeInvalidez(this.informacoesGroup, ROTULO_DO_CAMPO));
       return;
     }
     this.turmaFacade
@@ -148,6 +171,15 @@ export class TurmaCadastroComponent {
 
   fecharAlerta(): void {
     this.alerta.update((a) => ({ ...a, visivel: false }));
+  }
+
+  private exibirAlertaInvalido(detalhes: DetalheAlerta[]): void {
+    this.alerta.set({
+      visivel: true,
+      tipo: 'erro',
+      texto: 'MENSAGEM.CORRIJA_OS_CAMPOS',
+      detalhes,
+    });
   }
 
   private montarDto(): TurmaAdicionarDTO {
