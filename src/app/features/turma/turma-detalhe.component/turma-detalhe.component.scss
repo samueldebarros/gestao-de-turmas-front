@@ -1,0 +1,48 @@
+$cor-borda: #e5e7eb;
+$cor-texto-secundario: #6b7280;
+
+:host {
+  display: block;
+  min-height: 22rem;
+}
+
+.detalhe__bloco {
+  & + & {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid $cor-borda;
+  }
+}
+
+.detalhe__titulo {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.detalhe__contagens {
+  margin: 0 0 0.75rem;
+  font-size: 0.875rem;
+  color: $cor-texto-secundario;
+}
+
+.detalhe__status {
+  margin: 1rem 0;
+  text-align: center;
+  color: #666;
+}
+
+.detalhe__somente-leitura {
+  margin: 0 0 1.25rem;
+  color: #666;
+}
+
+.detalhe__tabela {
+  overflow-x: auto;
+}
+
+app-autocomplete {
+  display: block;
+  margin-bottom: 1rem;
+}

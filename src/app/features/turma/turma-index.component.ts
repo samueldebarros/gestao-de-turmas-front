@@ -14,6 +14,7 @@ import { RouterLink } from '@angular/router';
 import { catchError, finalize, Observable, of, tap } from 'rxjs';
 import { TurmaFacadeService } from '../../core/facades/turma-facade.service';
 import { Botao } from '../../shared/components/botao/botao.component';
+import { ConfirmacaoComponent } from '../../shared/components/confirmacao.component/confirmacao.component';
 import { FiltroListaComponent } from '../../shared/components/filtro-lista.component/filtro-lista.component';
 import { FormFieldSelectComponent } from '../../shared/components/form-field-select.component/form-field-select.component';
 import { FormFieldTextComponent } from '../../shared/components/form-field-text.component/form-field-text.component';
@@ -21,6 +22,7 @@ import { MensagemComponent } from '../../shared/components/mensagem.component/me
 import { Modal } from '../../shared/components/modal/modal.component';
 import { PaginacaoComponent } from '../../shared/components/paginacao.component/paginacao.component';
 import { TurmaCardComponent } from '../../shared/components/turma-card.component/turma-card.component';
+import { TurmaDetalheComponent } from './turma-detalhe.component/turma-detalhe.component';
 import {
   validadoresAnoLetivoTurma,
   validadoresCapacidadeTurma,
@@ -30,13 +32,16 @@ import { TurnoEnum } from '../../shared/enums/turno.enum';
 import { TurmaEditarDTO } from '../../shared/interfaces/dto/turma-editar-dto.interface';
 import { TurmaInterface } from '../../shared/interfaces/entities/turma.interface';
 import { AlertaState } from '../../shared/interfaces/ui/alerta-state.interface';
+import { ConfirmacaoAcao } from '../../shared/interfaces/ui/confirmacao-acao.interface';
 import { EstadoModalTurma } from '../../shared/interfaces/ui/estado-modal-turma.interface';
 import { FiltroListaInterface } from '../../shared/interfaces/ui/filtro-lista.interface';
 import { SelectFilterInterface } from '../../shared/interfaces/ui/select-filter.interface';
 import { SelectOptionInterface } from '../../shared/interfaces/ui/select-option.interface';
 import { ErrorMessagePipe } from '../../shared/pipes/error-message.pipe';
 import { ErrorParamsPipe } from '../../shared/pipes/error-params.pipe';
-import { extrairMensagemDeRegra } from '../../shared/utils/mensagem-regra-negocio.util';
+import { alertaDeErroHttp } from '../../shared/utils/tratar-erro-http.util';
+
+type AcaoPendenteTurma = { tipo: 'nenhuma' } | { tipo: 'inativar'; turma: TurmaInterface };
 
 @Component({
   selector: 'app-turma-index',
@@ -55,6 +60,8 @@ import { extrairMensagemDeRegra } from '../../shared/utils/mensagem-regra-negoci
     TranslatePipe,
     AsyncPipe,
     RouterLink,
+    TurmaDetalheComponent,
+    ConfirmacaoComponent,
   ],
   templateUrl: './turma-index.component.html',
   styleUrl: './turma-index.component.scss',
@@ -72,11 +79,20 @@ export class TurmaIndexComponent {
   readonly alertaPagina = signal<AlertaState>({ visivel: false, tipo: 'erro', texto: '' });
   readonly alertaModal = signal<AlertaState>({ visivel: false, tipo: 'erro', texto: '' });
 
-  private readonly estadoModal = signal<EstadoModalTurma>({ modo: 'fechado' });
+  readonly estadoModal = signal<EstadoModalTurma>({ modo: 'fechado' });
   private readonly idsEmVoo = signal<ReadonlySet<number>>(new Set());
 
   readonly modalAberto = computed(() => this.estadoModal().modo !== 'fechado');
-  readonly tituloModal = computed(() => 'TURMA.MODAL.EDICAO_TITULO');
+  readonly tituloModal = computed(() =>
+    this.estadoModal().modo == 'detalhe' ? 'TURMA.DETALHE.TITULO' : 'TURMA.MODAL.EDICAO_TITULO',
+  );
+
+  private readonly acaoPendente = signal<AcaoPendenteTurma>({ tipo: 'nenhuma' });
+
+  readonly confirmacaoPendente = computed<ConfirmacaoAcao | null>(() => {
+    const pendente = this.acaoPendente();
+    return pendente.tipo === 'inativar' ? this.confirmacaoInativar(pendente.turma) : null;
+  });
 
   readonly opcoesTurno: SelectOptionInterface[] = [
     { value: TurnoEnum.MATUTINO, label: 'TURMA.TURNO.1' },
@@ -153,6 +169,10 @@ export class TurmaIndexComponent {
     this.estadoModal.set({ modo: 'editar', turma });
   }
 
+  abrirDetalhe(turma: TurmaInterface): void {
+    this.estadoModal.set({ modo: 'detalhe', turma });
+  }
+
   fecharModal(): void {
     this.ocultarAlertaModal();
     this.estadoModal.set({ modo: 'fechado' });
@@ -165,22 +185,48 @@ export class TurmaIndexComponent {
   alternarStatus(turma: TurmaInterface): void {
     if (this.idsEmVoo().has(turma.id)) return;
 
+    if (turma.ativo) {
+      this.acaoPendente.set({ tipo: 'inativar', turma });
+      return;
+    }
+
     this.marcarEmVoo(turma.id, true);
     const aoTerminar = finalize<unknown>(() => this.marcarEmVoo(turma.id, false));
+    this.executarAcaoNaLista(
+      this.facade.reativar(turma.id).pipe(aoTerminar),
+      'MENSAGEM.SUCESSO_REATIVAR_TURMA',
+      'MENSAGEM.ERRO_REATIVAR_TURMA',
+    );
+  }
 
-    if (turma.ativo) {
-      this.executarAcaoNaLista(
-        this.facade.inativar(turma.id).pipe(aoTerminar),
-        'MENSAGEM.SUCESSO_INATIVAR_TURMA',
-        'MENSAGEM.ERRO_INATIVAR_TURMA',
-      );
-    } else {
-      this.executarAcaoNaLista(
-        this.facade.reativar(turma.id).pipe(aoTerminar),
-        'MENSAGEM.SUCESSO_REATIVAR_TURMA',
-        'MENSAGEM.ERRO_REATIVAR_TURMA',
-      );
-    }
+  confirmar(): void {
+    const pendente = this.acaoPendente();
+    this.acaoPendente.set({ tipo: 'nenhuma' });
+
+    if (pendente.tipo !== 'inativar') return;
+
+    const turma = pendente.turma;
+    this.marcarEmVoo(turma.id, true);
+    const aoTerminar = finalize<unknown>(() => this.marcarEmVoo(turma.id, false));
+    this.executarAcaoNaLista(
+      this.facade.inativar(turma.id).pipe(aoTerminar),
+      'MENSAGEM.SUCESSO_INATIVAR_TURMA',
+      'MENSAGEM.ERRO_INATIVAR_TURMA',
+    );
+  }
+
+  cancelarAcaoPendente(): void {
+    this.acaoPendente.set({ tipo: 'nenhuma' });
+  }
+
+  private confirmacaoInativar(turma: TurmaInterface): ConfirmacaoAcao {
+    return {
+      titulo: 'CONFIRMACAO.TITULO',
+      mensagem: 'TURMA.CONFIRMACAO.INATIVAR',
+      params: { identificador: turma.identificador },
+      rotuloConfirmar: 'CONFIRMACAO.CONFIRMAR',
+      variante: 'perigo',
+    };
   }
 
   salvarTurma(): void {
@@ -220,13 +266,6 @@ export class TurmaIndexComponent {
     this.alertaModal.update((alerta) => ({ ...alerta, visivel: false }));
   }
 
-  private textoDoErro(erro: unknown, chaveErro: string): string {
-    const status = (erro as { status?: number } | null)?.status;
-    if (status !== 422) return chaveErro;
-
-    return extrairMensagemDeRegra(erro) ?? 'MENSAGEM.ERRO_REGRA_NEGOCIO_TURMA';
-  }
-
   private executarAcaoNaLista(
     acao$: Observable<unknown>,
     chaveSucesso: string,
@@ -236,7 +275,9 @@ export class TurmaIndexComponent {
       .pipe(
         tap(() => this.exibirAlertaPagina('sucesso', chaveSucesso)),
         catchError((erro: unknown) => {
-          this.exibirAlertaPagina('erro', this.textoDoErro(erro, chaveErro));
+          this.alertaPagina.set(
+            alertaDeErroHttp(erro, chaveErro, 'MENSAGEM.ERRO_REGRA_NEGOCIO_TURMA'),
+          );
           return of(null);
         }),
         takeUntilDestroyed(this.destroyRef),
@@ -256,7 +297,9 @@ export class TurmaIndexComponent {
           this.fecharModal();
         }),
         catchError((erro: unknown) => {
-          this.exibirAlertaModal('erro', this.textoDoErro(erro, chaveErro));
+          this.alertaModal.set(
+            alertaDeErroHttp(erro, chaveErro, 'MENSAGEM.ERRO_REGRA_NEGOCIO_TURMA'),
+          );
           return of(null);
         }),
         takeUntilDestroyed(this.destroyRef),

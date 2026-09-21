@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { AlunoFacadeService } from '../../../core/facades/aluno-facade.service';
 import { DocenteFacadeService } from '../../../core/facades/docente-facade.service';
 import { TurmaFacadeService } from '../../../core/facades/turma-facade.service';
@@ -33,7 +34,10 @@ describe('TurmaCadastro: navegação e seleção', () => {
 
     TestBed.configureTestingModule({
       providers: [
-        { provide: DocenteFacadeService, useValue: { docentes$: of([]) } },
+        {
+          provide: DocenteFacadeService,
+          useValue: { docentes$: of({ status: 'ok', itens: [] }) },
+        },
         { provide: TurmaFacadeService, useValue: turmaFacadeFake },
         { provide: Router, useValue: routerFake },
       ],
@@ -165,5 +169,58 @@ describe('TurmaCadastro: navegação e seleção', () => {
     componente.avancar();
 
     expect(componente.passoAtual).toBe(PASSO_DISCIPLINAS);
+  });
+
+  it('exibe a frase do servidor quando o cadastro falha com 422', () => {
+    turmaFacadeFake.adicionar = vi.fn(() =>
+      throwError(() => ({
+        status: 422,
+        error: {
+          error: new SyntaxError('...'),
+          text: 'Já existe uma turma com essa combinação de Identificador, Série e Ano letivo',
+        },
+      })),
+    );
+    componente.informacoesGroup.setValue({
+      identificador: 'A',
+      serie: 1,
+      anoLetivo: 2026,
+      capacidade: 30,
+      turno: TurnoEnum.MATUTINO,
+    });
+    componente.setAlocacoes([3]);
+
+    componente.concluir();
+
+    expect(componente.alerta()).toEqual({
+      visivel: true,
+      tipo: 'erro',
+      texto: 'Já existe uma turma com essa combinação de Identificador, Série e Ano letivo',
+      literal: true,
+    });
+    expect(routerFake.navigate).not.toHaveBeenCalled();
+  });
+
+  it('disciplinas$ repassa o estado de erro quando a fonte de docentes falha, exibindo o aviso e escondendo o passo', () => {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: DocenteFacadeService, useValue: { docentes$: of({ status: 'erro' }) } },
+        { provide: TurmaFacadeService, useValue: turmaFacadeFake },
+        { provide: Router, useValue: routerFake },
+      ],
+    });
+    TestBed.overrideComponent(TurmaCadastroComponent, {
+      add: { providers: [{ provide: AlunoFacadeService, useValue: alunoFacadeFake }] },
+    });
+
+    const novaFixture = TestBed.createComponent(TurmaCadastroComponent);
+    novaFixture.componentInstance.passoAtual = PASSO_DISCIPLINAS;
+    novaFixture.detectChanges();
+
+    expect((novaFixture.nativeElement as HTMLElement).textContent).toContain(
+      'TURMA.CADASTRO.ERRO_DISCIPLINAS',
+    );
+    expect(novaFixture.debugElement.queryAll(By.css('app-passo-disciplinas'))).toHaveLength(0);
   });
 });

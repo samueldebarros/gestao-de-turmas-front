@@ -14,4 +14,5 @@ export class TurmaCardComponent {
   @Input() comandoEmVoo = false;
   @Output() editar = new EventEmitter<TurmaInterface>();
   @Output() alternarStatus = new EventEmitter<TurmaInterface>();
+  @Output() verDetalhes = new EventEmitter<TurmaInterface>();
 }

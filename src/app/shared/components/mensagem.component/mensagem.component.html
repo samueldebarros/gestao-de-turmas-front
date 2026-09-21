@@ -1,7 +1,11 @@
 @if (visivel) {
   <div class="caixa-mensagem" [class]="tipo">
     <div class="conteudo-mensagem">
-      <span> {{ texto | translate }} </span>
+      @if (literal) {
+        <span> {{ texto }} </span>
+      } @else {
+        <span> {{ texto | translate }} </span>
+      }
 
       @if (detalhes.length > 0) {
         <ul class="detalhes-mensagem">

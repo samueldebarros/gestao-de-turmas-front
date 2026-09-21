@@ -79,6 +79,9 @@
     "BUSCA": {
       "LABEL": "Find student",
       "PLACEHOLDER": "Type name or enrollment"
+    },
+    "CONFIRMACAO": {
+      "INATIVAR": "Deactivate student {{nome}}?"
     }
   },
   "TURMA": {
@@ -88,10 +91,19 @@
       "EDITAR": "Edit",
       "INATIVAR": "Deactivate",
       "REATIVAR": "Reactivate",
-      "SALVAR_ALTERACOES": "Save changes"
+      "SALVAR_ALTERACOES": "Save changes",
+      "CANCELAR_MATRICULA": "Remove",
+      "DESALOCAR": "Unassign"
     },
     "MODAL": {
       "EDICAO_TITULO": "Edit Class"
+    },
+    "CONFIRMACAO": {
+      "DESLIGAR": "Cancel {{nome}}'s enrollment in this class?",
+      "DESALOCAR": "Remove {{nome}} from {{disciplina}} in this class?",
+      "ALOCAR": "Assign {{nome}} to {{disciplina}} in this class?",
+      "TROCAR_DOCENTE": "{{disciplina}} is currently taught by {{atual}}. Replace with {{nome}}?",
+      "INATIVAR": "Deactivate class {{identificador}}? Enrollments and assignments will be locked."
     },
     "FILTRO": {
       "ANO_LETIVO": "School year",
@@ -124,10 +136,13 @@
       "ERRO": "Could not load classes. Please try again."
     },
     "CADASTRO": {
-      "TITULO": "Add class"
+      "TITULO": "Add class",
+      "ERRO_DISCIPLINAS": "Could not load the subjects.",
+      "CARREGANDO_DISCIPLINAS": "Loading subjects..."
     },
     "MENSAGEM": {
-      "ERRO_CADASTRO": "An error occurred while registering the class."
+      "ERRO_CADASTRO": "An error occurred while registering the class.",
+      "DOCENTE_JA_ALOCADO": "This teacher already teaches {{disciplina}} in this class."
     },
     "STEPPER": {
       "INFORMACOES": "Information",
@@ -150,6 +165,36 @@
     },
     "ALUNOS": {
       "SELECIONADOS": "{{total}} student(s) selected"
+    },
+    "SITUACAO": {
+      "1": "Active",
+      "2": "Suspended",
+      "3": "Cancelled",
+      "4": "Completed"
+    },
+    "DETALHE": {
+      "TITULO": "Class details",
+      "VAGAS": "{{ativos}} of {{capacidade}} seats taken",
+      "REGISTROS": "{{total}} enrollment record(s)",
+      "ALUNOS": {
+        "CARREGANDO": "Loading students...",
+        "VAZIO": "No students enrolled in this class.",
+        "ERRO": "Could not load the students for this class.",
+        "TITULO": "Enrolled students",
+        "ADICIONAR_LABEL": "Enroll student",
+        "ADICIONAR_PLACEHOLDER": "Type the name or the enrollment number"
+      },
+      "DOCENTES": {
+        "TITULO": "Teachers and subjects",
+        "CARREGANDO": "Loading teachers...",
+        "CARREGANDO_LISTA": "Loading the teacher list...",
+        "VAZIO": "No teachers assigned to this class.",
+        "ERRO": "Could not load the teachers for this class.",
+        "ERRO_LISTA": "Could not load the teacher list.",
+        "VAZIO_LISTA": "No teachers available for assignment.",
+        "ADICIONAR_LABEL": "Assign teacher"
+      },
+      "SOMENTE_LEITURA": "Inactive class: enrollments and assignments cannot be changed."
     }
   },
   "TABELA": {
@@ -186,7 +231,12 @@
         "NOME": "Full Name",
         "EMAIL": "E-mail",
         "DISCIPLINA": "Subject",
-        "STATUS": "Status"
+        "STATUS": "Status",
+        "CARGA_HORARIA": "Workload"
+      },
+      "ENTURMAMENTO": {
+        "SITUACAO": "Status",
+        "DATA": "Enrolled on"
       }
     }
   },
@@ -216,6 +266,7 @@
     "ERRO_EDICAO_ALUNO": "An error occurred while editing the student.",
     "ERRO_INATIVAR_ALUNO": "An error occurred while deactivating the student.",
     "ERRO_REATIVAR_ALUNO": "An error occurred while reactivating the student.",
+    "ERRO_REGRA_NEGOCIO_ALUNO": "The operation could not be completed.",
     "SUCESSO_CADASTRO_ALUNO": "Student registered successfully.",
     "SUCESSO_EDICAO_ALUNO": "Student updated successfully.",
     "SUCESSO_INATIVAR_ALUNO": "Student deactivated successfully.",
@@ -238,7 +289,21 @@
     "ERRO_INATIVAR_TURMA": "An error occurred while deactivating the class.",
     "SUCESSO_REATIVAR_TURMA": "Class reactivated successfully.",
     "ERRO_REATIVAR_TURMA": "An error occurred while reactivating the class.",
-    "ERRO_REGRA_NEGOCIO_TURMA": "Could not save. Fix the highlighted data and try again."
+    "ERRO_REGRA_NEGOCIO_TURMA": "Could not save. Fix the highlighted data and try again.",
+    "SUCESSO_MATRICULA": "Student enrolled successfully!",
+    "ERRO_MATRICULA": "Error enrolling the student.",
+    "SUCESSO_CANCELAR_MATRICULA": "Enrollment cancelled successfully!",
+    "ERRO_CANCELAR_MATRICULA": "Error cancelling the enrollment.",
+    "ERRO_REGRA_NEGOCIO_MATRICULA": "The operation could not be completed.",
+    "SUCESSO_DESALOCACAO": "Teacher unassigned successfully!",
+    "ERRO_DESALOCACAO": "Error unassigning the teacher.",
+    "SUCESSO_ALOCACAO": "Teacher assigned successfully!",
+    "ERRO_ALOCACAO": "Error assigning the teacher."
+  },
+  "CONFIRMACAO": {
+    "TITULO": "Confirm action",
+    "CONFIRMAR": "Confirm",
+    "CANCELAR": "Cancel"
   },
   "LOGIN": {
     "TITULO": "Sign in",
@@ -314,6 +379,9 @@
     "MODAL": {
       "CADASTRO_TITULO": "New Teacher",
       "EDICAO_TITULO": "Edit Teacher"
+    },
+    "CONFIRMACAO": {
+      "INATIVAR": "Deactivate teacher {{nome}}?"
     },
     "FORMULARIO": {
       "NOME_LABEL": "Full Name",

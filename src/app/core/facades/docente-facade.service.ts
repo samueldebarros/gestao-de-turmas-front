@@ -1,11 +1,14 @@
 import { inject, Injectable } from '@angular/core';
 import {
   BehaviorSubject,
+  catchError,
   debounceTime,
   distinctUntilChanged,
   map,
   Observable,
+  of,
   shareReplay,
+  startWith,
   switchMap,
   tap,
 } from 'rxjs';
@@ -16,7 +19,9 @@ import { DocenteAdicionarDTO } from '../../shared/interfaces/dto/docente-adicion
 import { DocenteEditarDTO } from '../../shared/interfaces/dto/docente-editar-dto.interface';
 import { DocenteDetalheInterface } from '../../shared/interfaces/entities/docente-detalhe.interface';
 import { DocenteListaInterface } from '../../shared/interfaces/entities/docente-lista.interface';
+import { DocenteSqlInterface } from '../../shared/interfaces/entities/docente-sql.interface';
 import { DocenteFiltro } from '../../shared/interfaces/ui/docente-filtro.interface';
+import { EstadoCarga } from '../../shared/interfaces/ui/estado-carga.interface';
 import { FiltroListaInterface } from '../../shared/interfaces/ui/filtro-lista.interface';
 import { OrdenacaoTabela } from '../../shared/interfaces/ui/ordenaca-tabela.interface';
 import { ResultadoPaginado } from '../../shared/interfaces/ui/resultado-paginado.interface';
@@ -38,9 +43,14 @@ export class DocenteFacadeService {
     disciplinaId: null,
   };
 
-  public readonly docentes$ = this.docenteService
+  public readonly docentes$: Observable<EstadoCarga<DocenteSqlInterface>> = this.docenteService
     .obterDocentesDisciplinasSql()
-    .pipe(shareReplay({ bufferSize: 1, refCount: true }));
+    .pipe(
+      map((itens) => ({ status: 'ok', itens }) as EstadoCarga<DocenteSqlInterface>),
+      startWith({ status: 'carregando' } as EstadoCarga<DocenteSqlInterface>),
+      shareReplay({ bufferSize: 1, refCount: true }),
+      catchError(() => of({ status: 'erro' } as EstadoCarga<DocenteSqlInterface>)),
+    );
 
   private readonly filtros$ = new BehaviorSubject<DocenteFiltro>({ ...this.filtroPadrao });
 

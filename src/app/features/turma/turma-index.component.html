@@ -4,6 +4,7 @@
     (visivelChange)="ocultarAlertaPagina()"
     [tipo]="alertaPagina().tipo"
     [texto]="alertaPagina().texto"
+    [literal]="alertaPagina().literal ?? false"
   ></app-mensagem>
 </div>
 
@@ -37,6 +38,7 @@
                 [comandoEmVoo]="estaEmVoo(turma.id)"
                 (editar)="abrirModalEdicao($event)"
                 (alternarStatus)="alternarStatus($event)"
+                (verDetalhes)="abrirDetalhe($event)"
               ></app-turma-card>
             }
           </div>
@@ -60,85 +62,103 @@
   <app-modal
     [titulo]="tituloModal() | translate"
     [visivel]="modalAberto()"
+    [largura]="estadoModal().modo === 'detalhe' ? 'ampla' : 'padrao'"
     (visivelChange)="fecharModal()"
   >
-    <app-mensagem
-      [visivel]="alertaModal().visivel"
-      (visivelChange)="ocultarAlertaModal()"
-      [tipo]="alertaModal().tipo"
-      [texto]="alertaModal().texto"
-    ></app-mensagem>
+    @if (estadoModal(); as estado) {
+      @if (estado.modo === 'detalhe') {
+        <app-turma-detalhe [turma]="estado.turma"></app-turma-detalhe>
+      } @else {
+        <app-mensagem
+          [visivel]="alertaModal().visivel"
+          (visivelChange)="ocultarAlertaModal()"
+          [tipo]="alertaModal().tipo"
+          [texto]="alertaModal().texto"
+          [literal]="alertaModal().literal ?? false"
+        ></app-mensagem>
 
-    <form [formGroup]="turmaForm" (ngSubmit)="salvarTurma()" class="form-turma">
-      <app-form-field-text
-        [label]="'TURMA.FORMULARIO.IDENTIFICADOR_LABEL' | translate"
-        [placeholder]="'TURMA.FORMULARIO.IDENTIFICADOR_PLACEHOLDER' | translate"
-        formControlName="identificador"
-        [control]="turmaForm.get('identificador')"
-        [errorMessage]="
-          turmaForm.get('identificador')
-            | errorMessage
-            | translate: (turmaForm.get('identificador') | errorParams)
-        "
-      ></app-form-field-text>
+        <form [formGroup]="turmaForm" (ngSubmit)="salvarTurma()" class="form-turma">
+          <app-form-field-text
+            [label]="'TURMA.FORMULARIO.IDENTIFICADOR_LABEL' | translate"
+            [placeholder]="'TURMA.FORMULARIO.IDENTIFICADOR_PLACEHOLDER' | translate"
+            formControlName="identificador"
+            [control]="turmaForm.get('identificador')"
+            [errorMessage]="
+              turmaForm.get('identificador')
+                | errorMessage
+                | translate: (turmaForm.get('identificador') | errorParams)
+            "
+          ></app-form-field-text>
 
-      <app-form-field-select
-        formControlName="serie"
-        [control]="turmaForm.get('serie')"
-        [options]="opcoesSerie"
-        [label]="'TURMA.FORMULARIO.SERIE_LABEL' | translate"
-        [placeholder]="'TURMA.FORMULARIO.SELECIONE' | translate"
-        [errorMessage]="
-          turmaForm.get('serie') | errorMessage | translate: (turmaForm.get('serie') | errorParams)
-        "
-      ></app-form-field-select>
+          <app-form-field-select
+            formControlName="serie"
+            [control]="turmaForm.get('serie')"
+            [options]="opcoesSerie"
+            [label]="'TURMA.FORMULARIO.SERIE_LABEL' | translate"
+            [placeholder]="'TURMA.FORMULARIO.SELECIONE' | translate"
+            [errorMessage]="
+              turmaForm.get('serie')
+                | errorMessage
+                | translate: (turmaForm.get('serie') | errorParams)
+            "
+          ></app-form-field-select>
 
-      <app-form-field-text
-        type="number"
-        formControlName="anoLetivo"
-        [control]="turmaForm.get('anoLetivo')"
-        [label]="'TURMA.FORMULARIO.ANO_LETIVO_LABEL' | translate"
-        [placeholder]="'TURMA.FORMULARIO.ANO_LETIVO_PLACEHOLDER' | translate"
-        [errorMessage]="
-          turmaForm.get('anoLetivo')
-            | errorMessage
-            | translate: (turmaForm.get('anoLetivo') | errorParams)
-        "
-      ></app-form-field-text>
+          <app-form-field-text
+            type="number"
+            formControlName="anoLetivo"
+            [control]="turmaForm.get('anoLetivo')"
+            [label]="'TURMA.FORMULARIO.ANO_LETIVO_LABEL' | translate"
+            [placeholder]="'TURMA.FORMULARIO.ANO_LETIVO_PLACEHOLDER' | translate"
+            [errorMessage]="
+              turmaForm.get('anoLetivo')
+                | errorMessage
+                | translate: (turmaForm.get('anoLetivo') | errorParams)
+            "
+          ></app-form-field-text>
 
-      <app-form-field-select
-        formControlName="turno"
-        [control]="turmaForm.get('turno')"
-        [options]="opcoesTurno"
-        [label]="'TURMA.FORMULARIO.TURNO_LABEL' | translate"
-        [placeholder]="'TURMA.FORMULARIO.SELECIONE' | translate"
-        [errorMessage]="
-          turmaForm.get('turno') | errorMessage | translate: (turmaForm.get('turno') | errorParams)
-        "
-      ></app-form-field-select>
+          <app-form-field-select
+            formControlName="turno"
+            [control]="turmaForm.get('turno')"
+            [options]="opcoesTurno"
+            [label]="'TURMA.FORMULARIO.TURNO_LABEL' | translate"
+            [placeholder]="'TURMA.FORMULARIO.SELECIONE' | translate"
+            [errorMessage]="
+              turmaForm.get('turno')
+                | errorMessage
+                | translate: (turmaForm.get('turno') | errorParams)
+            "
+          ></app-form-field-select>
 
-      <app-form-field-text
-        type="number"
-        formControlName="capacidade"
-        [control]="turmaForm.get('capacidade')"
-        [label]="'TURMA.FORMULARIO.CAPACIDADE_LABEL' | translate"
-        [placeholder]="'TURMA.FORMULARIO.CAPACIDADE_PLACEHOLDER' | translate"
-        [errorMessage]="
-          turmaForm.get('capacidade')
-            | errorMessage
-            | translate: (turmaForm.get('capacidade') | errorParams)
-        "
-      ></app-form-field-text>
+          <app-form-field-text
+            type="number"
+            formControlName="capacidade"
+            [control]="turmaForm.get('capacidade')"
+            [label]="'TURMA.FORMULARIO.CAPACIDADE_LABEL' | translate"
+            [placeholder]="'TURMA.FORMULARIO.CAPACIDADE_PLACEHOLDER' | translate"
+            [errorMessage]="
+              turmaForm.get('capacidade')
+                | errorMessage
+                | translate: (turmaForm.get('capacidade') | errorParams)
+            "
+          ></app-form-field-text>
 
-      <div class="acoes-modal">
-        <app-botao [tipo]="'submit'" [variante]="'primario'">
-          {{ 'TURMA.BOTOES.SALVAR_ALTERACOES' | translate }}
-        </app-botao>
+          <div class="acoes-modal">
+            <app-botao [tipo]="'submit'" [variante]="'primario'">
+              {{ 'TURMA.BOTOES.SALVAR_ALTERACOES' | translate }}
+            </app-botao>
 
-        <app-botao [tipo]="'button'" (acaoBotao)="fecharModal()" [variante]="'perigo'">
-          {{ 'TURMA.BOTOES.CANCELAR' | translate }}
-        </app-botao>
-      </div>
-    </form>
+            <app-botao [tipo]="'button'" (acaoBotao)="fecharModal()" [variante]="'perigo'">
+              {{ 'TURMA.BOTOES.CANCELAR' | translate }}
+            </app-botao>
+          </div>
+        </form>
+      }
+    }
   </app-modal>
+
+  <app-confirmacao
+    [confirmacao]="confirmacaoPendente()"
+    (confirmado)="confirmar()"
+    (cancelado)="cancelarAcaoPendente()"
+  ></app-confirmacao>
 </div>

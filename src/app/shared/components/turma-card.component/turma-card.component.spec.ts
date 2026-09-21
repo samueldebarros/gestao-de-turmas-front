@@ -21,7 +21,8 @@ describe('TurmaCardComponent', () => {
   let componente: TurmaCardComponent;
 
   const artigo = () => fixture.debugElement.query(By.css('article'));
-  const botoes = () => fixture.debugElement.queryAll(By.css('button'));
+  const botoes = () => fixture.debugElement.queryAll(By.css('.card__rodape button'));
+  const botaoAbrir = () => fixture.debugElement.query(By.css('.card__abrir'));
 
   const montar = (turma: TurmaInterface) => {
     componente.turma = turma;
@@ -41,10 +42,36 @@ describe('TurmaCardComponent', () => {
     expect(artigo().nativeElement.hasAttribute('tabindex')).toBe(false);
   });
 
-  it('renderiza exatamente dois botões', () => {
+  it('renderiza exatamente dois botões de ação no rodapé', () => {
     montar(TURMA_MOCK);
 
     expect(botoes().length).toBe(2);
+  });
+
+  it('o corpo do card é um botão nativo, alcançável por teclado', () => {
+    montar(TURMA_MOCK);
+
+    expect(botaoAbrir().nativeElement.tagName).toBe('BUTTON');
+  });
+
+  it('clicar no corpo do card emite a turma em @Output verDetalhes', () => {
+    montar(TURMA_MOCK);
+    const emitidas: TurmaInterface[] = [];
+    componente.verDetalhes.subscribe((turma) => emitidas.push(turma));
+
+    botaoAbrir().nativeElement.click();
+
+    expect(emitidas).toEqual([TURMA_MOCK]);
+  });
+
+  it('clicar em editar não dispara verDetalhes', () => {
+    montar(TURMA_MOCK);
+    const detalhes: TurmaInterface[] = [];
+    componente.verDetalhes.subscribe((turma) => detalhes.push(turma));
+
+    botoes()[0].nativeElement.click();
+
+    expect(detalhes).toEqual([]);
   });
 
   it('clicar em editar emite a turma em @Output editar', () => {

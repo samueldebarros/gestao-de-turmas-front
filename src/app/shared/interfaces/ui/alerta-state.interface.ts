@@ -5,4 +5,5 @@ export interface AlertaState {
   tipo: 'sucesso' | 'erro';
   texto: string;
   detalhes?: DetalheAlerta[];
+  literal?: boolean;
 }

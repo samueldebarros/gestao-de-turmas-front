@@ -52,6 +52,9 @@ describe('TurmaIndexComponent: integração no DOM', () => {
     editar: Mock;
     inativar: Mock;
     reativar: Mock;
+    alunosDaTurma: Mock;
+    docentesDaTurma: Mock;
+    alunosDisponiveis: Mock;
   };
 
   const dom = () => fixture.nativeElement as HTMLElement;
@@ -66,6 +69,11 @@ describe('TurmaIndexComponent: integração no DOM', () => {
     cartao.querySelectorAll('.card__rodape button')[1] as HTMLButtonElement;
 
   const modal = () => dom().querySelector('app-modal') as HTMLElement;
+
+  const botaoConfirmar = () =>
+    Array.from(dom().querySelectorAll('app-confirmacao button')).find(
+      (botao) => botao.textContent?.trim() === 'CONFIRMACAO.CONFIRMAR',
+    ) as HTMLButtonElement;
 
   const campoModal = (placeholder: string) =>
     modal().querySelector(`input[placeholder="${placeholder}"]`) as HTMLInputElement;
@@ -89,7 +97,40 @@ describe('TurmaIndexComponent: integração no DOM', () => {
       editar: vi.fn(() => of(undefined)),
       inativar: vi.fn(() => of(undefined)),
       reativar: vi.fn(() => of(undefined)),
+      alunosDaTurma: vi.fn(() => of({ status: 'ok', itens: [] })),
+      docentesDaTurma: vi.fn(() => of({ status: 'ok', itens: [] })),
+      alunosDisponiveis: vi.fn(() => of([])),
     };
+  });
+
+  it('clicar no corpo do card abre o painel de detalhe, não o formulário de edição', () => {
+    montar();
+
+    (cartoes()[0].querySelector('.card__abrir') as HTMLButtonElement).click();
+    fixture.detectChanges();
+
+    expect(modal().querySelector('app-turma-detalhe')).not.toBeNull();
+    expect(modal().querySelector('form.form-turma')).toBeNull();
+    expect(facade.alunosDaTurma).toHaveBeenCalledWith(TURMA_ATIVA.id);
+  });
+
+  it('reabrir o painel em outra turma carrega a turma nova, não a anterior', () => {
+    montar();
+    const abrir = (indice: number) =>
+      (cartoes()[indice].querySelector('.card__abrir') as HTMLButtonElement).click();
+
+    abrir(0);
+    fixture.detectChanges();
+    expect(facade.alunosDaTurma).toHaveBeenLastCalledWith(TURMA_ATIVA.id);
+
+    dom().querySelector('app-modal .botao-fechar')?.dispatchEvent(new Event('click'));
+    fixture.detectChanges();
+
+    abrir(1);
+    fixture.detectChanges();
+
+    expect(facade.alunosDaTurma).toHaveBeenLastCalledWith(TURMA_INATIVA.id);
+    expect(facade.docentesDaTurma).toHaveBeenLastCalledWith(TURMA_INATIVA.id);
   });
 
   it('editar um card abre de fato o dialog nativo por trás do modal', () => {
@@ -140,6 +181,9 @@ describe('TurmaIndexComponent: integração no DOM', () => {
     montar();
 
     botaoStatus(cartoes()[0]).click();
+    fixture.detectChanges();
+
+    botaoConfirmar().click();
     fixture.detectChanges();
 
     expect(dom().querySelector('.alerta-pagina .caixa-mensagem')?.textContent).toContain(

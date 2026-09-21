@@ -167,14 +167,14 @@ describe('AlunoIndex: orquestração do cadastro', () => {
   });
 
   describe('falha do servidor', () => {
-    it('alerta erro na página e mantém o modal aberto', () => {
+    it('alerta erro no modal e mantém o modal aberto', () => {
       facadeFake.adicionar = vi.fn(() => throwError(() => new Error('500')));
       componente.abrirModal();
       preencherFormulario();
 
       componente.salvarAluno();
 
-      expect(componente.alertaPagina()).toEqual({
+      expect(componente.alertaModal()).toEqual({
         visivel: true,
         tipo: 'erro',
         texto: 'MENSAGEM.ERRO_CADASTRO_ALUNO',
@@ -276,13 +276,17 @@ describe('AlunoIndex: orquestração do cadastro', () => {
   });
 
   describe('definirAcao traduz o evento genérico da tabela em intenção', () => {
-    it.each([
-      { acaoId: 'inativar', metodo: 'inativar' as const },
-      { acaoId: 'reativar', metodo: 'reativar' as const },
-    ])('$acaoId chama o Facade com o id do item', ({ acaoId, metodo }) => {
-      componente.definirAcao({ acaoId, item: criarAluno({ id: 13 }) });
+    it('reativar chama o Facade diretamente com o id do item', () => {
+      componente.definirAcao({ acaoId: 'reativar', item: criarAluno({ id: 13 }) });
 
-      expect(facadeFake[metodo]).toHaveBeenCalledWith(13);
+      expect(facadeFake.reativar).toHaveBeenCalledWith(13);
+    });
+
+    it('inativar chama o Facade com o id do item, depois de confirmado', () => {
+      componente.definirAcao({ acaoId: 'inativar', item: criarAluno({ id: 13 }) });
+      componente.confirmar();
+
+      expect(facadeFake.inativar).toHaveBeenCalledWith(13);
     });
 
     it('editar abre o modal de edição em vez de chamar o Facade', () => {
@@ -308,6 +312,7 @@ describe('AlunoIndex: orquestração do cadastro', () => {
 
     it('inativar com sucesso alerta na página', () => {
       componente.definirAcao({ acaoId: 'inativar', item: criarAluno() });
+      componente.confirmar();
 
       expect(componente.alertaPagina()).toEqual({
         visivel: true,
@@ -320,9 +325,45 @@ describe('AlunoIndex: orquestração do cadastro', () => {
       facadeFake.inativar = vi.fn(() => throwError(() => new Error('404')));
 
       componente.definirAcao({ acaoId: 'inativar', item: criarAluno() });
+      componente.confirmar();
 
       expect(componente.alertaPagina().tipo).toBe('erro');
       expect(componente.alertaPagina().texto).toBe('MENSAGEM.ERRO_INATIVAR_ALUNO');
+    });
+
+    it('422 ao inativar exibe a frase do servidor, não a chave genérica', () => {
+      facadeFake.inativar = vi.fn(() =>
+        throwError(() => ({
+          status: 422,
+          error: {
+            error: new SyntaxError('...'),
+            text: 'O aluno possui matrículas ativas.',
+          },
+        })),
+      );
+
+      componente.definirAcao({ acaoId: 'inativar', item: criarAluno() });
+      componente.confirmar();
+
+      expect(componente.alertaPagina()).toEqual({
+        visivel: true,
+        tipo: 'erro',
+        texto: 'O aluno possui matrículas ativas.',
+        literal: true,
+      });
+    });
+
+    it('erro sem 422 ao inativar cai na chave genérica', () => {
+      facadeFake.inativar = vi.fn(() => throwError(() => ({ status: 500 })));
+
+      componente.definirAcao({ acaoId: 'inativar', item: criarAluno() });
+      componente.confirmar();
+
+      expect(componente.alertaPagina()).toEqual({
+        visivel: true,
+        tipo: 'erro',
+        texto: 'MENSAGEM.ERRO_INATIVAR_ALUNO',
+      });
     });
   });
 
@@ -362,6 +403,7 @@ describe('AlunoIndex: orquestração do cadastro', () => {
 
     it('ocultar mantém o texto e só apaga a visibilidade', () => {
       componente.definirAcao({ acaoId: 'inativar', item: criarAluno() });
+      componente.confirmar();
 
       componente.ocultarAlertaPagina();
 
@@ -464,11 +506,53 @@ describe('AlunoIndex: orquestração do cadastro', () => {
       const emissor = new Subject<void>();
       facadeFake.inativar = vi.fn(() => emissor.asObservable());
       componente.definirAcao({ acaoId: 'inativar', item: criarAluno() });
+      componente.confirmar();
 
       fixture.destroy();
       emissor.next();
 
       expect(componente.alertaPagina().visivel).toBe(false);
+    });
+  });
+
+  describe('confirmação ao inativar', () => {
+    it('inativar não chama o Facade sem confirmação', () => {
+      componente.definirAcao({ acaoId: 'inativar', item: criarAluno({ id: 9 }) });
+
+      expect(facadeFake.inativar).not.toHaveBeenCalled();
+    });
+
+    it('confirmar chama o Facade uma única vez, com o id do aluno pendente', () => {
+      componente.definirAcao({ acaoId: 'inativar', item: criarAluno({ id: 9 }) });
+
+      componente.confirmar();
+
+      expect(facadeFake.inativar).toHaveBeenCalledTimes(1);
+      expect(facadeFake.inativar).toHaveBeenCalledWith(9);
+    });
+
+    it('reativar continua chamando o Facade diretamente, sem confirmação', () => {
+      componente.definirAcao({ acaoId: 'reativar', item: criarAluno({ id: 9 }) });
+
+      expect(facadeFake.reativar).toHaveBeenCalledWith(9);
+      expect(facadeFake.inativar).not.toHaveBeenCalled();
+    });
+
+    it('inativar deixa a ação em voo, desabilitando só a linha do aluno confirmado', () => {
+      const chamada$ = new Subject<void>();
+      facadeFake.inativar = vi.fn(() => chamada$.asObservable());
+
+      componente.definirAcao({ acaoId: 'inativar', item: criarAluno({ id: 5 }) });
+      componente.confirmar();
+
+      const inativar = componente.acoesTabela.find((acao) => acao.id === 'inativar');
+      expect(inativar?.desabilitada?.(criarAluno({ id: 5 }))).toBe(true);
+      expect(inativar?.desabilitada?.(criarAluno({ id: 9 }))).toBe(false);
+
+      chamada$.next();
+      chamada$.complete();
+
+      expect(inativar?.desabilitada?.(criarAluno({ id: 5 }))).toBe(false);
     });
   });
 });

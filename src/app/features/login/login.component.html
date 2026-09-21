@@ -28,7 +28,11 @@
 
     @if (alerta(); as a) {
       @if (a.visivel) {
-        <p class="login__alerta login__alerta--erro" role="alert">{{ a.texto | translate }}</p>
+        @if (a.literal) {
+          <p class="login__alerta login__alerta--erro" role="alert">{{ a.texto }}</p>
+        } @else {
+          <p class="login__alerta login__alerta--erro" role="alert">{{ a.texto | translate }}</p>
+        }
       }
     }
 

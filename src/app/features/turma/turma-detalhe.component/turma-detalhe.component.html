@@ -1,0 +1,123 @@
+<app-mensagem
+  [visivel]="alertaPainel().visivel"
+  (visivelChange)="ocultarAlerta()"
+  [tipo]="alertaPainel().tipo"
+  [texto]="alertaPainel().texto"
+  [literal]="alertaPainel().literal ?? false"
+></app-mensagem>
+
+<app-confirmacao
+  [confirmacao]="confirmacaoPendente()"
+  (confirmado)="confirmar()"
+  (cancelado)="cancelarAcaoPendente()"
+></app-confirmacao>
+
+@if (!turma.ativo) {
+  <p class="detalhe__somente-leitura" data-testid="aviso-somente-leitura">
+    {{ 'TURMA.DETALHE.SOMENTE_LEITURA' | translate }}
+  </p>
+}
+
+<section class="detalhe__bloco" data-testid="bloco-alunos">
+  <h4 class="detalhe__titulo">{{ 'TURMA.DETALHE.ALUNOS.TITULO' | translate }}</h4>
+
+  @if (turma.ativo) {
+    <app-autocomplete
+      [buscar]="buscarAluno"
+      [rotulo]="rotuloAluno"
+      [label]="'TURMA.DETALHE.ALUNOS.ADICIONAR_LABEL' | translate"
+      [placeholder]="'TURMA.DETALHE.ALUNOS.ADICIONAR_PLACEHOLDER' | translate"
+      (selecionado)="matricular($event)"
+    ></app-autocomplete>
+  }
+
+  @if (alunos$ | async; as estado) {
+    @switch (estado.status) {
+      @case ('carregando') {
+        <p class="detalhe__status">{{ 'TURMA.DETALHE.ALUNOS.CARREGANDO' | translate }}</p>
+      }
+      @case ('erro') {
+        <p class="detalhe__status">{{ 'TURMA.DETALHE.ALUNOS.ERRO' | translate }}</p>
+      }
+      @case ('ok') {
+        <p class="detalhe__contagens">
+          {{
+            'TURMA.DETALHE.VAGAS'
+              | translate: { ativos: vagasOcupadas(estado.itens), capacidade: turma.capacidade }
+          }}
+          ·
+          {{ 'TURMA.DETALHE.REGISTROS' | translate: { total: estado.itens.length } }}
+        </p>
+
+        @if (estado.itens.length) {
+          <div class="detalhe__tabela">
+            <app-tabela-generica
+              [dados]="estado.itens"
+              [colunas]="colunasAluno"
+              [acoes]="acoesAlunoVisiveis"
+              (acaoClicada)="acaoDaLinha($event)"
+            ></app-tabela-generica>
+          </div>
+        } @else {
+          <p class="detalhe__status">{{ 'TURMA.DETALHE.ALUNOS.VAZIO' | translate }}</p>
+        }
+      }
+    }
+  }
+</section>
+
+<section class="detalhe__bloco" data-testid="bloco-docentes">
+  <h4 class="detalhe__titulo">{{ 'TURMA.DETALHE.DOCENTES.TITULO' | translate }}</h4>
+
+  @if (turma.ativo) {
+    @if (opcoesDocente$ | async; as estadoOpcoes) {
+      @switch (estadoOpcoes.status) {
+        @case ('carregando') {
+          <p class="detalhe__status">
+            {{ 'TURMA.DETALHE.DOCENTES.CARREGANDO_LISTA' | translate }}
+          </p>
+        }
+        @case ('erro') {
+          <p class="detalhe__status">{{ 'TURMA.DETALHE.DOCENTES.ERRO_LISTA' | translate }}</p>
+        }
+        @case ('ok') {
+          @if (estadoOpcoes.itens.length) {
+            <app-form-field-select
+              [options]="estadoOpcoes.itens"
+              [label]="'TURMA.DETALHE.DOCENTES.ADICIONAR_LABEL' | translate"
+              [placeholder]="'TURMA.FORMULARIO.SELECIONE' | translate"
+              [formControl]="docenteSelecionado"
+            ></app-form-field-select>
+          } @else {
+            <p class="detalhe__status">{{ 'TURMA.DETALHE.DOCENTES.VAZIO_LISTA' | translate }}</p>
+          }
+        }
+      }
+    }
+  }
+
+  @if (docentes$ | async; as estado) {
+    @switch (estado.status) {
+      @case ('carregando') {
+        <p class="detalhe__status">{{ 'TURMA.DETALHE.DOCENTES.CARREGANDO' | translate }}</p>
+      }
+      @case ('erro') {
+        <p class="detalhe__status">{{ 'TURMA.DETALHE.DOCENTES.ERRO' | translate }}</p>
+      }
+      @case ('ok') {
+        @if (estado.itens.length) {
+          <div class="detalhe__tabela">
+            <app-tabela-generica
+              [dados]="estado.itens"
+              [colunas]="colunasDocente"
+              [acoes]="acoesDocenteVisiveis"
+              (acaoClicada)="acaoDocente($event)"
+            ></app-tabela-generica>
+          </div>
+        } @else {
+          <p class="detalhe__status">{{ 'TURMA.DETALHE.DOCENTES.VAZIO' | translate }}</p>
+        }
+      }
+    }
+  }
+</section>

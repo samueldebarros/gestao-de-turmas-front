@@ -9,6 +9,7 @@ const criarDocente = (
   id,
   docenteNome,
   docenteEmail: `docente${id}@escola.com`,
+  disciplinaId: disciplinaNome.length,
   disciplinaNome,
   cargaHoraria: 40,
 });

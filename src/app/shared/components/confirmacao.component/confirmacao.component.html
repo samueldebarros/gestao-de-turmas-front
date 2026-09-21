@@ -1,0 +1,19 @@
+@if (confirmacao) {
+  <app-modal
+    [titulo]="confirmacao.titulo | translate"
+    [visivel]="true"
+    (visivelChange)="cancelar()"
+  >
+    <p>{{ confirmacao.mensagem | translate: confirmacao.params }}</p>
+
+    <div class="confirmacao-acoes">
+      <app-botao variante="secundario" (acaoBotao)="cancelar()">
+        {{ 'CONFIRMACAO.CANCELAR' | translate }}
+      </app-botao>
+
+      <app-botao [variante]="confirmacao.variante" (acaoBotao)="confirmar()">
+        {{ confirmacao.rotuloConfirmar | translate }}
+      </app-botao>
+    </div>
+  </app-modal>
+}

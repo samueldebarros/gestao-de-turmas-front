@@ -41,6 +41,41 @@ describe('MensagemComponent', () => {
     });
   });
 
+  describe('literal, chave i18n vs. frase do servidor', () => {
+    beforeEach(() => {
+      const translate = TestBed.inject(TranslateService);
+      translate.setTranslation('pt-BR', {
+        MENSAGEM: { CORRIJA_OS_CAMPOS: 'Corrija os campos indicados abaixo:' },
+      });
+      translate.use('pt-BR');
+    });
+
+    it('literal ausente (padrão false) traduz o texto quando ele é uma chave conhecida', () => {
+      componente.visivel = true;
+      componente.texto = 'MENSAGEM.CORRIJA_OS_CAMPOS';
+      fixture.detectChanges();
+
+      const texto = fixture.nativeElement
+        .querySelector('.conteudo-mensagem span')
+        ?.textContent?.trim();
+
+      expect(texto).toBe('Corrija os campos indicados abaixo:');
+    });
+
+    it('literal true exibe a mesma string crua, sem tentar traduzi-la', () => {
+      componente.visivel = true;
+      componente.literal = true;
+      componente.texto = 'MENSAGEM.CORRIJA_OS_CAMPOS';
+      fixture.detectChanges();
+
+      const texto = fixture.nativeElement
+        .querySelector('.conteudo-mensagem span')
+        ?.textContent?.trim();
+
+      expect(texto).toBe('MENSAGEM.CORRIJA_OS_CAMPOS');
+    });
+  });
+
   describe('detalhes, a lista de causas', () => {
     it('sem detalhes, nenhuma lista é renderizada', () => {
       componente.visivel = true;

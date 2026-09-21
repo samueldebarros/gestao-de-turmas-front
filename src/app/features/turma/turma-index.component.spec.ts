@@ -85,6 +85,24 @@ describe('TurmaIndexComponent', () => {
       expect(componente.modalAberto()).toBe(false);
     });
 
+    it('abrir detalhe guarda a turma no estado e troca o título do modal', () => {
+      montar();
+
+      componente.abrirDetalhe(TURMA_ATIVA);
+
+      expect(componente.estadoModal()).toEqual({ modo: 'detalhe', turma: TURMA_ATIVA });
+      expect(componente.modalAberto()).toBe(true);
+      expect(componente.tituloModal()).toBe('TURMA.DETALHE.TITULO');
+    });
+
+    it('abrir edição usa o título de edição, não o de detalhe', () => {
+      montar();
+
+      componente.abrirModalEdicao(TURMA_ATIVA);
+
+      expect(componente.tituloModal()).toBe('TURMA.MODAL.EDICAO_TITULO');
+    });
+
     it('abrir edição preenche o form com os dados da turma e abre o modal', () => {
       montar();
 
@@ -187,16 +205,46 @@ describe('TurmaIndexComponent', () => {
   });
 
   describe('alternarStatus roteia pelo campo ativo', () => {
-    it('turma ativa chama inativar, não reativar', () => {
+    it('turma ativa chama inativar, não reativar, depois de confirmado', () => {
       montar();
 
       componente.alternarStatus(TURMA_ATIVA);
+      componente.confirmar();
 
       expect(facade.inativar).toHaveBeenCalledWith(TURMA_ATIVA.id);
       expect(facade.reativar).not.toHaveBeenCalled();
     });
 
     it('turma inativa chama reativar, não inativar', () => {
+      montar();
+
+      componente.alternarStatus(TURMA_INATIVA);
+
+      expect(facade.reativar).toHaveBeenCalledWith(TURMA_INATIVA.id);
+      expect(facade.inativar).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('confirmação ao inativar', () => {
+    it('inativar não chama o Facade sem confirmação', () => {
+      montar();
+
+      componente.alternarStatus(TURMA_ATIVA);
+
+      expect(facade.inativar).not.toHaveBeenCalled();
+    });
+
+    it('confirmar chama o Facade uma única vez, com o id da turma pendente', () => {
+      montar();
+
+      componente.alternarStatus(TURMA_ATIVA);
+      componente.confirmar();
+
+      expect(facade.inativar).toHaveBeenCalledTimes(1);
+      expect(facade.inativar).toHaveBeenCalledWith(TURMA_ATIVA.id);
+    });
+
+    it('reativar continua chamando o Facade diretamente, sem confirmação', () => {
       montar();
 
       componente.alternarStatus(TURMA_INATIVA);
@@ -233,6 +281,7 @@ describe('TurmaIndexComponent', () => {
       montar();
 
       componente.alternarStatus(TURMA_ATIVA);
+      componente.confirmar();
 
       expect(componente.alertaPagina()).toEqual({
         visivel: true,
@@ -257,7 +306,8 @@ describe('TurmaIndexComponent', () => {
       facade.inativar = vi.fn(() => throwError(() => ({ status: 500 })));
       montar();
 
-      expect(() => componente.alternarStatus(TURMA_ATIVA)).not.toThrow();
+      componente.alternarStatus(TURMA_ATIVA);
+      expect(() => componente.confirmar()).not.toThrow();
 
       expect(componente.alertaPagina()).toEqual({
         visivel: true,
@@ -279,11 +329,13 @@ describe('TurmaIndexComponent', () => {
       montar();
 
       componente.alternarStatus(TURMA_ATIVA);
+      componente.confirmar();
 
       expect(componente.alertaPagina()).toEqual({
         visivel: true,
         tipo: 'erro',
         texto: 'A turma possui 12 alunos matriculados.',
+        literal: true,
       });
     });
 
@@ -363,7 +415,7 @@ describe('TurmaIndexComponent', () => {
       const cardInativa = fixture.debugElement
         .queryAll(By.directive(TurmaCardComponent))
         .find((el) => (el.componentInstance as TurmaCardComponent).turma.id === TURMA_INATIVA.id);
-      const botaoStatus = cardInativa!.queryAll(By.css('button'))[1];
+      const botaoStatus = cardInativa!.queryAll(By.css('.card__rodape button'))[1];
 
       expect(botaoStatus.nativeElement.disabled).toBe(true);
 
