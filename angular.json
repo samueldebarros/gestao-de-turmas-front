@@ -95,10 +95,10 @@
             ],
             "coverageReporters": ["text-summary", "html", "lcovonly"],
             "coverageThresholds": {
-              "statements": 76.58,
-              "branches": 83.36,
-              "functions": 73.13,
-              "lines": 77.06
+              "statements": 76.84,
+              "branches": 83.47,
+              "functions": 73.95,
+              "lines": 77.23
             }
           },
           "configurations": {
@@ -107,6 +107,7 @@
               "coverageInclude": [
                 "src/app/core/facades/docente-facade.service.ts",
                 "src/app/shared/utils/tratar-erro-http.util.ts",
+                "src/app/shared/utils/mensagem-regra-negocio.util.ts",
                 "src/app/shared/components/confirmacao.component/**/*.ts",
                 "src/app/shared/components/tabela-generica/**/*.ts",
                 "src/app/shared/components/mensagem.component/**/*.ts",
@@ -117,10 +118,10 @@
                 "src/app/features/docente/docente-index.component.ts"
               ],
               "coverageThresholds": {
-                "statements": 94.33,
-                "branches": 88.77,
-                "functions": 90.41,
-                "lines": 95.47
+                "statements": 95.63,
+                "branches": 89.9,
+                "functions": 92.94,
+                "lines": 96.4
               }
             }
           }
