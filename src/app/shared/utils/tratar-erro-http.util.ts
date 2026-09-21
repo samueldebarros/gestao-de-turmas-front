@@ -1,5 +1,5 @@
 import { AlertaState } from '../interfaces/ui/alerta-state.interface';
-import { extrairMensagemDeRegra } from './mensagem-regra-negocio.util';
+import { extrairErroDeNegocio } from './mensagem-regra-negocio.util';
 
 export function alertaDeErroHttp(
   erro: unknown,
@@ -12,9 +12,14 @@ export function alertaDeErroHttp(
     return { visivel: true, tipo: 'erro', texto: chaveFallback };
   }
 
-  const mensagem = extrairMensagemDeRegra(erro);
-  if (mensagem) {
-    return { visivel: true, tipo: 'erro', texto: mensagem, literal: true };
+  const erroNegocio = extrairErroDeNegocio(erro);
+  if (erroNegocio) {
+    return {
+      visivel: true,
+      tipo: 'erro',
+      texto: `ERRO_NEGOCIO.${erroNegocio.codigo}`,
+      params: erroNegocio.params ?? undefined,
+    };
   }
 
   return { visivel: true, tipo: 'erro', texto: chaveRegraNegocio };

@@ -222,7 +222,7 @@ describe('TurmaDetalheComponent', () => {
     });
   });
 
-  it('recusa 422 exibe a frase do servidor no alerta do painel', () => {
+  it('recusa 422 sem codigo utilizável cai na chave genérica de regra de negócio', () => {
     facade.matricularAluno = vi.fn(() =>
       throwError(() => ({
         status: 422,
@@ -242,7 +242,7 @@ describe('TurmaDetalheComponent', () => {
 
     expect(componente.alertaPainel()).toMatchObject({
       tipo: 'erro',
-      texto: 'A turma atingiu a capacidade máxima.',
+      texto: 'MENSAGEM.ERRO_REGRA_NEGOCIO_MATRICULA',
     });
   });
 
@@ -492,7 +492,12 @@ describe('TurmaDetalheComponent', () => {
     const componente = fixture.componentInstance as unknown as {
       docenteSelecionado: { setValue: (v: number | null) => void };
       confirmar: () => void;
-      alertaPainel: () => { visivel: boolean; tipo: string; texto: string; literal?: boolean };
+      alertaPainel: () => {
+        visivel: boolean;
+        tipo: string;
+        texto: string;
+        params?: Record<string, unknown>;
+      };
     };
 
     componente.docenteSelecionado.setValue(DOCENTE.id);
@@ -501,8 +506,8 @@ describe('TurmaDetalheComponent', () => {
     expect(componente.alertaPainel()).toMatchObject({
       visivel: true,
       tipo: 'sucesso',
-      texto: 'Este docente já leciona Matemática nesta turma.',
-      literal: true,
+      texto: 'TURMA.MENSAGEM.DOCENTE_JA_ALOCADO',
+      params: { disciplina: 'Matemática' },
     });
 
     componente.confirmar();

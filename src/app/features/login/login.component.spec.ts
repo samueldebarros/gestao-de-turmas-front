@@ -68,18 +68,16 @@ describe('LoginComponent', () => {
     expect(mensagemDoCampoEmail()).toBe('VALIDACAO.EMAIL_INVALIDO');
   });
 
-  it('422 do servidor mostra a frase enviada, não a chave fixa de credenciais', () => {
+  it('401 do servidor mostra a chave fixa de credenciais, traduzida', () => {
     montar({
-      login: vi.fn(() =>
-        throwError(() => ({ status: 422, error: 'Conta temporariamente bloqueada.' })),
-      ),
+      login: vi.fn(() => throwError(() => ({ status: 401 }))),
     });
 
     preencherCredenciais();
     fixture.componentInstance.entrar();
     fixture.detectChanges();
 
-    expect(textoDoAlerta()).toBe('Conta temporariamente bloqueada.');
+    expect(textoDoAlerta()).toBe('LOGIN.ERRO_CREDENCIAIS');
   });
 
   it('erro sem 422 mantém a frase genérica de credenciais, mesmo em 500', () => {

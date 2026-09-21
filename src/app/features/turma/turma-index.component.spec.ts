@@ -8,6 +8,7 @@ import { TurmaCardComponent } from '../../shared/components/turma-card.component
 import { TurnoEnum } from '../../shared/enums/turno.enum';
 import { TurmaInterface } from '../../shared/interfaces/entities/turma.interface';
 import { EstadoLista } from '../../shared/interfaces/ui/estado-lista.interface';
+import { FiltroListaInterface } from '../../shared/interfaces/ui/filtro-lista.interface';
 import { TurmaIndexComponent } from './turma-index.component';
 
 const TURMA_ATIVA: TurmaInterface = {
@@ -316,7 +317,7 @@ describe('TurmaIndexComponent', () => {
       });
     });
 
-    it('422 ao inativar exibe a frase do servidor na PÁGINA, não a chave genérica', () => {
+    it('422 ao inativar sem codigo utilizável cai na chave genérica de regra de negócio, na PÁGINA', () => {
       facade.inativar = vi.fn(() =>
         throwError(() => ({
           status: 422,
@@ -334,8 +335,7 @@ describe('TurmaIndexComponent', () => {
       expect(componente.alertaPagina()).toEqual({
         visivel: true,
         tipo: 'erro',
-        texto: 'A turma possui 12 alunos matriculados.',
-        literal: true,
+        texto: 'MENSAGEM.ERRO_REGRA_NEGOCIO_TURMA',
       });
     });
 
@@ -355,7 +355,7 @@ describe('TurmaIndexComponent', () => {
       expect(componente.turmaForm.value.identificador).toBe('A');
     });
 
-    it('422 na edição exibe a frase do servidor DENTRO do modal', () => {
+    it('422 na edição sem codigo utilizável cai na chave genérica DENTRO do modal', () => {
       facade.editar = vi.fn(() =>
         throwError(() => ({
           status: 422,
@@ -370,7 +370,7 @@ describe('TurmaIndexComponent', () => {
 
       componente.salvarTurma();
 
-      expect(componente.alertaModal().texto).toBe('A turma possui 12 alunos matriculados.');
+      expect(componente.alertaModal().texto).toBe('MENSAGEM.ERRO_REGRA_NEGOCIO_TURMA');
       expect(componente.modalAberto()).toBe(true);
     });
 
@@ -424,6 +424,72 @@ describe('TurmaIndexComponent', () => {
       fixture.detectChanges();
 
       expect(botaoStatus.nativeElement.disabled).toBe(false);
+    });
+  });
+
+  describe('repasses diretos ao Facade e comandos triviais', () => {
+    it('filtrar repassa o filtro ao Facade', () => {
+      montar();
+      const filtro = { pesquisa: 'a' } as FiltroListaInterface;
+
+      componente.filtrar(filtro);
+
+      expect(facade.aplicarFiltros).toHaveBeenCalledWith(filtro);
+    });
+
+    it('mudar de página repassa o número ao Facade', () => {
+      montar();
+
+      componente.mudarPagina(3);
+
+      expect(facade.mudarPagina).toHaveBeenCalledWith(3);
+    });
+
+    it('fechar o aviso de sucesso do cadastro esconde só ele', () => {
+      montar();
+
+      componente.fecharSucesso();
+
+      expect(componente.sucessoCadastro()).toBe(false);
+    });
+
+    it('cancelar a ação pendente zera a confirmação sem chamar o Facade', () => {
+      montar();
+      componente.alternarStatus(TURMA_ATIVA);
+
+      componente.cancelarAcaoPendente();
+
+      expect(componente.confirmacaoPendente()).toBeNull();
+      expect(facade.inativar).not.toHaveBeenCalled();
+    });
+
+    it('ocultar o alerta da página mantém o texto e só apaga a visibilidade', () => {
+      montar();
+      componente.alternarStatus(TURMA_INATIVA);
+
+      componente.ocultarAlertaPagina();
+
+      expect(componente.alertaPagina().visivel).toBe(false);
+      expect(componente.alertaPagina().texto).toBe('MENSAGEM.SUCESSO_REATIVAR_TURMA');
+    });
+  });
+
+  describe('confirmar e salvarTurma sem estado pendente não fazem nada', () => {
+    it('confirmar sem ação pendente não chama inativar nem reativar', () => {
+      montar();
+
+      expect(() => componente.confirmar()).not.toThrow();
+
+      expect(facade.inativar).not.toHaveBeenCalled();
+      expect(facade.reativar).not.toHaveBeenCalled();
+    });
+
+    it('salvarTurma com o modal fechado não chama editar', () => {
+      montar();
+
+      expect(() => componente.salvarTurma()).not.toThrow();
+
+      expect(facade.editar).not.toHaveBeenCalled();
     });
   });
 });

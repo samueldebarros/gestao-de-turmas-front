@@ -4,7 +4,7 @@
     (visivelChange)="ocultarAlertaPagina()"
     [tipo]="alertaPagina().tipo"
     [texto]="alertaPagina().texto"
-    [literal]="alertaPagina().literal ?? false"
+    [params]="alertaPagina().params"
   ></app-mensagem>
 </div>
 
@@ -74,7 +74,7 @@
           (visivelChange)="ocultarAlertaModal()"
           [tipo]="alertaModal().tipo"
           [texto]="alertaModal().texto"
-          [literal]="alertaModal().literal ?? false"
+          [params]="alertaModal().params"
         ></app-mensagem>
 
         <form [formGroup]="turmaForm" (ngSubmit)="salvarTurma()" class="form-turma">

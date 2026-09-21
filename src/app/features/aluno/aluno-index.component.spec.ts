@@ -331,7 +331,7 @@ describe('AlunoIndex: orquestração do cadastro', () => {
       expect(componente.alertaPagina().texto).toBe('MENSAGEM.ERRO_INATIVAR_ALUNO');
     });
 
-    it('422 ao inativar exibe a frase do servidor, não a chave genérica', () => {
+    it('422 ao inativar sem codigo utilizável cai na chave genérica de regra de negócio', () => {
       facadeFake.inativar = vi.fn(() =>
         throwError(() => ({
           status: 422,
@@ -348,8 +348,7 @@ describe('AlunoIndex: orquestração do cadastro', () => {
       expect(componente.alertaPagina()).toEqual({
         visivel: true,
         tipo: 'erro',
-        texto: 'O aluno possui matrículas ativas.',
-        literal: true,
+        texto: 'MENSAGEM.ERRO_REGRA_NEGOCIO_ALUNO',
       });
     });
 

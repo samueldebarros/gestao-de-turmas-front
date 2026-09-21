@@ -11,7 +11,7 @@ import {
 import { AsyncPipe } from '@angular/common';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { catchError, finalize, map, Observable, of, shareReplay, tap } from 'rxjs';
 import { AutocompleteComponent } from '../../../shared/components/autocomplete.component/autocomplete.component';
 import { ConfirmacaoComponent } from '../../../shared/components/confirmacao.component/confirmacao.component';
@@ -90,8 +90,6 @@ export class TurmaDetalheComponent implements OnInit {
   readonly alertaPainel = signal<AlertaState>({ visivel: false, tipo: 'erro', texto: '' });
 
   protected readonly docenteSelecionado = new FormControl<number | null>(null);
-
-  private readonly translate = inject(TranslateService);
 
   private readonly docentesDisponiveis = toSignal(this.docenteFacade.docentes$, {
     initialValue: { status: 'carregando' } as EstadoCarga<DocenteSqlInterface>,
@@ -239,13 +237,9 @@ export class TurmaDetalheComponent implements OnInit {
         : undefined;
 
     if (docenteAtual?.id === docenteEscolhido.id) {
-      this.exibirAlerta(
-        'sucesso',
-        this.translate.instant('TURMA.MENSAGEM.DOCENTE_JA_ALOCADO', {
-          disciplina: docenteEscolhido.disciplinaNome,
-        }),
-        true,
-      );
+      this.exibirAlerta('sucesso', 'TURMA.MENSAGEM.DOCENTE_JA_ALOCADO', {
+        disciplina: docenteEscolhido.disciplinaNome,
+      });
       return;
     }
 
@@ -375,8 +369,12 @@ export class TurmaDetalheComponent implements OnInit {
       .subscribe();
   }
 
-  private exibirAlerta(tipo: AlertaState['tipo'], texto: string, literal = false): void {
-    this.alertaPainel.set({ visivel: true, tipo, texto, literal });
+  private exibirAlerta(
+    tipo: AlertaState['tipo'],
+    texto: string,
+    params?: Record<string, unknown>,
+  ): void {
+    this.alertaPainel.set({ visivel: true, tipo, texto, params });
   }
 
   private marcarAlunoEmVoo(id: number, emVoo: boolean): void {

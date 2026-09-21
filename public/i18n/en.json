@@ -396,5 +396,27 @@
       "DISCIPLINA_SELECIONE": "Select",
       "DISCIPLINA_NENHUMA": "No subject"
     }
+  },
+  "ERRO_NEGOCIO": {
+    "TURMA_COMBINACAO_DUPLICADA": "A class with this identifier, grade and school year already exists.",
+    "TURMA_ALOCACAO_DOCENTE_INVALIDA": "One or more teacher assignments are invalid.",
+    "TURMA_DOCENTE_DUPLICADO_NA_DISCIPLINA": "There is more than one teacher for the same subject in this class.",
+    "TURMA_CAPACIDADE_MENOR_QUE_ATIVOS": "Capacity cannot be lower than the number of active students. Entered: {{capacidade}}; active students: {{alunosAtivos}}.",
+    "TURMA_INATIVAR_COM_ALUNOS_ATIVOS": "A class with active students cannot be deactivated. This class has {{alunosAtivos}} active student(s).",
+    "TURMA_INATIVA_NAO_MATRICULA": "Students cannot be enrolled in an inactive class.",
+    "TURMA_CAPACIDADE_ATINGIDA": "This class has reached maximum capacity. Capacity: {{capacidade}}; active students: {{alunosAtivos}}.",
+    "TURMA_INATIVA_NAO_ALTERA_MATRICULA": "Enrollments of an inactive class cannot be changed.",
+    "TURMA_INATIVA_NAO_ALTERA_ALOCACAO": "Assignments of an inactive class cannot be changed.",
+    "DOCENTE_INATIVO_NAO_ALOCAVEL": "An inactive teacher cannot be assigned.",
+    "DOCENTE_SEM_DISCIPLINA": "This teacher has no subject assigned.",
+    "DATA_NASCIMENTO_FUTURA": "Date of birth cannot be today or in the future.",
+    "DATA_NASCIMENTO_IDADE_EXCESSIVA": "The date of birth is invalid (age over 120 years).",
+    "EMAIL_EM_USO": "This email is already in use.",
+    "ALUNO_MATRICULA_NAO_GERADA": "Could not generate a unique registration number. Please try again.",
+    "SEXO_OBRIGATORIO": "Select a gender.",
+    "DOCENTE_IDADE_MINIMA": "The teacher must be at least {{idadeMinima}} years old.",
+    "DISCIPLINA_INEXISTENTE_OU_INATIVA": "The selected subject does not exist or is inactive.",
+    "CPF_INVALIDO": "The CPF entered is invalid.",
+    "CPF_EM_USO": "This CPF is already in use."
   }
 }

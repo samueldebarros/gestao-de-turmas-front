@@ -168,7 +168,7 @@ describe('TurmaIndexComponent: integração no DOM', () => {
     expect(botaoStatus(cartoes()[1]).textContent?.trim()).toBe('TURMA.BOTOES.REATIVAR');
   });
 
-  it('inativação recusada com 422 exibe a frase do servidor no alerta de página', () => {
+  it('inativação recusada com 422 sem codigo utilizável exibe a chave genérica no alerta de página', () => {
     facade.inativar = vi.fn(() =>
       throwError(() => ({
         status: 422,
@@ -187,7 +187,7 @@ describe('TurmaIndexComponent: integração no DOM', () => {
     fixture.detectChanges();
 
     expect(dom().querySelector('.alerta-pagina .caixa-mensagem')?.textContent).toContain(
-      'A turma possui 12 alunos matriculados.',
+      'MENSAGEM.ERRO_REGRA_NEGOCIO_TURMA',
     );
   });
 });

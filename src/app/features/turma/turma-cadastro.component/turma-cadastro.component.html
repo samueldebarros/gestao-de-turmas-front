@@ -4,7 +4,7 @@
     [tipo]="alerta().tipo"
     [texto]="alerta().texto"
     [detalhes]="alerta().detalhes ?? []"
-    [literal]="alerta().literal ?? false"
+    [params]="alerta().params"
     (visivelChange)="fecharAlerta()"
   ></app-mensagem>
   <header class="wizard__cabecalho">

@@ -241,7 +241,7 @@ describe('DocenteIndexComponent', () => {
       });
     });
 
-    it('inativar recusado com 422 mostra a frase do servidor na lista', () => {
+    it('inativar recusado com 422 sem codigo utilizável cai na chave genérica de regra de negócio', () => {
       facade.inativar = vi.fn(() =>
         throwError(() => ({
           status: 422,
@@ -259,8 +259,7 @@ describe('DocenteIndexComponent', () => {
       expect(componente.alertaPagina()).toEqual({
         visivel: true,
         tipo: 'erro',
-        texto: 'O docente possui turmas ativas vinculadas.',
-        literal: true,
+        texto: 'MENSAGEM.ERRO_REGRA_NEGOCIO_DOCENTE',
       });
     });
 
@@ -811,18 +810,19 @@ describe('DocenteIndexComponent', () => {
           text: 'A disciplina informada não existe ou está inativa.',
         },
       },
-    ])('422 mostra a razão que o servidor mandou no formato $formato', ({ error }) => {
-      facade.adicionar = vi.fn(() => throwError(() => ({ status: 422, error })));
-      montar();
-      componente.abrirModalAdicionar();
-      preencherFormularioValido();
+    ])(
+      '422 sem codigo utilizável no formato $formato cai na chave genérica de regra de negócio',
+      ({ error }) => {
+        facade.adicionar = vi.fn(() => throwError(() => ({ status: 422, error })));
+        montar();
+        componente.abrirModalAdicionar();
+        preencherFormularioValido();
 
-      componente.salvarDocente();
+        componente.salvarDocente();
 
-      expect(componente.alertaModal().texto).toBe(
-        'A disciplina informada não existe ou está inativa.',
-      );
-    });
+        expect(componente.alertaModal().texto).toBe('MENSAGEM.ERRO_REGRA_NEGOCIO_DOCENTE');
+      },
+    );
 
     it('422 cai na chave genérica quando o corpo não é aproveitável', () => {
       facade.adicionar = vi.fn(() => throwError(() => ({ status: 422, error: '<html></html>' })));
@@ -835,7 +835,7 @@ describe('DocenteIndexComponent', () => {
       expect(componente.alertaModal().texto).toBe('MENSAGEM.ERRO_REGRA_NEGOCIO_DOCENTE');
     });
 
-    it('erros diferentes produzem mensagens diferentes na segunda tentativa', () => {
+    it('erros diferentes sem codigo utilizável caem na mesma chave genérica, na segunda tentativa', () => {
       facade.adicionar = vi.fn(() =>
         throwError(() => ({ status: 422, error: 'Esse CPF já esta em uso.' })),
       );
@@ -843,14 +843,14 @@ describe('DocenteIndexComponent', () => {
       componente.abrirModalAdicionar();
       preencherFormularioValido();
       componente.salvarDocente();
-      expect(componente.alertaModal().texto).toBe('Esse CPF já esta em uso.');
+      expect(componente.alertaModal().texto).toBe('MENSAGEM.ERRO_REGRA_NEGOCIO_DOCENTE');
 
       facade.adicionar = vi.fn(() =>
         throwError(() => ({ status: 422, error: 'A data de nascimento informada é inválida.' })),
       );
       componente.salvarDocente();
 
-      expect(componente.alertaModal().texto).toBe('A data de nascimento informada é inválida.');
+      expect(componente.alertaModal().texto).toBe('MENSAGEM.ERRO_REGRA_NEGOCIO_DOCENTE');
     });
   });
 

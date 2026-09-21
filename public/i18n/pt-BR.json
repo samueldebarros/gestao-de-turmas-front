@@ -396,5 +396,27 @@
       "DISCIPLINA_SELECIONE": "Selecione",
       "DISCIPLINA_NENHUMA": "Sem disciplina"
     }
+  },
+  "ERRO_NEGOCIO": {
+    "TURMA_COMBINACAO_DUPLICADA": "Já existe uma turma com essa combinação de identificador, série e ano letivo.",
+    "TURMA_ALOCACAO_DOCENTE_INVALIDA": "Uma ou mais alocações de docente são inválidas.",
+    "TURMA_DOCENTE_DUPLICADO_NA_DISCIPLINA": "Há mais de um docente para a mesma disciplina na turma.",
+    "TURMA_CAPACIDADE_MENOR_QUE_ATIVOS": "A capacidade não pode ser menor que o número de alunos ativos. Informada: {{capacidade}}; alunos ativos: {{alunosAtivos}}.",
+    "TURMA_INATIVAR_COM_ALUNOS_ATIVOS": "Não é possível inativar uma turma com alunos ativos. A turma possui {{alunosAtivos}} aluno(s) ativo(s).",
+    "TURMA_INATIVA_NAO_MATRICULA": "Não é possível matricular aluno em uma turma inativa.",
+    "TURMA_CAPACIDADE_ATINGIDA": "A turma atingiu a capacidade máxima. Capacidade: {{capacidade}}; alunos ativos: {{alunosAtivos}}.",
+    "TURMA_INATIVA_NAO_ALTERA_MATRICULA": "Não é possível alterar matrículas de uma turma inativa.",
+    "TURMA_INATIVA_NAO_ALTERA_ALOCACAO": "Não é possível alterar alocações de uma turma inativa.",
+    "DOCENTE_INATIVO_NAO_ALOCAVEL": "Não é possível alocar um docente inativo.",
+    "DOCENTE_SEM_DISCIPLINA": "O docente não possui disciplina associada.",
+    "DATA_NASCIMENTO_FUTURA": "A data de nascimento não pode ser maior ou igual à data atual.",
+    "DATA_NASCIMENTO_IDADE_EXCESSIVA": "A data de nascimento informada é inválida (idade superior a 120 anos).",
+    "EMAIL_EM_USO": "Este e-mail já está em uso.",
+    "ALUNO_MATRICULA_NAO_GERADA": "Não foi possível gerar uma matrícula única. Tente novamente.",
+    "SEXO_OBRIGATORIO": "Selecione um sexo.",
+    "DOCENTE_IDADE_MINIMA": "O docente deve ter pelo menos {{idadeMinima}} anos.",
+    "DISCIPLINA_INEXISTENTE_OU_INATIVA": "A disciplina informada não existe ou está inativa.",
+    "CPF_INVALIDO": "O CPF informado é inválido.",
+    "CPF_EM_USO": "Este CPF já está em uso."
   }
 }

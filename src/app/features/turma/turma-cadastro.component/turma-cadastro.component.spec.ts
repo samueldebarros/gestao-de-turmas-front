@@ -171,7 +171,7 @@ describe('TurmaCadastro: navegação e seleção', () => {
     expect(componente.passoAtual).toBe(PASSO_DISCIPLINAS);
   });
 
-  it('exibe a frase do servidor quando o cadastro falha com 422', () => {
+  it('exibe a chave genérica de regra de negócio quando o cadastro falha com 422 sem codigo', () => {
     turmaFacadeFake.adicionar = vi.fn(() =>
       throwError(() => ({
         status: 422,
@@ -195,8 +195,7 @@ describe('TurmaCadastro: navegação e seleção', () => {
     expect(componente.alerta()).toEqual({
       visivel: true,
       tipo: 'erro',
-      texto: 'Já existe uma turma com essa combinação de Identificador, Série e Ano letivo',
-      literal: true,
+      texto: 'MENSAGEM.ERRO_REGRA_NEGOCIO_TURMA',
     });
     expect(routerFake.navigate).not.toHaveBeenCalled();
   });
