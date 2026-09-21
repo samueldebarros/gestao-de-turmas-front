@@ -991,4 +991,67 @@ describe('DocenteIndexComponent', () => {
       expect(texto).toContain('3');
     });
   });
+
+  describe('alerta com params, observado no DOM', () => {
+    it('inativação recusada com 422 com codigo e params interpola os dois valores distintos no alerta de página', () => {
+      facade.inativar = vi.fn(() =>
+        throwError(() => ({
+          status: 422,
+          error: {
+            codigo: 'DOCENTE_TURMAS_VINCULADAS',
+            params: { nome: 'Larissa', quantidade: 3 },
+            mensagem: 'O docente possui turmas vinculadas.',
+          },
+        })),
+      );
+      montar();
+      const translate = TestBed.inject(TranslateService);
+      translate.setTranslation('pt-BR', {
+        ERRO_NEGOCIO: {
+          DOCENTE_TURMAS_VINCULADAS: '{{nome}} tem {{quantidade}} turma(s) vinculada(s).',
+        },
+      });
+      translate.use('pt-BR');
+
+      componente.definirAcao({ acaoId: 'inativar', item: ATIVO });
+      componente.confirmar();
+      fixture.detectChanges();
+
+      const texto = fixture.nativeElement.querySelector(
+        '.alerta-pagina .caixa-mensagem',
+      )?.textContent;
+      expect(texto).toContain('Larissa');
+      expect(texto).toContain('3 turma');
+    });
+
+    it('gravação recusada com 422 com codigo e params interpola os dois valores distintos no alerta do modal', () => {
+      facade.adicionar = vi.fn(() =>
+        throwError(() => ({
+          status: 422,
+          error: {
+            codigo: 'DOCENTE_TURMAS_VINCULADAS',
+            params: { nome: 'Otávio', quantidade: 5 },
+            mensagem: 'O docente possui turmas vinculadas.',
+          },
+        })),
+      );
+      montar();
+      const translate = TestBed.inject(TranslateService);
+      translate.setTranslation('pt-BR', {
+        ERRO_NEGOCIO: {
+          DOCENTE_TURMAS_VINCULADAS: '{{nome}} tem {{quantidade}} turma(s) vinculada(s).',
+        },
+      });
+      translate.use('pt-BR');
+
+      componente.abrirModalAdicionar();
+      preencherFormularioValido();
+      componente.salvarDocente();
+      fixture.detectChanges();
+
+      const texto = fixture.nativeElement.querySelector('app-modal .caixa-mensagem')?.textContent;
+      expect(texto).toContain('Otávio');
+      expect(texto).toContain('5 turma');
+    });
+  });
 });

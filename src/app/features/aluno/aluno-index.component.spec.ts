@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TranslateService } from '@ngx-translate/core';
 import { Observable, of, Subject, throwError } from 'rxjs';
 import { AlunoFacadeService } from '../../core/facades/aluno-facade.service';
 import { FeriadoFacadeService } from '../../core/facades/feriado-facade.service';
@@ -552,6 +553,78 @@ describe('AlunoIndex: orquestração do cadastro', () => {
       chamada$.complete();
 
       expect(inativar?.desabilitada?.(criarAluno({ id: 5 }))).toBe(false);
+    });
+  });
+
+  describe('alerta com params, observado no DOM', () => {
+    const montarComTemplate = () => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          { provide: AlunoFacadeService, useValue: facadeFake },
+          { provide: FeriadoFacadeService, useValue: { feriadosAnoAtual$: of([]) } },
+        ],
+      });
+      const traducao = TestBed.inject(TranslateService);
+      traducao.setTranslation('pt-BR', {
+        ERRO_NEGOCIO: {
+          ALUNO_MATRICULA_ATIVA: '{{nome}} possui {{quantidade}} matrícula(s) ativa(s).',
+        },
+      });
+      traducao.use('pt-BR');
+
+      fixture = TestBed.createComponent(AlunoIndex);
+      componente = fixture.componentInstance;
+      fixture.detectChanges();
+    };
+
+    it('inativação recusada com 422 com codigo e params interpola os dois valores distintos no alerta de página', () => {
+      facadeFake.inativar = vi.fn(() =>
+        throwError(() => ({
+          status: 422,
+          error: {
+            codigo: 'ALUNO_MATRICULA_ATIVA',
+            params: { nome: 'Bruna', quantidade: 4 },
+            mensagem: 'O aluno possui matrículas ativas.',
+          },
+        })),
+      );
+      montarComTemplate();
+
+      componente.definirAcao({ acaoId: 'inativar', item: criarAluno() });
+      componente.confirmar();
+      fixture.detectChanges();
+
+      const texto = (fixture.nativeElement as HTMLElement).querySelector(
+        '.alerta-pagina .caixa-mensagem',
+      )?.textContent;
+      expect(texto).toContain('Bruna');
+      expect(texto).toContain('4 matrícula');
+    });
+
+    it('cadastro recusado com 422 com codigo e params interpola os dois valores distintos no alerta do modal', () => {
+      facadeFake.adicionar = vi.fn(() =>
+        throwError(() => ({
+          status: 422,
+          error: {
+            codigo: 'ALUNO_MATRICULA_ATIVA',
+            params: { nome: 'Carla', quantidade: 7 },
+            mensagem: 'O aluno possui matrículas ativas.',
+          },
+        })),
+      );
+      montarComTemplate();
+
+      componente.abrirModal();
+      preencherFormulario();
+      componente.salvarAluno();
+      fixture.detectChanges();
+
+      const texto = (fixture.nativeElement as HTMLElement).querySelector(
+        'app-modal .caixa-mensagem',
+      )?.textContent;
+      expect(texto).toContain('Carla');
+      expect(texto).toContain('7 matrícula');
     });
   });
 });

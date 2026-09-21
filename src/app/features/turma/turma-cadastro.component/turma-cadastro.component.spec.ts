@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TranslateService } from '@ngx-translate/core';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
@@ -221,5 +222,62 @@ describe('TurmaCadastro: navegação e seleção', () => {
       'TURMA.CADASTRO.ERRO_DISCIPLINAS',
     );
     expect(novaFixture.debugElement.queryAll(By.css('app-passo-disciplinas'))).toHaveLength(0);
+  });
+
+  it('cadastro recusado com codigo e params interpola os dois valores distintos no alerta do wizard', () => {
+    turmaFacadeFake.adicionar = vi.fn(() =>
+      throwError(() => ({
+        status: 422,
+        error: {
+          codigo: 'TURMA_CAPACIDADE_ATINGIDA',
+          params: { capacidade: 50, alunosAtivos: 45 },
+          mensagem: 'A turma atingiu a capacidade máxima.',
+        },
+      })),
+    );
+
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: DocenteFacadeService,
+          useValue: { docentes$: of({ status: 'ok', itens: [] }) },
+        },
+        { provide: TurmaFacadeService, useValue: turmaFacadeFake },
+        { provide: Router, useValue: routerFake },
+      ],
+    });
+    TestBed.overrideComponent(TurmaCadastroComponent, {
+      add: { providers: [{ provide: AlunoFacadeService, useValue: alunoFacadeFake }] },
+    });
+    const traducao = TestBed.inject(TranslateService);
+    traducao.setTranslation('pt-BR', {
+      ERRO_NEGOCIO: {
+        TURMA_CAPACIDADE_ATINGIDA:
+          'A turma atingiu a capacidade máxima. Capacidade: {{capacidade}}; alunos ativos: {{alunosAtivos}}.',
+      },
+    });
+    traducao.use('pt-BR');
+
+    const novaFixture = TestBed.createComponent(TurmaCadastroComponent);
+    const novoComponente = novaFixture.componentInstance;
+    novoComponente.informacoesGroup.setValue({
+      identificador: 'A',
+      serie: 1,
+      anoLetivo: 2026,
+      capacidade: 30,
+      turno: TurnoEnum.MATUTINO,
+    });
+    novoComponente.setAlocacoes([3]);
+    novaFixture.detectChanges();
+
+    novoComponente.concluir();
+    novaFixture.detectChanges();
+
+    const texto = (novaFixture.nativeElement as HTMLElement).querySelector(
+      '.caixa-mensagem',
+    )?.textContent;
+    expect(texto).toContain('Capacidade: 50');
+    expect(texto).toContain('alunos ativos: 45');
   });
 });

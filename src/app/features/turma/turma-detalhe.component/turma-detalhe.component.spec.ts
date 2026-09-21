@@ -87,6 +87,10 @@ const TRADUCOES = {
       },
     },
   },
+  ERRO_NEGOCIO: {
+    TURMA_CAPACIDADE_ATINGIDA:
+      'A turma atingiu a capacidade máxima. Capacidade: {{capacidade}}; alunos ativos: {{alunosAtivos}}.',
+  },
 };
 
 describe('TurmaDetalheComponent', () => {
@@ -257,6 +261,30 @@ describe('TurmaDetalheComponent', () => {
     componente.matricular({ id: 2 });
 
     expect(componente.alertaPainel().texto).toBe('MENSAGEM.ERRO_MATRICULA');
+  });
+
+  it('recusa 422 com codigo e params interpola os dois valores distintos no DOM do alerta do painel', () => {
+    facade.matricularAluno = vi.fn(() =>
+      throwError(() => ({
+        status: 422,
+        error: {
+          codigo: 'TURMA_CAPACIDADE_ATINGIDA',
+          params: { capacidade: 22, alunosAtivos: 18 },
+          mensagem: 'A turma atingiu a capacidade máxima.',
+        },
+      })),
+    );
+    montar();
+    const componente = fixture.componentInstance as unknown as {
+      matricular: (aluno: { id: number }) => void;
+    };
+
+    componente.matricular({ id: 2 });
+    fixture.detectChanges();
+
+    const texto = dom().querySelector('.caixa-mensagem')?.textContent ?? '';
+    expect(texto).toContain('Capacidade: 22');
+    expect(texto).toContain('alunos ativos: 18');
   });
 
   it('clicar em desligar não chama o facade antes da confirmação', () => {
