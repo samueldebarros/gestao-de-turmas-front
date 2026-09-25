@@ -224,6 +224,48 @@ describe('TurmaCadastro: navegação e seleção', () => {
     expect(novaFixture.debugElement.queryAll(By.css('app-passo-disciplinas'))).toHaveLength(0);
   });
 
+  it('disciplinas$ entrega ao passo os docentes agrupados por disciplina quando a fonte carrega', () => {
+    const docente = (id: number, disciplinaId: number, disciplinaNome: string) => ({
+      id,
+      docenteNome: `Docente ${id}`,
+      docenteEmail: `docente${id}@escola.com`,
+      disciplinaId,
+      disciplinaNome,
+      cargaHoraria: 40,
+    });
+    const matematica1 = docente(1, 11, 'Matemática');
+    const historia = docente(2, 12, 'História');
+    const matematica2 = docente(3, 11, 'Matemática');
+
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: DocenteFacadeService,
+          useValue: {
+            docentes$: of({ status: 'ok', itens: [matematica1, historia, matematica2] }),
+          },
+        },
+        { provide: TurmaFacadeService, useValue: turmaFacadeFake },
+        { provide: Router, useValue: routerFake },
+      ],
+    });
+    TestBed.overrideComponent(TurmaCadastroComponent, {
+      add: { providers: [{ provide: AlunoFacadeService, useValue: alunoFacadeFake }] },
+    });
+
+    const novaFixture = TestBed.createComponent(TurmaCadastroComponent);
+    novaFixture.componentInstance.passoAtual = PASSO_DISCIPLINAS;
+    novaFixture.detectChanges();
+
+    const passo = novaFixture.debugElement.query(By.css('app-passo-disciplinas'));
+    expect(passo).not.toBeNull();
+    expect(passo.componentInstance.grupos).toEqual([
+      { disciplinaNome: 'Matemática', docentes: [matematica1, matematica2] },
+      { disciplinaNome: 'História', docentes: [historia] },
+    ]);
+  });
+
   it('cadastro recusado com codigo e params interpola os dois valores distintos no alerta do wizard', () => {
     turmaFacadeFake.adicionar = vi.fn(() =>
       throwError(() => ({

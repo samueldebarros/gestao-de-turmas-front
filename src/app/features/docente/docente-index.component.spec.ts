@@ -969,6 +969,53 @@ describe('DocenteIndexComponent', () => {
 
       expect(inativar?.desabilitada?.(ATIVO)).toBe(false);
     });
+
+    it('a confirmação pendente nomeia o docente a inativar e some depois de confirmada', () => {
+      montar();
+      expect(componente.confirmacaoPendente()).toBeNull();
+
+      componente.definirAcao({ acaoId: 'inativar', item: ATIVO });
+
+      expect(componente.confirmacaoPendente()).toEqual({
+        titulo: 'CONFIRMACAO.TITULO',
+        mensagem: 'DOCENTE.CONFIRMACAO.INATIVAR',
+        params: { nome: ATIVO.nome },
+        rotuloConfirmar: 'CONFIRMACAO.CONFIRMAR',
+        variante: 'perigo',
+      });
+
+      componente.confirmar();
+
+      expect(componente.confirmacaoPendente()).toBeNull();
+    });
+
+    it('cancelar descarta a pendência: confirmar depois não chama o Facade', () => {
+      montar();
+
+      componente.definirAcao({ acaoId: 'inativar', item: ATIVO });
+      componente.cancelarAcaoPendente();
+
+      expect(componente.confirmacaoPendente()).toBeNull();
+
+      componente.confirmar();
+
+      expect(facade.inativar).not.toHaveBeenCalled();
+    });
+
+    it('confirmar de novo o docente ainda em voo não dispara segunda inativação', () => {
+      const chamada$ = new Subject<void>();
+      facade.inativar = vi.fn(() => chamada$.asObservable());
+      montar();
+
+      componente.definirAcao({ acaoId: 'inativar', item: ATIVO });
+      componente.confirmar();
+      componente.definirAcao({ acaoId: 'inativar', item: ATIVO });
+      componente.confirmar();
+
+      expect(facade.inativar).toHaveBeenCalledTimes(1);
+
+      chamada$.complete();
+    });
   });
 
   describe('T-19: mensagem de erro com placeholder interpola, não exibe cru', () => {

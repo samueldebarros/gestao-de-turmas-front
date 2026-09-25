@@ -68,6 +68,8 @@ const TRADUCOES = {
   TURMA: {
     SITUACAO: { 1: 'Ativo', 3: 'Cancelado' },
     CONFIRMACAO: {
+      DESLIGAR: 'Cancelar a matrícula de {{nome}}?',
+      DESALOCAR: 'Desalocar {{nome}} de {{disciplina}}?',
       ALOCAR: 'Alocar {{nome}} em {{disciplina}} nesta turma?',
       TROCAR_DOCENTE: '{{disciplina}} já está com {{atual}}. Substituir por {{nome}}?',
     },
@@ -93,6 +95,15 @@ const TRADUCOES = {
   },
 };
 
+interface ComponenteComAcoesInterface {
+  acaoDaLinha: (evento: { acaoId: string; item: AlunoDaTurmaInterface }) => void;
+  acaoDocente: (evento: { acaoId: string; item: DocenteSqlInterface }) => void;
+  docenteSelecionado: { setValue: (v: number | null) => void };
+  confirmar: () => void;
+  cancelarAcaoPendente: () => void;
+  alertaPainel: () => { visivel: boolean };
+}
+
 describe('TurmaDetalheComponent', () => {
   let fixture: ComponentFixture<TurmaDetalheComponent>;
   let facade: {
@@ -113,6 +124,11 @@ describe('TurmaDetalheComponent', () => {
 
   const textoDe = (bloco: string) =>
     dom().querySelector(`[data-testid="bloco-${bloco}"]`)?.textContent ?? '';
+
+  const textoDaConfirmacao = () => {
+    fixture.detectChanges();
+    return dom().querySelector('app-confirmacao p')?.textContent?.trim() ?? null;
+  };
 
   const montar = (turma: TurmaInterface = TURMA) => {
     TestBed.configureTestingModule({
@@ -614,5 +630,122 @@ describe('TurmaDetalheComponent', () => {
 
     expect(rotulos).toContain(`${DOCENTE.disciplinaNome} - ${DOCENTE.docenteNome}`);
     expect(rotulos).toContain(`${DOCENTE_2.disciplinaNome} - ${DOCENTE_2.docenteNome}`);
+  });
+
+  const componente = () => fixture.componentInstance as unknown as ComponenteComAcoesInterface;
+
+  describe('o modal de confirmação mostra a ação pendente', () => {
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('desligar nomeia o aluno, e cancelar fecha o modal', () => {
+      montar();
+
+      componente().acaoDaLinha({ acaoId: 'desligar', item: criarAluno({ nome: 'Bruna Reis' }) });
+
+      expect(textoDaConfirmacao()).toBe('Cancelar a matrícula de Bruna Reis?');
+
+      componente().cancelarAcaoPendente();
+
+      expect(textoDaConfirmacao()).toBeNull();
+    });
+
+    it('desalocar nomeia o docente e a disciplina', () => {
+      montar();
+
+      componente().acaoDocente({ acaoId: 'desalocar', item: DOCENTE });
+
+      expect(textoDaConfirmacao()).toBe('Desalocar Carlos Lima de Matemática?');
+    });
+
+    it('alocar em disciplina livre mostra a confirmação de alocação, e confirmar fecha o modal', () => {
+      docentesFacadeMock = of({ status: 'ok', itens: [DOCENTE, DOCENTE_HISTORIA] });
+      montar();
+
+      componente().docenteSelecionado.setValue(DOCENTE_HISTORIA.id);
+
+      expect(textoDaConfirmacao()).toBe('Alocar Marcos Alves em História nesta turma?');
+
+      componente().confirmar();
+
+      expect(textoDaConfirmacao()).toBeNull();
+    });
+
+    it('trocar o docente de disciplina ocupada mostra quem sai e quem entra', () => {
+      docentesFacadeMock = of({ status: 'ok', itens: [DOCENTE, DOCENTE_2] });
+      montar();
+
+      componente().docenteSelecionado.setValue(DOCENTE_2.id);
+
+      expect(textoDaConfirmacao()).toBe(
+        'Matemática já está com Carlos Lima. Substituir por Fernanda Reis?',
+      );
+    });
+
+    it('falha ao carregar os docentes da turma trata a disciplina como livre e oferece alocar', () => {
+      facade.docentesDaTurma = vi.fn(() => of({ status: 'erro' }));
+      montar();
+
+      componente().docenteSelecionado.setValue(DOCENTE.id);
+
+      expect(textoDaConfirmacao()).toBe('Alocar Carlos Lima em Matemática nesta turma?');
+      expect(componente().alertaPainel().visivel).toBe(false);
+    });
+
+    it('escolher docente enquanto a lista de docentes ainda carrega é ignorado sem erro', () => {
+      docentesFacadeMock = of({ status: 'carregando' });
+      montar();
+      vi.useFakeTimers();
+
+      componente().docenteSelecionado.setValue(DOCENTE.id);
+
+      expect(() => vi.runOnlyPendingTimers()).not.toThrow();
+      expect(textoDaConfirmacao()).toBeNull();
+      expect(componente().alertaPainel().visivel).toBe(false);
+    });
+
+    it('escolher docente que não está na lista disponível é ignorado sem erro', () => {
+      montar();
+      vi.useFakeTimers();
+
+      componente().docenteSelecionado.setValue(999);
+
+      expect(() => vi.runOnlyPendingTimers()).not.toThrow();
+      expect(textoDaConfirmacao()).toBeNull();
+      expect(componente().alertaPainel().visivel).toBe(false);
+    });
+  });
+
+  describe('clique repetido na mesma linha em voo não duplica a mutação', () => {
+    it('desligar de novo o aluno ainda em voo não cancela a matrícula duas vezes', () => {
+      const chamada$ = new Subject<void>();
+      facade.cancelarMatricula = vi.fn(() => chamada$.asObservable());
+      montar();
+
+      componente().acaoDaLinha({ acaoId: 'desligar', item: criarAluno({ id: 5 }) });
+      componente().confirmar();
+      componente().acaoDaLinha({ acaoId: 'desligar', item: criarAluno({ id: 5 }) });
+      componente().confirmar();
+
+      expect(facade.cancelarMatricula).toHaveBeenCalledTimes(1);
+
+      chamada$.complete();
+    });
+
+    it('desalocar de novo a disciplina ainda em voo não desvincula duas vezes', () => {
+      const chamada$ = new Subject<void>();
+      facade.desvincularDisciplina = vi.fn(() => chamada$.asObservable());
+      montar();
+
+      componente().acaoDocente({ acaoId: 'desalocar', item: DOCENTE });
+      componente().confirmar();
+      componente().acaoDocente({ acaoId: 'desalocar', item: DOCENTE });
+      componente().confirmar();
+
+      expect(facade.desvincularDisciplina).toHaveBeenCalledTimes(1);
+
+      chamada$.complete();
+    });
   });
 });

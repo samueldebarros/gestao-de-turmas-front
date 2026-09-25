@@ -95,10 +95,10 @@
             ],
             "coverageReporters": ["text-summary", "html", "lcovonly"],
             "coverageThresholds": {
-              "statements": 76.84,
-              "branches": 83.47,
-              "functions": 73.95,
-              "lines": 77.23
+              "statements": 77.98,
+              "branches": 85.51,
+              "functions": 75.25,
+              "lines": 78.1
             }
           },
           "configurations": {
@@ -118,10 +118,10 @@
                 "src/app/features/docente/docente-index.component.ts"
               ],
               "coverageThresholds": {
-                "statements": 95.63,
-                "branches": 89.9,
-                "functions": 92.94,
-                "lines": 96.4
+                "statements": 98.13,
+                "branches": 94.78,
+                "functions": 95.43,
+                "lines": 98.02
               }
             }
           }

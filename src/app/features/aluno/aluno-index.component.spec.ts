@@ -554,6 +554,49 @@ describe('AlunoIndex: orquestração do cadastro', () => {
 
       expect(inativar?.desabilitada?.(criarAluno({ id: 5 }))).toBe(false);
     });
+
+    it('a confirmação pendente nomeia o aluno a inativar e some depois de confirmada', () => {
+      expect(componente.confirmacaoPendente()).toBeNull();
+
+      componente.definirAcao({ acaoId: 'inativar', item: criarAluno({ nome: 'Bruna Reis' }) });
+
+      expect(componente.confirmacaoPendente()).toEqual({
+        titulo: 'CONFIRMACAO.TITULO',
+        mensagem: 'ALUNO.CONFIRMACAO.INATIVAR',
+        params: { nome: 'Bruna Reis' },
+        rotuloConfirmar: 'CONFIRMACAO.CONFIRMAR',
+        variante: 'perigo',
+      });
+
+      componente.confirmar();
+
+      expect(componente.confirmacaoPendente()).toBeNull();
+    });
+
+    it('cancelar descarta a pendência: confirmar depois não chama o Facade', () => {
+      componente.definirAcao({ acaoId: 'inativar', item: criarAluno({ id: 9 }) });
+      componente.cancelarAcaoPendente();
+
+      expect(componente.confirmacaoPendente()).toBeNull();
+
+      componente.confirmar();
+
+      expect(facadeFake.inativar).not.toHaveBeenCalled();
+    });
+
+    it('confirmar de novo o aluno ainda em voo não dispara segunda inativação', () => {
+      const chamada$ = new Subject<void>();
+      facadeFake.inativar = vi.fn(() => chamada$.asObservable());
+
+      componente.definirAcao({ acaoId: 'inativar', item: criarAluno({ id: 5 }) });
+      componente.confirmar();
+      componente.definirAcao({ acaoId: 'inativar', item: criarAluno({ id: 5 }) });
+      componente.confirmar();
+
+      expect(facadeFake.inativar).toHaveBeenCalledTimes(1);
+
+      chamada$.complete();
+    });
   });
 
   describe('alerta com params, observado no DOM', () => {
