@@ -67,7 +67,8 @@
                   @if (!acao.condicaoVisibilidade || acao.condicaoVisibilidade(item)) {
                     <app-botao
                       [variante]="acao.varianteBotao"
-                      (click)="dispararAcao(acao.id, item)"
+                      [desabilitado]="acao.desabilitada ? acao.desabilitada(item) : false"
+                      (acaoBotao)="dispararAcao(acao.id, item)"
                     >
                       {{ acao.rotulo | translate }}
                     </app-botao>

@@ -31,7 +31,9 @@ $cor-marca-escuro: #870c0c;
     border-radius: 6px;
     cursor: pointer;
     font-weight: 500;
-    transition: background-color 0.15s ease, color 0.15s ease;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
 
     &:hover {
       background-color: rgba(255, 255, 255, 0.15);
@@ -60,7 +62,10 @@ $cor-marca-escuro: #870c0c;
   cursor: pointer;
   line-height: 0;
   opacity: 0.55;
-  transition: opacity 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+  transition:
+    opacity 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
 
   svg {
     display: block;

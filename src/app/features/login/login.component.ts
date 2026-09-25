@@ -16,6 +16,7 @@ import { Botao } from '../../shared/components/botao/botao.component';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ErrorMessagePipe } from '../../shared/pipes/error-message.pipe';
 import { ErrorParamsPipe } from '../../shared/pipes/error-params.pipe';
+import { alertaDeErroHttp } from '../../shared/utils/tratar-erro-http.util';
 
 @Component({
   selector: 'app-login',
@@ -63,9 +64,11 @@ export class LoginComponent {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => this.router.navigate(['/alunos']),
-        error: () => {
+        error: (erro: unknown) => {
           this.carregando.set(false);
-          this.alerta.set({ visivel: true, tipo: 'erro', texto: 'LOGIN.ERRO_CREDENCIAIS' });
+          this.alerta.set(
+            alertaDeErroHttp(erro, 'LOGIN.ERRO_CREDENCIAIS', 'LOGIN.ERRO_CREDENCIAIS'),
+          );
         },
       });
   }

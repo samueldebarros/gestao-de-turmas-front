@@ -4,6 +4,7 @@
     (visivelChange)="ocultarAlertaPagina()"
     [tipo]="alertaPagina().tipo"
     [texto]="alertaPagina().texto"
+    [params]="alertaPagina().params"
   ></app-mensagem>
 </div>
 
@@ -57,6 +58,7 @@
       [tipo]="alertaModal().tipo"
       [texto]="alertaModal().texto"
       [detalhes]="alertaModal().detalhes ?? []"
+      [params]="alertaModal().params"
     ></app-mensagem>
 
     <form [formGroup]="docenteForm" (ngSubmit)="salvarDocente()" class="form-docente">
@@ -134,4 +136,10 @@
       </div>
     </form>
   </app-modal>
+
+  <app-confirmacao
+    [confirmacao]="confirmacaoPendente()"
+    (confirmado)="confirmar()"
+    (cancelado)="cancelarAcaoPendente()"
+  ></app-confirmacao>
 </div>

@@ -4,6 +4,7 @@
     (visivelChange)="ocultarAlertaPagina()"
     [tipo]="alertaPagina().tipo"
     [texto]="alertaPagina().texto"
+    [params]="alertaPagina().params"
   ></app-mensagem>
 </div>
 
@@ -65,6 +66,7 @@
       (visivelChange)="ocultarAlertaModal()"
       [tipo]="alertaModal().tipo"
       [texto]="alertaModal().texto"
+      [params]="alertaModal().params"
     ></app-mensagem>
 
     <form [formGroup]="alunoForm" (ngSubmit)="salvarAluno()" class="formAluno">
@@ -142,4 +144,10 @@
       <app-importar-alunos (importado)="aoImportar($event)"></app-importar-alunos>
     </app-modal>
   }
+
+  <app-confirmacao
+    [confirmacao]="confirmacaoPendente()"
+    (confirmado)="confirmar()"
+    (cancelado)="cancelarAcaoPendente()"
+  ></app-confirmacao>
 </div>

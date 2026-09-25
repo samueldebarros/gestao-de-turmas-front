@@ -14,7 +14,9 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { DocenteFacadeService } from '../../../core/facades/docente-facade.service';
 import { AlunoFacadeService } from '../../../core/facades/aluno-facade.service';
 import { agruparPorDisciplina } from '../../../shared/utils/agrupar-por-disciplina.util';
-import { catchError, map, of, tap } from 'rxjs';
+import { catchError, map, Observable, of, tap } from 'rxjs';
+import { EstadoCarga } from '../../../shared/interfaces/ui/estado-carga.interface';
+import { GrupoDisciplinaInterface } from '../../../shared/interfaces/ui/grupo-disciplina.interface';
 import { PassoDisciplinasComponent } from '../../../shared/components/passos/passo-disciplinas.component/passo-disciplinas.component';
 import { PassoAlunosComponent } from '../../../shared/components/passos/passo-alunos.component/passo-alunos.component';
 import { PassoInformacoesComponent } from '../../../shared/components/passos/passo-informacoes.component/passo-informacoes.component';
@@ -29,6 +31,7 @@ import { ImportarAlunosComponent } from '../../../shared/components/importar-alu
 import { FeatureFlagsService } from '../../../core/services/feature-flags.service';
 import { DetalheAlerta } from '../../../shared/interfaces/ui/detalhe-alerta.interface';
 import { causasDeInvalidez } from '../../../shared/utils/causas-de-invalidez.util';
+import { alertaDeErroHttp } from '../../../shared/utils/tratar-erro-http.util';
 
 const ROTULO_DO_CAMPO: Record<string, string> = {
   identificador: 'TURMA.FORMULARIO.IDENTIFICADOR_LABEL',
@@ -95,7 +98,15 @@ export class TurmaCadastroComponent {
     alunosIds: new FormControl<number[]>([], { nonNullable: true }),
   });
 
-  readonly disciplinas$ = this.docenteFacade.docentes$.pipe(map(agruparPorDisciplina));
+  readonly disciplinas$: Observable<EstadoCarga<GrupoDisciplinaInterface>> =
+    this.docenteFacade.docentes$.pipe(
+      map(
+        (estado): EstadoCarga<GrupoDisciplinaInterface> =>
+          estado.status === 'ok'
+            ? { status: 'ok', itens: agruparPorDisciplina(estado.itens) }
+            : estado,
+      ),
+    );
   readonly alunosPagina$ = this.alunoFacade.resultado$;
 
   private readonly ordemGrupos = ['informacoes', 'alocacoes', 'alunosIds'] as const;
@@ -161,8 +172,14 @@ export class TurmaCadastroComponent {
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         tap(() => this.router.navigate(['/turmas'], { state: { sucesso: true } })),
-        catchError(() => {
-          this.alerta.set({ visivel: true, tipo: 'erro', texto: 'TURMA.MENSAGEM.ERRO_CADASTRO' });
+        catchError((erro: unknown) => {
+          this.alerta.set(
+            alertaDeErroHttp(
+              erro,
+              'TURMA.MENSAGEM.ERRO_CADASTRO',
+              'MENSAGEM.ERRO_REGRA_NEGOCIO_TURMA',
+            ),
+          );
           return of(null);
         }),
       )

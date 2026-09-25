@@ -1,44 +1,66 @@
-import { extrairMensagemDeRegra } from './mensagem-regra-negocio.util';
+import { extrairErroDeNegocio } from './mensagem-regra-negocio.util';
 
-const MENSAGEM = 'A data de nascimento informada é inválida (idade superior a 120 anos).';
+describe('extrairErroDeNegocio', () => {
+  describe('formatos que o back novo produz', () => {
+    it('extrai codigo, params e mensagem quando o corpo tem codigo utilizável', () => {
+      const erro = {
+        status: 422,
+        error: {
+          codigo: 'TURMA_CAPACIDADE_ATINGIDA',
+          params: { capacidade: 20, alunosAtivos: 20 },
+          mensagem: 'A turma atingiu a capacidade máxima. Capacidade: 20; alunos ativos: 20.',
+        },
+      };
 
-describe('extrairMensagemDeRegra', () => {
-  describe('formatos que o servidor realmente produz', () => {
-    it('lê o corpo quando ele chega como string', () => {
-      expect(extrairMensagemDeRegra({ status: 422, error: MENSAGEM })).toBe(MENSAGEM);
+      expect(extrairErroDeNegocio(erro)).toEqual({
+        codigo: 'TURMA_CAPACIDADE_ATINGIDA',
+        params: { capacidade: 20, alunosAtivos: 20 },
+        mensagem: 'A turma atingiu a capacidade máxima. Capacidade: 20; alunos ativos: 20.',
+      });
     });
 
-    it('lê o corpo quando o HttpClient embrulha o texto por falhar ao parsear JSON', () => {
-      const erro = { status: 422, error: { error: new SyntaxError('...'), text: MENSAGEM } };
+    it('extrai codigo com params nulo', () => {
+      const erro = {
+        status: 422,
+        error: {
+          codigo: 'TURMA_COMBINACAO_DUPLICADA',
+          params: null,
+          mensagem: 'Já existe uma turma com essa combinação de Identificador, Série e Ano letivo',
+        },
+      };
 
-      expect(extrairMensagemDeRegra(erro)).toBe(MENSAGEM);
-    });
-
-    it('remove espaço em volta', () => {
-      expect(extrairMensagemDeRegra({ error: `  ${MENSAGEM}  ` })).toBe(MENSAGEM);
+      expect(extrairErroDeNegocio(erro)).toEqual({
+        codigo: 'TURMA_COMBINACAO_DUPLICADA',
+        params: null,
+        mensagem: 'Já existe uma turma com essa combinação de Identificador, Série e Ano letivo',
+      });
     });
   });
 
-  describe('recusa o que não é mensagem de regra', () => {
+  describe('recusa o que não traz codigo utilizável', () => {
     it.each([
+      {
+        caso: 'string crua (formato antigo)',
+        erro: { status: 422, error: 'A turma atingiu a capacidade.' },
+      },
+      {
+        caso: 'codigo nulo',
+        erro: { status: 422, error: { codigo: null, params: null, mensagem: 'x' } },
+      },
+      {
+        caso: 'objeto sem codigo',
+        erro: { status: 422, error: { params: null, mensagem: 'x' } },
+      },
+      { caso: 'corpo vazio', erro: { status: 422, error: '' } },
+      {
+        caso: 'HTML',
+        erro: { status: 422, error: '<!DOCTYPE html><html><body>Erro</body></html>' },
+      },
       { caso: 'corpo ausente', erro: { status: 500 } },
-      { caso: 'corpo nulo', erro: { status: 422, error: null } },
-      { caso: 'corpo vazio', erro: { status: 422, error: '   ' } },
-      { caso: 'objeto sem text', erro: { status: 422, error: { title: 'Not Found' } } },
       { caso: 'erro que não é objeto', erro: 'falhou' },
       { caso: 'nulo', erro: null },
     ])('devolve nulo para $caso', ({ erro }) => {
-      expect(extrairMensagemDeRegra(erro)).toBeNull();
-    });
-
-    it('recusa página HTML, que o handler global devolve ao redirecionar', () => {
-      const erro = { status: 422, error: '<!DOCTYPE html><html><body>Erro</body></html>' };
-
-      expect(extrairMensagemDeRegra(erro)).toBeNull();
-    });
-
-    it('recusa texto longo demais para caber num alerta', () => {
-      expect(extrairMensagemDeRegra({ error: 'x'.repeat(301) })).toBeNull();
+      expect(extrairErroDeNegocio(erro)).toBeNull();
     });
   });
 });

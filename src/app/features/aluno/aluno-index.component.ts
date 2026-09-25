@@ -28,12 +28,14 @@ import { MensagemComponent } from '../../shared/components/mensagem.component/me
 import { AlunoFacadeService } from '../../core/facades/aluno-facade.service.js';
 import { FeatureFlagsService } from '../../core/services/feature-flags.service';
 import { FeriadoFacadeService } from '../../core/facades/feriado-facade.service.js';
-import { catchError, Observable, of, tap } from 'rxjs';
+import { catchError, finalize, Observable, of, tap } from 'rxjs';
 import { AsyncPipe, DatePipe } from '@angular/common';
 import { SexoEnum } from '../../shared/enums/sexo.enum.js';
 import { AlunoAdicionarDTO } from '../../shared/interfaces/dto/aluno-adicionar-dto.interface.js';
 import { AlunoEditarDTO } from '../../shared/interfaces/dto/aluno-editar-dto.interface.js';
 import { AcaoTabela } from '../../shared/interfaces/ui/acao-tabela.interface.js';
+import { ConfirmacaoAcao } from '../../shared/interfaces/ui/confirmacao-acao.interface';
+import { ConfirmacaoComponent } from '../../shared/components/confirmacao.component/confirmacao.component';
 import { EventoAcaoTabela } from '../../shared/interfaces/ui/evento-acao-tabela.interface.js';
 import { AlunoInterface } from '../../shared/interfaces/entities/aluno.interface.js';
 import { formatarCpfCnpj, mascararCpfCnpj } from '../../shared/utils/cpf-cnpj.utils';
@@ -53,6 +55,9 @@ import { EstadoModal } from '../../shared/interfaces/ui/estado-modal.interface.j
 import { ImportarAlunosComponent } from '../../shared/components/importar-alunos.component/importar-alunos.component.js';
 import { ImportacaoResultado } from '../../shared/interfaces/dto/importacao-alunos.interface.js';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { alertaDeErroHttp } from '../../shared/utils/tratar-erro-http.util';
+
+type AcaoPendenteAluno = { tipo: 'nenhuma' } | { tipo: 'inativar'; aluno: AlunoInterface };
 
 @Component({
   selector: 'app-aluno-index',
@@ -74,6 +79,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     DatePickerComponent,
     AutocompleteComponent,
     ImportarAlunosComponent,
+    ConfirmacaoComponent,
   ],
   templateUrl: './aluno-index.component.html',
   styleUrl: './aluno-index.component.scss',
@@ -143,6 +149,8 @@ export class AlunoIndex implements OnInit {
       rotulo: 'ALUNO.BOTOES.INATIVAR',
       varianteBotao: 'perigo',
       condicaoVisibilidade: (aluno: AlunoInterface) => aluno.ativo === true,
+      confirmacao: (aluno: AlunoInterface) => this.confirmacaoInativar(aluno),
+      desabilitada: (aluno: AlunoInterface) => this.alunosEmVoo().has(aluno.id),
     },
     {
       id: 'reativar',
@@ -176,6 +184,14 @@ export class AlunoIndex implements OnInit {
   private readonly estadoModal = signal<EstadoModal>({ modo: 'fechado' });
 
   public readonly modalAberto = computed(() => this.estadoModal().modo !== 'fechado');
+
+  private readonly acaoPendente = signal<AcaoPendenteAluno>({ tipo: 'nenhuma' });
+  private readonly alunosEmVoo = signal<ReadonlySet<number>>(new Set());
+
+  public readonly confirmacaoPendente = computed<ConfirmacaoAcao | null>(() => {
+    const pendente = this.acaoPendente();
+    return pendente.tipo === 'inativar' ? this.confirmacaoInativar(pendente.aluno) : null;
+  });
 
   public alertaModal = signal<AlertaState>({ visivel: false, tipo: 'sucesso', texto: '' });
   public readonly alertaPagina = signal<AlertaState>({ visivel: false, tipo: 'erro', texto: '' });
@@ -223,7 +239,7 @@ export class AlunoIndex implements OnInit {
         this.abrirModalEdicao(evento.item);
         break;
       case 'inativar':
-        this.inativarAluno(evento.item.id);
+        this.acaoPendente.set({ tipo: 'inativar', aluno: evento.item });
         break;
       case 'reativar':
         this.reativarAluno(evento.item.id);
@@ -231,6 +247,38 @@ export class AlunoIndex implements OnInit {
       default:
         console.warn(`Ação não reconhecida: ${evento.acaoId}`);
     }
+  }
+
+  public confirmar(): void {
+    const pendente = this.acaoPendente();
+    this.acaoPendente.set({ tipo: 'nenhuma' });
+
+    if (pendente.tipo !== 'inativar') return;
+
+    const alunoId = pendente.aluno.id;
+    if (this.alunosEmVoo().has(alunoId)) return;
+
+    this.marcarAlunoEmVoo(alunoId, true);
+    const aoTerminar = finalize<unknown>(() => this.marcarAlunoEmVoo(alunoId, false));
+    this.executarAcaoNaLista(
+      this.facade.inativar(alunoId).pipe(aoTerminar),
+      'MENSAGEM.SUCESSO_INATIVAR_ALUNO',
+      'MENSAGEM.ERRO_INATIVAR_ALUNO',
+    );
+  }
+
+  public cancelarAcaoPendente(): void {
+    this.acaoPendente.set({ tipo: 'nenhuma' });
+  }
+
+  private confirmacaoInativar(aluno: AlunoInterface): ConfirmacaoAcao {
+    return {
+      titulo: 'CONFIRMACAO.TITULO',
+      mensagem: 'ALUNO.CONFIRMACAO.INATIVAR',
+      params: { nome: aluno.nome },
+      rotuloConfirmar: 'CONFIRMACAO.CONFIRMAR',
+      variante: 'perigo',
+    };
   }
 
   public alunoForm!: FormGroup<{
@@ -311,16 +359,36 @@ export class AlunoIndex implements OnInit {
     acao$: Observable<unknown>,
     chaveSucesso: string,
     chaveErro: string,
-    aoSucesso?: () => void,
+  ): void {
+    acao$
+      .pipe(
+        tap(() => this.exibirAlertaPagina('sucesso', chaveSucesso)),
+        catchError((erro: unknown) => {
+          this.alertaPagina.set(
+            alertaDeErroHttp(erro, chaveErro, 'MENSAGEM.ERRO_REGRA_NEGOCIO_ALUNO'),
+          );
+          return of(null);
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe();
+  }
+
+  private executarAcaoNoModal(
+    acao$: Observable<unknown>,
+    chaveSucesso: string,
+    chaveErro: string,
   ): void {
     acao$
       .pipe(
         tap(() => {
           this.exibirAlertaPagina('sucesso', chaveSucesso);
-          aoSucesso?.();
+          this.fecharModal();
         }),
-        catchError(() => {
-          this.exibirAlertaPagina('erro', chaveErro);
+        catchError((erro: unknown) => {
+          this.alertaModal.set(
+            alertaDeErroHttp(erro, chaveErro, 'MENSAGEM.ERRO_REGRA_NEGOCIO_ALUNO'),
+          );
           return of(null);
         }),
         takeUntilDestroyed(this.destroyRef),
@@ -336,11 +404,10 @@ export class AlunoIndex implements OnInit {
     }
     const novoAluno = this.criarAlunoParaEnvio();
 
-    this.executarAcaoNaLista(
+    this.executarAcaoNoModal(
       this.facade.adicionar(novoAluno),
       'MENSAGEM.SUCESSO_CADASTRO_ALUNO',
       'MENSAGEM.ERRO_CADASTRO_ALUNO',
-      () => this.fecharModal(),
     );
   }
 
@@ -357,20 +424,23 @@ export class AlunoIndex implements OnInit {
       sexo: Number(this.alunoForm.value.sexo),
       dataNascimento: this.alunoForm.value.dataNascimento!,
     };
-    this.executarAcaoNaLista(
+    this.executarAcaoNoModal(
       this.facade.editar(payload),
       'MENSAGEM.SUCESSO_EDICAO_ALUNO',
       'MENSAGEM.ERRO_EDICAO_ALUNO',
-      () => this.fecharModal(),
     );
   }
 
-  private inativarAluno(id: number) {
-    this.executarAcaoNaLista(
-      this.facade.inativar(id),
-      'MENSAGEM.SUCESSO_INATIVAR_ALUNO',
-      'MENSAGEM.ERRO_INATIVAR_ALUNO',
-    );
+  private marcarAlunoEmVoo(id: number, emVoo: boolean): void {
+    this.alunosEmVoo.update((atual) => {
+      const novo = new Set(atual);
+      if (emVoo) {
+        novo.add(id);
+      } else {
+        novo.delete(id);
+      }
+      return novo;
+    });
   }
 
   private reativarAluno(id: number) {

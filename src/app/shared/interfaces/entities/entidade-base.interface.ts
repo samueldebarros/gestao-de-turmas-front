@@ -1,4 +1,4 @@
 export interface EntidadeBaseInterface {
-    id: number;
-    ativo?: boolean;
+  id: number;
+  ativo?: boolean;
 }

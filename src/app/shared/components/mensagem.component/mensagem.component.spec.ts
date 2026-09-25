@@ -41,6 +41,45 @@ describe('MensagemComponent', () => {
     });
   });
 
+  describe('texto principal, sempre traduzido', () => {
+    beforeEach(() => {
+      const translate = TestBed.inject(TranslateService);
+      translate.setTranslation('pt-BR', {
+        MENSAGEM: { CORRIJA_OS_CAMPOS: 'Corrija os campos indicados abaixo:' },
+        ERRO_NEGOCIO: {
+          TURMA_CAPACIDADE_ATINGIDA:
+            'A turma atingiu a capacidade máxima. Capacidade: {{capacidade}}; alunos ativos: {{alunosAtivos}}.',
+        },
+      });
+      translate.use('pt-BR');
+    });
+
+    it('traduz o texto quando ele é uma chave conhecida', () => {
+      componente.visivel = true;
+      componente.texto = 'MENSAGEM.CORRIJA_OS_CAMPOS';
+      fixture.detectChanges();
+
+      const texto = fixture.nativeElement
+        .querySelector('.conteudo-mensagem span')
+        ?.textContent?.trim();
+
+      expect(texto).toBe('Corrija os campos indicados abaixo:');
+    });
+
+    it('interpola os params no texto principal', () => {
+      componente.visivel = true;
+      componente.texto = 'ERRO_NEGOCIO.TURMA_CAPACIDADE_ATINGIDA';
+      componente.params = { capacidade: 20, alunosAtivos: 20 };
+      fixture.detectChanges();
+
+      const texto = fixture.nativeElement
+        .querySelector('.conteudo-mensagem span')
+        ?.textContent?.trim();
+
+      expect(texto).toBe('A turma atingiu a capacidade máxima. Capacidade: 20; alunos ativos: 20.');
+    });
+  });
+
   describe('detalhes, a lista de causas', () => {
     it('sem detalhes, nenhuma lista é renderizada', () => {
       componente.visivel = true;

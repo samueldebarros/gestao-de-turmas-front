@@ -16,6 +16,7 @@ export class MensagemComponent {
   @Input() tipo: 'sucesso' | 'erro' = 'sucesso';
   @Input() texto: string = '';
   @Input() detalhes: DetalheAlerta[] = [];
+  @Input() params?: Record<string, unknown>;
 
   fecharMensagem(): void {
     this.visivel = false;

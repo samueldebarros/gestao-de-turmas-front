@@ -1,6 +1,10 @@
 <article class="card" [class.card--inativo]="turma.ativo === false">
   <header class="card__cabecalho">
-    <h3 class="card__titulo">{{ turma.serie }}º {{ turma.identificador }}</h3>
+    <h3 class="card__titulo">
+      <button type="button" class="card__abrir" (click)="verDetalhes.emit(turma)">
+        {{ turma.serie }}º {{ turma.identificador }}
+      </button>
+    </h3>
     <span
       class="badge"
       [class.badge--ativo]="turma.ativo !== false"

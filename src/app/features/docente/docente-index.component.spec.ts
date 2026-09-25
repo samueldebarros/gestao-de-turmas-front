@@ -180,15 +180,21 @@ describe('DocenteIndexComponent', () => {
       expect(facade.ordenarPor).toHaveBeenCalledWith(OrdenacaoDocenteEnum.DISCIPLINA);
     });
 
-    it.each([
-      { acaoId: 'inativar', item: ATIVO, metodo: 'inativar' },
-      { acaoId: 'reativar', item: INATIVO, metodo: 'reativar' },
-    ] as const)('$acaoId chama o Facade com o id do item', ({ acaoId, item, metodo }) => {
+    it('reativar chama o Facade diretamente com o id do item', () => {
       montar();
 
-      componente.definirAcao({ acaoId, item });
+      componente.definirAcao({ acaoId: 'reativar', item: INATIVO });
 
-      expect(facade[metodo]).toHaveBeenCalledWith(item.id);
+      expect(facade.reativar).toHaveBeenCalledWith(INATIVO.id);
+    });
+
+    it('inativar chama o Facade com o id do item, depois de confirmado', () => {
+      montar();
+
+      componente.definirAcao({ acaoId: 'inativar', item: ATIVO });
+      componente.confirmar();
+
+      expect(facade.inativar).toHaveBeenCalledWith(ATIVO.id);
     });
 
     it('ignora ação desconhecida sem quebrar nem chamar o Facade', () => {
@@ -212,6 +218,7 @@ describe('DocenteIndexComponent', () => {
       montar();
 
       componente.definirAcao({ acaoId: 'inativar', item: ATIVO });
+      componente.confirmar();
 
       expect(componente.alertaPagina()).toEqual({
         visivel: true,
@@ -224,7 +231,8 @@ describe('DocenteIndexComponent', () => {
       facade.inativar = vi.fn(() => throwError(() => ({ status: 500 })));
       montar();
 
-      expect(() => componente.definirAcao({ acaoId: 'inativar', item: ATIVO })).not.toThrow();
+      componente.definirAcao({ acaoId: 'inativar', item: ATIVO });
+      expect(() => componente.confirmar()).not.toThrow();
 
       expect(componente.alertaPagina()).toEqual({
         visivel: true,
@@ -233,9 +241,32 @@ describe('DocenteIndexComponent', () => {
       });
     });
 
+    it('inativar recusado com 422 sem codigo utilizável cai na chave genérica de regra de negócio', () => {
+      facade.inativar = vi.fn(() =>
+        throwError(() => ({
+          status: 422,
+          error: {
+            error: new SyntaxError('...'),
+            text: 'O docente possui turmas ativas vinculadas.',
+          },
+        })),
+      );
+      montar();
+
+      componente.definirAcao({ acaoId: 'inativar', item: ATIVO });
+      componente.confirmar();
+
+      expect(componente.alertaPagina()).toEqual({
+        visivel: true,
+        tipo: 'erro',
+        texto: 'MENSAGEM.ERRO_REGRA_NEGOCIO_DOCENTE',
+      });
+    });
+
     it('ocultar mantém o texto e só apaga a visibilidade', () => {
       montar();
       componente.definirAcao({ acaoId: 'inativar', item: ATIVO });
+      componente.confirmar();
 
       componente.ocultarAlertaPagina();
 
@@ -779,18 +810,19 @@ describe('DocenteIndexComponent', () => {
           text: 'A disciplina informada não existe ou está inativa.',
         },
       },
-    ])('422 mostra a razão que o servidor mandou no formato $formato', ({ error }) => {
-      facade.adicionar = vi.fn(() => throwError(() => ({ status: 422, error })));
-      montar();
-      componente.abrirModalAdicionar();
-      preencherFormularioValido();
+    ])(
+      '422 sem codigo utilizável no formato $formato cai na chave genérica de regra de negócio',
+      ({ error }) => {
+        facade.adicionar = vi.fn(() => throwError(() => ({ status: 422, error })));
+        montar();
+        componente.abrirModalAdicionar();
+        preencherFormularioValido();
 
-      componente.salvarDocente();
+        componente.salvarDocente();
 
-      expect(componente.alertaModal().texto).toBe(
-        'A disciplina informada não existe ou está inativa.',
-      );
-    });
+        expect(componente.alertaModal().texto).toBe('MENSAGEM.ERRO_REGRA_NEGOCIO_DOCENTE');
+      },
+    );
 
     it('422 cai na chave genérica quando o corpo não é aproveitável', () => {
       facade.adicionar = vi.fn(() => throwError(() => ({ status: 422, error: '<html></html>' })));
@@ -803,7 +835,7 @@ describe('DocenteIndexComponent', () => {
       expect(componente.alertaModal().texto).toBe('MENSAGEM.ERRO_REGRA_NEGOCIO_DOCENTE');
     });
 
-    it('erros diferentes produzem mensagens diferentes na segunda tentativa', () => {
+    it('erros diferentes sem codigo utilizável caem na mesma chave genérica, na segunda tentativa', () => {
       facade.adicionar = vi.fn(() =>
         throwError(() => ({ status: 422, error: 'Esse CPF já esta em uso.' })),
       );
@@ -811,14 +843,14 @@ describe('DocenteIndexComponent', () => {
       componente.abrirModalAdicionar();
       preencherFormularioValido();
       componente.salvarDocente();
-      expect(componente.alertaModal().texto).toBe('Esse CPF já esta em uso.');
+      expect(componente.alertaModal().texto).toBe('MENSAGEM.ERRO_REGRA_NEGOCIO_DOCENTE');
 
       facade.adicionar = vi.fn(() =>
         throwError(() => ({ status: 422, error: 'A data de nascimento informada é inválida.' })),
       );
       componente.salvarDocente();
 
-      expect(componente.alertaModal().texto).toBe('A data de nascimento informada é inválida.');
+      expect(componente.alertaModal().texto).toBe('MENSAGEM.ERRO_REGRA_NEGOCIO_DOCENTE');
     });
   });
 
@@ -887,7 +919,102 @@ describe('DocenteIndexComponent', () => {
       expect(componente.rotuloSubmit()).toMatch(NAMESPACES_PERMITIDOS);
 
       componente.definirAcao({ acaoId: 'inativar', item: ATIVO });
+      componente.confirmar();
       expect(componente.alertaPagina().texto).toMatch(NAMESPACES_PERMITIDOS);
+    });
+  });
+
+  describe('confirmação ao inativar', () => {
+    it('inativar não chama o Facade sem confirmação', () => {
+      montar();
+
+      componente.definirAcao({ acaoId: 'inativar', item: ATIVO });
+
+      expect(facade.inativar).not.toHaveBeenCalled();
+    });
+
+    it('confirmar chama o Facade uma única vez, com o id do docente pendente', () => {
+      montar();
+
+      componente.definirAcao({ acaoId: 'inativar', item: ATIVO });
+      componente.confirmar();
+
+      expect(facade.inativar).toHaveBeenCalledTimes(1);
+      expect(facade.inativar).toHaveBeenCalledWith(ATIVO.id);
+    });
+
+    it('reativar continua chamando o Facade diretamente, sem confirmação', () => {
+      montar();
+
+      componente.definirAcao({ acaoId: 'reativar', item: INATIVO });
+
+      expect(facade.reativar).toHaveBeenCalledWith(INATIVO.id);
+      expect(facade.inativar).not.toHaveBeenCalled();
+    });
+
+    it('inativar deixa a ação em voo, desabilitando só a linha do docente confirmado', () => {
+      const chamada$ = new Subject<void>();
+      facade.inativar = vi.fn(() => chamada$.asObservable());
+      montar();
+
+      componente.definirAcao({ acaoId: 'inativar', item: ATIVO });
+      componente.confirmar();
+
+      const inativar = componente.acoesTabela.find((acao) => acao.id === 'inativar');
+      expect(inativar?.desabilitada?.(ATIVO)).toBe(true);
+      expect(inativar?.desabilitada?.(INATIVO)).toBe(false);
+
+      chamada$.next();
+      chamada$.complete();
+
+      expect(inativar?.desabilitada?.(ATIVO)).toBe(false);
+    });
+
+    it('a confirmação pendente nomeia o docente a inativar e some depois de confirmada', () => {
+      montar();
+      expect(componente.confirmacaoPendente()).toBeNull();
+
+      componente.definirAcao({ acaoId: 'inativar', item: ATIVO });
+
+      expect(componente.confirmacaoPendente()).toEqual({
+        titulo: 'CONFIRMACAO.TITULO',
+        mensagem: 'DOCENTE.CONFIRMACAO.INATIVAR',
+        params: { nome: ATIVO.nome },
+        rotuloConfirmar: 'CONFIRMACAO.CONFIRMAR',
+        variante: 'perigo',
+      });
+
+      componente.confirmar();
+
+      expect(componente.confirmacaoPendente()).toBeNull();
+    });
+
+    it('cancelar descarta a pendência: confirmar depois não chama o Facade', () => {
+      montar();
+
+      componente.definirAcao({ acaoId: 'inativar', item: ATIVO });
+      componente.cancelarAcaoPendente();
+
+      expect(componente.confirmacaoPendente()).toBeNull();
+
+      componente.confirmar();
+
+      expect(facade.inativar).not.toHaveBeenCalled();
+    });
+
+    it('confirmar de novo o docente ainda em voo não dispara segunda inativação', () => {
+      const chamada$ = new Subject<void>();
+      facade.inativar = vi.fn(() => chamada$.asObservable());
+      montar();
+
+      componente.definirAcao({ acaoId: 'inativar', item: ATIVO });
+      componente.confirmar();
+      componente.definirAcao({ acaoId: 'inativar', item: ATIVO });
+      componente.confirmar();
+
+      expect(facade.inativar).toHaveBeenCalledTimes(1);
+
+      chamada$.complete();
     });
   });
 
@@ -909,6 +1036,69 @@ describe('DocenteIndexComponent', () => {
 
       expect(texto).not.toContain('{{requiredLength}}');
       expect(texto).toContain('3');
+    });
+  });
+
+  describe('alerta com params, observado no DOM', () => {
+    it('inativação recusada com 422 com codigo e params interpola os dois valores distintos no alerta de página', () => {
+      facade.inativar = vi.fn(() =>
+        throwError(() => ({
+          status: 422,
+          error: {
+            codigo: 'DOCENTE_TURMAS_VINCULADAS',
+            params: { nome: 'Larissa', quantidade: 3 },
+            mensagem: 'O docente possui turmas vinculadas.',
+          },
+        })),
+      );
+      montar();
+      const translate = TestBed.inject(TranslateService);
+      translate.setTranslation('pt-BR', {
+        ERRO_NEGOCIO: {
+          DOCENTE_TURMAS_VINCULADAS: '{{nome}} tem {{quantidade}} turma(s) vinculada(s).',
+        },
+      });
+      translate.use('pt-BR');
+
+      componente.definirAcao({ acaoId: 'inativar', item: ATIVO });
+      componente.confirmar();
+      fixture.detectChanges();
+
+      const texto = fixture.nativeElement.querySelector(
+        '.alerta-pagina .caixa-mensagem',
+      )?.textContent;
+      expect(texto).toContain('Larissa');
+      expect(texto).toContain('3 turma');
+    });
+
+    it('gravação recusada com 422 com codigo e params interpola os dois valores distintos no alerta do modal', () => {
+      facade.adicionar = vi.fn(() =>
+        throwError(() => ({
+          status: 422,
+          error: {
+            codigo: 'DOCENTE_TURMAS_VINCULADAS',
+            params: { nome: 'Otávio', quantidade: 5 },
+            mensagem: 'O docente possui turmas vinculadas.',
+          },
+        })),
+      );
+      montar();
+      const translate = TestBed.inject(TranslateService);
+      translate.setTranslation('pt-BR', {
+        ERRO_NEGOCIO: {
+          DOCENTE_TURMAS_VINCULADAS: '{{nome}} tem {{quantidade}} turma(s) vinculada(s).',
+        },
+      });
+      translate.use('pt-BR');
+
+      componente.abrirModalAdicionar();
+      preencherFormularioValido();
+      componente.salvarDocente();
+      fixture.detectChanges();
+
+      const texto = fixture.nativeElement.querySelector('app-modal .caixa-mensagem')?.textContent;
+      expect(texto).toContain('Otávio');
+      expect(texto).toContain('5 turma');
     });
   });
 });

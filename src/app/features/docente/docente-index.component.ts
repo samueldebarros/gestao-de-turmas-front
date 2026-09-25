@@ -10,7 +10,7 @@ import {
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
-import { catchError, Observable, of, tap } from 'rxjs';
+import { catchError, finalize, Observable, of, tap } from 'rxjs';
 import { DisciplinaFacadeService } from '../../core/facades/disciplina-facade.service';
 import { DocenteFacadeService } from '../../core/facades/docente-facade.service';
 import { Botao } from '../../shared/components/botao/botao.component';
@@ -31,6 +31,8 @@ import { DocenteDetalheInterface } from '../../shared/interfaces/entities/docent
 import { DocenteListaInterface } from '../../shared/interfaces/entities/docente-lista.interface';
 import { AcaoTabela } from '../../shared/interfaces/ui/acao-tabela.interface';
 import { AlertaState } from '../../shared/interfaces/ui/alerta-state.interface';
+import { ConfirmacaoAcao } from '../../shared/interfaces/ui/confirmacao-acao.interface';
+import { ConfirmacaoComponent } from '../../shared/components/confirmacao.component/confirmacao.component';
 import { DetalheAlerta } from '../../shared/interfaces/ui/detalhe-alerta.interface';
 import { EstadoModalDocente } from '../../shared/interfaces/ui/estado-modal-docente.interface';
 import { EventoAcaoTabela } from '../../shared/interfaces/ui/evento-acao-tabela.interface';
@@ -39,7 +41,7 @@ import { SelectFilterInterface } from '../../shared/interfaces/ui/select-filter.
 import { SelectOptionInterface } from '../../shared/interfaces/ui/select-option.interface';
 import { TabelaColuna } from '../../shared/interfaces/ui/tabela-coluna.interface';
 import { causasDeInvalidez } from '../../shared/utils/causas-de-invalidez.util';
-import { extrairMensagemDeRegra } from '../../shared/utils/mensagem-regra-negocio.util';
+import { alertaDeErroHttp } from '../../shared/utils/tratar-erro-http.util';
 import { ErrorMessagePipe } from '../../shared/pipes/error-message.pipe';
 import { ErrorParamsPipe } from '../../shared/pipes/error-params.pipe';
 import { CpfCnpjValidator } from '../../shared/validators/cpf-cnpj.validator';
@@ -52,6 +54,10 @@ const ROTULO_DO_CAMPO: Record<string, string> = {
   dataNascimento: 'DOCENTE.FORMULARIO.DATA_NASCIMENTO_LABEL',
   disciplinaId: 'DOCENTE.FORMULARIO.DISCIPLINA_LABEL',
 };
+
+type AcaoPendenteDocente =
+  | { tipo: 'nenhuma' }
+  | { tipo: 'inativar'; docente: DocenteListaInterface };
 
 @Component({
   selector: 'app-docente-index',
@@ -70,6 +76,7 @@ const ROTULO_DO_CAMPO: Record<string, string> = {
     TranslatePipe,
     ErrorMessagePipe,
     ErrorParamsPipe,
+    ConfirmacaoComponent,
   ],
   templateUrl: './docente-index.component.html',
   styleUrl: './docente-index.component.scss',
@@ -100,6 +107,14 @@ export class DocenteIndexComponent {
 
   public readonly modoModal = computed(() => this.estadoModal().modo);
   public readonly modalAberto = computed(() => this.estadoModal().modo !== 'fechado');
+
+  private readonly acaoPendente = signal<AcaoPendenteDocente>({ tipo: 'nenhuma' });
+  private readonly docentesEmVoo = signal<ReadonlySet<number>>(new Set());
+
+  public readonly confirmacaoPendente = computed<ConfirmacaoAcao | null>(() => {
+    const pendente = this.acaoPendente();
+    return pendente.tipo === 'inativar' ? this.confirmacaoInativar(pendente.docente) : null;
+  });
 
   public readonly tituloModal = computed(() =>
     this.estadoModal().modo === 'editar'
@@ -204,6 +219,8 @@ export class DocenteIndexComponent {
       rotulo: 'DOCENTE.BOTOES.INATIVAR',
       varianteBotao: 'perigo',
       condicaoVisibilidade: (docente: DocenteListaInterface) => docente.ativo === true,
+      confirmacao: (docente: DocenteListaInterface) => this.confirmacaoInativar(docente),
+      desabilitada: (docente: DocenteListaInterface) => this.docentesEmVoo().has(docente.id),
     },
     {
       id: 'reativar',
@@ -231,11 +248,7 @@ export class DocenteIndexComponent {
         this.carregarParaEdicao(evento.item.id);
         break;
       case 'inativar':
-        this.executarAcaoNaLista(
-          this.docentesFacade.inativar(evento.item.id),
-          'MENSAGEM.SUCESSO_INATIVAR_DOCENTE',
-          'MENSAGEM.ERRO_INATIVAR_DOCENTE',
-        );
+        this.acaoPendente.set({ tipo: 'inativar', docente: evento.item });
         break;
       case 'reativar':
         this.executarAcaoNaLista(
@@ -245,6 +258,38 @@ export class DocenteIndexComponent {
         );
         break;
     }
+  }
+
+  public confirmar(): void {
+    const pendente = this.acaoPendente();
+    this.acaoPendente.set({ tipo: 'nenhuma' });
+
+    if (pendente.tipo !== 'inativar') return;
+
+    const docenteId = pendente.docente.id;
+    if (this.docentesEmVoo().has(docenteId)) return;
+
+    this.marcarDocenteEmVoo(docenteId, true);
+    const aoTerminar = finalize<unknown>(() => this.marcarDocenteEmVoo(docenteId, false));
+    this.executarAcaoNaLista(
+      this.docentesFacade.inativar(docenteId).pipe(aoTerminar),
+      'MENSAGEM.SUCESSO_INATIVAR_DOCENTE',
+      'MENSAGEM.ERRO_INATIVAR_DOCENTE',
+    );
+  }
+
+  public cancelarAcaoPendente(): void {
+    this.acaoPendente.set({ tipo: 'nenhuma' });
+  }
+
+  private confirmacaoInativar(docente: DocenteListaInterface): ConfirmacaoAcao {
+    return {
+      titulo: 'CONFIRMACAO.TITULO',
+      mensagem: 'DOCENTE.CONFIRMACAO.INATIVAR',
+      params: { nome: docente.nome },
+      rotuloConfirmar: 'CONFIRMACAO.CONFIRMAR',
+      variante: 'perigo',
+    };
   }
 
   public abrirModalAdicionar(): void {
@@ -267,13 +312,6 @@ export class DocenteIndexComponent {
     const estado = this.estadoModal();
     if (estado.modo === 'editar') this.editarDocente(estado.docente);
     else if (estado.modo === 'adicionar') this.adicionarDocente();
-  }
-
-  private textoDoErro(erro: unknown, chaveErro: string): string {
-    const status = (erro as { status?: number } | null)?.status;
-    if (status !== 422) return chaveErro;
-
-    return extrairMensagemDeRegra(erro) ?? 'MENSAGEM.ERRO_REGRA_NEGOCIO_DOCENTE';
   }
 
   public ocultarAlertaPagina(): void {
@@ -364,6 +402,18 @@ export class DocenteIndexComponent {
     return limpo === '' ? null : limpo;
   }
 
+  private marcarDocenteEmVoo(id: number, emVoo: boolean): void {
+    this.docentesEmVoo.update((atual) => {
+      const novo = new Set(atual);
+      if (emVoo) {
+        novo.add(id);
+      } else {
+        novo.delete(id);
+      }
+      return novo;
+    });
+  }
+
   private limparFormulario(): void {
     this.docenteForm.reset({
       nome: '',
@@ -382,8 +432,10 @@ export class DocenteIndexComponent {
     acao$
       .pipe(
         tap(() => this.exibirAlertaPagina('sucesso', chaveSucesso)),
-        catchError(() => {
-          this.exibirAlertaPagina('erro', chaveErro);
+        catchError((erro: unknown) => {
+          this.alertaPagina.set(
+            alertaDeErroHttp(erro, chaveErro, 'MENSAGEM.ERRO_REGRA_NEGOCIO_DOCENTE'),
+          );
           return of(null);
         }),
         takeUntilDestroyed(this.destroyRef),
@@ -403,7 +455,10 @@ export class DocenteIndexComponent {
           this.fecharModal();
         }),
         catchError((erro: unknown) => {
-          this.exibirAlertaModal('erro', this.textoDoErro(erro, chaveErro));
+          this.alertaModal.set({
+            ...alertaDeErroHttp(erro, chaveErro, 'MENSAGEM.ERRO_REGRA_NEGOCIO_DOCENTE'),
+            detalhes: [],
+          });
           return of(null);
         }),
         takeUntilDestroyed(this.destroyRef),

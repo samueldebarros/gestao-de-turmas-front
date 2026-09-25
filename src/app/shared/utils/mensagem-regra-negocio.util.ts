@@ -1,26 +1,13 @@
-const TAMANHO_MAXIMO = 300;
+import { ErroNegocio } from '../interfaces/dto/erro-negocio.interface';
 
-function textoUtilizavel(valor: unknown): string | null {
-  if (typeof valor !== 'string') return null;
-
-  const limpo = valor.trim();
-  if (limpo.length === 0 || limpo.length > TAMANHO_MAXIMO) return null;
-  if (limpo.startsWith('<')) return null;
-
-  return limpo;
-}
-
-export function extrairMensagemDeRegra(erro: unknown): string | null {
+export function extrairErroDeNegocio(erro: unknown): ErroNegocio | null {
   if (typeof erro !== 'object' || erro === null) return null;
 
   const corpo = (erro as { error?: unknown }).error;
+  if (typeof corpo !== 'object' || corpo === null) return null;
 
-  const direto = textoUtilizavel(corpo);
-  if (direto) return direto;
+  const { codigo } = corpo as { codigo?: unknown };
+  if (typeof codigo !== 'string' || codigo.length === 0) return null;
 
-  if (typeof corpo === 'object' && corpo !== null) {
-    return textoUtilizavel((corpo as { text?: unknown }).text);
-  }
-
-  return null;
+  return corpo as ErroNegocio;
 }

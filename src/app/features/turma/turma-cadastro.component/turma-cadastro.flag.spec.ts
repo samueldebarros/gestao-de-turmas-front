@@ -30,7 +30,10 @@ describe('TurmaCadastro: flag importarCsv', () => {
   const montarNoPassoDeAlunos = (importarCsv: boolean) => {
     TestBed.configureTestingModule({
       providers: [
-        { provide: DocenteFacadeService, useValue: { docentes$: of([]) } },
+        {
+          provide: DocenteFacadeService,
+          useValue: { docentes$: of({ status: 'ok', itens: [] }) },
+        },
         { provide: TurmaFacadeService, useValue: { adicionar: vi.fn() } },
         { provide: Router, useValue: { navigate: vi.fn() } },
         { provide: FeatureFlagsService, useValue: { importarCsv: signal(importarCsv) } },

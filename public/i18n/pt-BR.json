@@ -79,6 +79,9 @@
     "BUSCA": {
       "LABEL": "Encontrar aluno",
       "PLACEHOLDER": "Digite o nome ou matrícula"
+    },
+    "CONFIRMACAO": {
+      "INATIVAR": "Inativar o aluno {{nome}}?"
     }
   },
   "TURMA": {
@@ -88,10 +91,19 @@
       "EDITAR": "Editar",
       "INATIVAR": "Inativar",
       "REATIVAR": "Reativar",
-      "SALVAR_ALTERACOES": "Salvar alterações"
+      "SALVAR_ALTERACOES": "Salvar alterações",
+      "CANCELAR_MATRICULA": "Desligar",
+      "DESALOCAR": "Desalocar"
     },
     "MODAL": {
       "EDICAO_TITULO": "Editar Turma"
+    },
+    "CONFIRMACAO": {
+      "DESLIGAR": "Cancelar a matrícula de {{nome}} nesta turma?",
+      "DESALOCAR": "Remover {{nome}} da disciplina {{disciplina}} nesta turma?",
+      "ALOCAR": "Alocar {{nome}} em {{disciplina}} nesta turma?",
+      "TROCAR_DOCENTE": "{{disciplina}} já está com {{atual}}. Substituir por {{nome}}?",
+      "INATIVAR": "Inativar a turma {{identificador}}? Matrículas e alocações ficam bloqueadas."
     },
     "FILTRO": {
       "ANO_LETIVO": "Ano letivo",
@@ -124,10 +136,13 @@
       "ERRO": "Não foi possível carregar as turmas. Tente novamente."
     },
     "CADASTRO": {
-      "TITULO": "Cadastrar turma"
+      "TITULO": "Cadastrar turma",
+      "ERRO_DISCIPLINAS": "Não foi possível carregar as disciplinas.",
+      "CARREGANDO_DISCIPLINAS": "Carregando disciplinas..."
     },
     "MENSAGEM": {
-      "ERRO_CADASTRO": "Ocorreu um erro ao cadastrar a turma."
+      "ERRO_CADASTRO": "Ocorreu um erro ao cadastrar a turma.",
+      "DOCENTE_JA_ALOCADO": "Este docente já leciona {{disciplina}} nesta turma."
     },
     "STEPPER": {
       "INFORMACOES": "Informações",
@@ -150,6 +165,36 @@
     },
     "ALUNOS": {
       "SELECIONADOS": "{{total}} aluno(s) selecionado(s)"
+    },
+    "SITUACAO": {
+      "1": "Ativo",
+      "2": "Trancado",
+      "3": "Cancelado",
+      "4": "Concluído"
+    },
+    "DETALHE": {
+      "TITULO": "Detalhes da turma",
+      "VAGAS": "{{ativos}} de {{capacidade}} vagas ocupadas",
+      "REGISTROS": "{{total}} registro(s) de matrícula",
+      "ALUNOS": {
+        "CARREGANDO": "Carregando alunos...",
+        "VAZIO": "Nenhum aluno matriculado nesta turma.",
+        "ERRO": "Não foi possível carregar os alunos desta turma.",
+        "TITULO": "Alunos matriculados",
+        "ADICIONAR_LABEL": "Matricular aluno",
+        "ADICIONAR_PLACEHOLDER": "Digite o nome ou a matrícula"
+      },
+      "DOCENTES": {
+        "TITULO": "Docentes e disciplinas",
+        "CARREGANDO": "Carregando docentes...",
+        "CARREGANDO_LISTA": "Carregando a lista de docentes...",
+        "VAZIO": "Nenhum docente alocado nesta turma.",
+        "ERRO": "Não foi possível carregar os docentes desta turma.",
+        "ERRO_LISTA": "Não foi possível carregar a lista de docentes.",
+        "VAZIO_LISTA": "Nenhum docente disponível para alocação.",
+        "ADICIONAR_LABEL": "Alocar docente"
+      },
+      "SOMENTE_LEITURA": "Turma inativa: as matrículas e alocações não podem ser alteradas."
     }
   },
   "TABELA": {
@@ -186,7 +231,12 @@
         "NOME": "Nome Completo",
         "EMAIL": "E-mail",
         "DISCIPLINA": "Disciplina",
-        "STATUS": "Status"
+        "STATUS": "Status",
+        "CARGA_HORARIA": "Carga horária"
+      },
+      "ENTURMAMENTO": {
+        "SITUACAO": "Situação",
+        "DATA": "Matriculado em"
       }
     }
   },
@@ -216,6 +266,7 @@
     "ERRO_EDICAO_ALUNO": "Ocorreu um erro ao editar o aluno.",
     "ERRO_INATIVAR_ALUNO": "Ocorreu um erro ao inativar o aluno.",
     "ERRO_REATIVAR_ALUNO": "Ocorreu um erro ao reativar o aluno.",
+    "ERRO_REGRA_NEGOCIO_ALUNO": "Não foi possível concluir a operação.",
     "SUCESSO_CADASTRO_ALUNO": "Aluno cadastrado com sucesso.",
     "SUCESSO_EDICAO_ALUNO": "Aluno editado com sucesso.",
     "SUCESSO_INATIVAR_ALUNO": "Aluno inativado com sucesso.",
@@ -238,7 +289,21 @@
     "ERRO_INATIVAR_TURMA": "Ocorreu um erro ao inativar a turma.",
     "SUCESSO_REATIVAR_TURMA": "Turma reativada com sucesso.",
     "ERRO_REATIVAR_TURMA": "Ocorreu um erro ao reativar a turma.",
-    "ERRO_REGRA_NEGOCIO_TURMA": "Não foi possível salvar. Corrija os dados destacados e tente novamente."
+    "ERRO_REGRA_NEGOCIO_TURMA": "Não foi possível salvar. Corrija os dados destacados e tente novamente.",
+    "SUCESSO_MATRICULA": "Aluno matriculado com sucesso!",
+    "ERRO_MATRICULA": "Erro ao matricular o aluno.",
+    "SUCESSO_CANCELAR_MATRICULA": "Matrícula cancelada com sucesso!",
+    "ERRO_CANCELAR_MATRICULA": "Erro ao cancelar a matrícula.",
+    "ERRO_REGRA_NEGOCIO_MATRICULA": "Não foi possível concluir a operação.",
+    "SUCESSO_DESALOCACAO": "Docente desalocado com sucesso!",
+    "ERRO_DESALOCACAO": "Erro ao desalocar o docente.",
+    "SUCESSO_ALOCACAO": "Docente alocado com sucesso!",
+    "ERRO_ALOCACAO": "Erro ao alocar o docente."
+  },
+  "CONFIRMACAO": {
+    "TITULO": "Confirmar ação",
+    "CONFIRMAR": "Confirmar",
+    "CANCELAR": "Cancelar"
   },
   "LOGIN": {
     "TITULO": "Entrar",
@@ -315,6 +380,9 @@
       "CADASTRO_TITULO": "Cadastro de Docente",
       "EDICAO_TITULO": "Editar Docente"
     },
+    "CONFIRMACAO": {
+      "INATIVAR": "Inativar o docente {{nome}}?"
+    },
     "FORMULARIO": {
       "NOME_LABEL": "Nome Completo",
       "NOME_PLACEHOLDER": "Digite o nome",
@@ -328,5 +396,27 @@
       "DISCIPLINA_SELECIONE": "Selecione",
       "DISCIPLINA_NENHUMA": "Sem disciplina"
     }
+  },
+  "ERRO_NEGOCIO": {
+    "TURMA_COMBINACAO_DUPLICADA": "Já existe uma turma com essa combinação de identificador, série e ano letivo.",
+    "TURMA_ALOCACAO_DOCENTE_INVALIDA": "Uma ou mais alocações de docente são inválidas.",
+    "TURMA_DOCENTE_DUPLICADO_NA_DISCIPLINA": "Há mais de um docente para a mesma disciplina na turma.",
+    "TURMA_CAPACIDADE_MENOR_QUE_ATIVOS": "A capacidade não pode ser menor que o número de alunos ativos. Informada: {{capacidade}}; alunos ativos: {{alunosAtivos}}.",
+    "TURMA_INATIVAR_COM_ALUNOS_ATIVOS": "Não é possível inativar uma turma com alunos ativos. A turma possui {{alunosAtivos}} aluno(s) ativo(s).",
+    "TURMA_INATIVA_NAO_MATRICULA": "Não é possível matricular aluno em uma turma inativa.",
+    "TURMA_CAPACIDADE_ATINGIDA": "A turma atingiu a capacidade máxima. Capacidade: {{capacidade}}; alunos ativos: {{alunosAtivos}}.",
+    "TURMA_INATIVA_NAO_ALTERA_MATRICULA": "Não é possível alterar matrículas de uma turma inativa.",
+    "TURMA_INATIVA_NAO_ALTERA_ALOCACAO": "Não é possível alterar alocações de uma turma inativa.",
+    "DOCENTE_INATIVO_NAO_ALOCAVEL": "Não é possível alocar um docente inativo.",
+    "DOCENTE_SEM_DISCIPLINA": "O docente não possui disciplina associada.",
+    "DATA_NASCIMENTO_FUTURA": "A data de nascimento não pode ser maior ou igual à data atual.",
+    "DATA_NASCIMENTO_IDADE_EXCESSIVA": "A data de nascimento informada é inválida (idade superior a 120 anos).",
+    "EMAIL_EM_USO": "Este e-mail já está em uso.",
+    "ALUNO_MATRICULA_NAO_GERADA": "Não foi possível gerar uma matrícula única. Tente novamente.",
+    "SEXO_OBRIGATORIO": "Selecione um sexo.",
+    "DOCENTE_IDADE_MINIMA": "O docente deve ter pelo menos {{idadeMinima}} anos.",
+    "DISCIPLINA_INEXISTENTE_OU_INATIVA": "A disciplina informada não existe ou está inativa.",
+    "CPF_INVALIDO": "O CPF informado é inválido.",
+    "CPF_EM_USO": "Este CPF já está em uso."
   }
 }

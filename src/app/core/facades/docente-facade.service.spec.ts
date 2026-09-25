@@ -12,6 +12,7 @@ import { DocenteListaInterface } from '../../shared/interfaces/entities/docente-
 import { DocenteSqlInterface } from '../../shared/interfaces/entities/docente-sql.interface';
 import { SEM_DISCIPLINA, TODAS_DISCIPLINAS } from '../../shared/constants/disciplina-filtro.const';
 import { DocenteFiltro } from '../../shared/interfaces/ui/docente-filtro.interface';
+import { EstadoCarga } from '../../shared/interfaces/ui/estado-carga.interface';
 import { FiltroListaInterface } from '../../shared/interfaces/ui/filtro-lista.interface';
 import { ResultadoPaginado } from '../../shared/interfaces/ui/resultado-paginado.interface';
 import { DocenteFacadeService } from './docente-facade.service';
@@ -57,6 +58,7 @@ const DOCENTES: DocenteSqlInterface[] = [
     id: 1,
     docenteNome: 'Ana',
     docenteEmail: 'ana@escola.br',
+    disciplinaId: 11,
     disciplinaNome: 'Matemática',
     cargaHoraria: 40,
   },
@@ -93,10 +95,10 @@ describe('DocenteFacadeService', () => {
       inscricoes.add(facade.docentes$.subscribe());
       http.expectOne(URL_ESPERADA).flush(DOCENTES);
 
-      let recebido: DocenteSqlInterface[] | undefined;
-      inscricoes.add(facade.docentes$.subscribe((docentes) => (recebido = docentes)));
+      let recebido: EstadoCarga<DocenteSqlInterface> | undefined;
+      inscricoes.add(facade.docentes$.subscribe((estado) => (recebido = estado)));
 
-      expect(recebido).toEqual(DOCENTES);
+      expect(recebido).toEqual({ status: 'ok', itens: DOCENTES });
       http.expectNone(URL_ESPERADA);
     });
 
@@ -105,11 +107,36 @@ describe('DocenteFacadeService', () => {
       http.expectOne(URL_ESPERADA).flush(DOCENTES);
       primeira.unsubscribe();
 
-      let recebido: DocenteSqlInterface[] | undefined;
-      inscricoes.add(facade.docentes$.subscribe((docentes) => (recebido = docentes)));
+      let recebido: EstadoCarga<DocenteSqlInterface> | undefined;
+      inscricoes.add(facade.docentes$.subscribe((estado) => (recebido = estado)));
 
-      expect(recebido).toEqual(DOCENTES);
+      expect(recebido).toEqual({ status: 'ok', itens: DOCENTES });
       http.expectNone(URL_ESPERADA);
+    });
+
+    it('quando a fonte falha, emite o estado de erro em vez de propagar a exceção', () => {
+      const estados: EstadoCarga<DocenteSqlInterface>[] = [];
+      inscricoes.add(facade.docentes$.subscribe((estado) => estados.push(estado)));
+
+      http
+        .expectOne(URL_ESPERADA)
+        .flush('falha', { status: 500, statusText: 'Internal Server Error' });
+
+      expect(estados).toEqual([{ status: 'carregando' }, { status: 'erro' }]);
+    });
+
+    it('depois de uma falha, uma nova assinatura refaz a busca em vez de repetir o erro para sempre', () => {
+      const primeira = facade.docentes$.subscribe();
+      http
+        .expectOne(URL_ESPERADA)
+        .flush('falha', { status: 500, statusText: 'Internal Server Error' });
+      primeira.unsubscribe();
+
+      let recebido: EstadoCarga<DocenteSqlInterface> | undefined;
+      inscricoes.add(facade.docentes$.subscribe((estado) => (recebido = estado)));
+      http.expectOne(URL_ESPERADA).flush(DOCENTES);
+
+      expect(recebido).toEqual({ status: 'ok', itens: DOCENTES });
     });
   });
 

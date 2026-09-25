@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TranslateService } from '@ngx-translate/core';
+import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { AlunoFacadeService } from '../../../core/facades/aluno-facade.service';
 import { DocenteFacadeService } from '../../../core/facades/docente-facade.service';
 import { TurmaFacadeService } from '../../../core/facades/turma-facade.service';
@@ -33,7 +35,10 @@ describe('TurmaCadastro: navegação e seleção', () => {
 
     TestBed.configureTestingModule({
       providers: [
-        { provide: DocenteFacadeService, useValue: { docentes$: of([]) } },
+        {
+          provide: DocenteFacadeService,
+          useValue: { docentes$: of({ status: 'ok', itens: [] }) },
+        },
         { provide: TurmaFacadeService, useValue: turmaFacadeFake },
         { provide: Router, useValue: routerFake },
       ],
@@ -165,5 +170,156 @@ describe('TurmaCadastro: navegação e seleção', () => {
     componente.avancar();
 
     expect(componente.passoAtual).toBe(PASSO_DISCIPLINAS);
+  });
+
+  it('exibe a chave genérica de regra de negócio quando o cadastro falha com 422 sem codigo', () => {
+    turmaFacadeFake.adicionar = vi.fn(() =>
+      throwError(() => ({
+        status: 422,
+        error: {
+          error: new SyntaxError('...'),
+          text: 'Já existe uma turma com essa combinação de Identificador, Série e Ano letivo',
+        },
+      })),
+    );
+    componente.informacoesGroup.setValue({
+      identificador: 'A',
+      serie: 1,
+      anoLetivo: 2026,
+      capacidade: 30,
+      turno: TurnoEnum.MATUTINO,
+    });
+    componente.setAlocacoes([3]);
+
+    componente.concluir();
+
+    expect(componente.alerta()).toEqual({
+      visivel: true,
+      tipo: 'erro',
+      texto: 'MENSAGEM.ERRO_REGRA_NEGOCIO_TURMA',
+    });
+    expect(routerFake.navigate).not.toHaveBeenCalled();
+  });
+
+  it('disciplinas$ repassa o estado de erro quando a fonte de docentes falha, exibindo o aviso e escondendo o passo', () => {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: DocenteFacadeService, useValue: { docentes$: of({ status: 'erro' }) } },
+        { provide: TurmaFacadeService, useValue: turmaFacadeFake },
+        { provide: Router, useValue: routerFake },
+      ],
+    });
+    TestBed.overrideComponent(TurmaCadastroComponent, {
+      add: { providers: [{ provide: AlunoFacadeService, useValue: alunoFacadeFake }] },
+    });
+
+    const novaFixture = TestBed.createComponent(TurmaCadastroComponent);
+    novaFixture.componentInstance.passoAtual = PASSO_DISCIPLINAS;
+    novaFixture.detectChanges();
+
+    expect((novaFixture.nativeElement as HTMLElement).textContent).toContain(
+      'TURMA.CADASTRO.ERRO_DISCIPLINAS',
+    );
+    expect(novaFixture.debugElement.queryAll(By.css('app-passo-disciplinas'))).toHaveLength(0);
+  });
+
+  it('disciplinas$ entrega ao passo os docentes agrupados por disciplina quando a fonte carrega', () => {
+    const docente = (id: number, disciplinaId: number, disciplinaNome: string) => ({
+      id,
+      docenteNome: `Docente ${id}`,
+      docenteEmail: `docente${id}@escola.com`,
+      disciplinaId,
+      disciplinaNome,
+      cargaHoraria: 40,
+    });
+    const matematica1 = docente(1, 11, 'Matemática');
+    const historia = docente(2, 12, 'História');
+    const matematica2 = docente(3, 11, 'Matemática');
+
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: DocenteFacadeService,
+          useValue: {
+            docentes$: of({ status: 'ok', itens: [matematica1, historia, matematica2] }),
+          },
+        },
+        { provide: TurmaFacadeService, useValue: turmaFacadeFake },
+        { provide: Router, useValue: routerFake },
+      ],
+    });
+    TestBed.overrideComponent(TurmaCadastroComponent, {
+      add: { providers: [{ provide: AlunoFacadeService, useValue: alunoFacadeFake }] },
+    });
+
+    const novaFixture = TestBed.createComponent(TurmaCadastroComponent);
+    novaFixture.componentInstance.passoAtual = PASSO_DISCIPLINAS;
+    novaFixture.detectChanges();
+
+    const passo = novaFixture.debugElement.query(By.css('app-passo-disciplinas'));
+    expect(passo).not.toBeNull();
+    expect(passo.componentInstance.grupos).toEqual([
+      { disciplinaNome: 'Matemática', docentes: [matematica1, matematica2] },
+      { disciplinaNome: 'História', docentes: [historia] },
+    ]);
+  });
+
+  it('cadastro recusado com codigo e params interpola os dois valores distintos no alerta do wizard', () => {
+    turmaFacadeFake.adicionar = vi.fn(() =>
+      throwError(() => ({
+        status: 422,
+        error: {
+          codigo: 'TURMA_CAPACIDADE_ATINGIDA',
+          params: { capacidade: 50, alunosAtivos: 45 },
+          mensagem: 'A turma atingiu a capacidade máxima.',
+        },
+      })),
+    );
+
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: DocenteFacadeService,
+          useValue: { docentes$: of({ status: 'ok', itens: [] }) },
+        },
+        { provide: TurmaFacadeService, useValue: turmaFacadeFake },
+        { provide: Router, useValue: routerFake },
+      ],
+    });
+    TestBed.overrideComponent(TurmaCadastroComponent, {
+      add: { providers: [{ provide: AlunoFacadeService, useValue: alunoFacadeFake }] },
+    });
+    const traducao = TestBed.inject(TranslateService);
+    traducao.setTranslation('pt-BR', {
+      ERRO_NEGOCIO: {
+        TURMA_CAPACIDADE_ATINGIDA:
+          'A turma atingiu a capacidade máxima. Capacidade: {{capacidade}}; alunos ativos: {{alunosAtivos}}.',
+      },
+    });
+    traducao.use('pt-BR');
+
+    const novaFixture = TestBed.createComponent(TurmaCadastroComponent);
+    const novoComponente = novaFixture.componentInstance;
+    novoComponente.informacoesGroup.setValue({
+      identificador: 'A',
+      serie: 1,
+      anoLetivo: 2026,
+      capacidade: 30,
+      turno: TurnoEnum.MATUTINO,
+    });
+    novoComponente.setAlocacoes([3]);
+    novaFixture.detectChanges();
+
+    novoComponente.concluir();
+    novaFixture.detectChanges();
+
+    const texto = (novaFixture.nativeElement as HTMLElement).querySelector(
+      '.caixa-mensagem',
+    )?.textContent;
+    expect(texto).toContain('Capacidade: 50');
+    expect(texto).toContain('alunos ativos: 45');
   });
 });

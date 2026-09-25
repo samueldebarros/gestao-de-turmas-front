@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TranslateService } from '@ngx-translate/core';
 import { provideRouter } from '@angular/router';
 import { Observable, of, throwError } from 'rxjs';
 import type { Mock } from 'vitest';
@@ -52,6 +53,9 @@ describe('TurmaIndexComponent: integração no DOM', () => {
     editar: Mock;
     inativar: Mock;
     reativar: Mock;
+    alunosDaTurma: Mock;
+    docentesDaTurma: Mock;
+    alunosDisponiveis: Mock;
   };
 
   const dom = () => fixture.nativeElement as HTMLElement;
@@ -67,10 +71,17 @@ describe('TurmaIndexComponent: integração no DOM', () => {
 
   const modal = () => dom().querySelector('app-modal') as HTMLElement;
 
+  const botaoConfirmar = () =>
+    Array.from(dom().querySelectorAll('app-confirmacao button')).find(
+      (botao) => botao.textContent?.trim() === 'CONFIRMACAO.CONFIRMAR',
+    ) as HTMLButtonElement;
+
   const campoModal = (placeholder: string) =>
     modal().querySelector(`input[placeholder="${placeholder}"]`) as HTMLInputElement;
 
   const selectsModal = () => Array.from(modal().querySelectorAll('select')) as HTMLSelectElement[];
+
+  const formularioModal = () => modal().querySelector('form.form-turma') as HTMLFormElement;
 
   const montar = () => {
     TestBed.configureTestingModule({
@@ -89,7 +100,40 @@ describe('TurmaIndexComponent: integração no DOM', () => {
       editar: vi.fn(() => of(undefined)),
       inativar: vi.fn(() => of(undefined)),
       reativar: vi.fn(() => of(undefined)),
+      alunosDaTurma: vi.fn(() => of({ status: 'ok', itens: [] })),
+      docentesDaTurma: vi.fn(() => of({ status: 'ok', itens: [] })),
+      alunosDisponiveis: vi.fn(() => of([])),
     };
+  });
+
+  it('clicar no corpo do card abre o painel de detalhe, não o formulário de edição', () => {
+    montar();
+
+    (cartoes()[0].querySelector('.card__abrir') as HTMLButtonElement).click();
+    fixture.detectChanges();
+
+    expect(modal().querySelector('app-turma-detalhe')).not.toBeNull();
+    expect(modal().querySelector('form.form-turma')).toBeNull();
+    expect(facade.alunosDaTurma).toHaveBeenCalledWith(TURMA_ATIVA.id);
+  });
+
+  it('reabrir o painel em outra turma carrega a turma nova, não a anterior', () => {
+    montar();
+    const abrir = (indice: number) =>
+      (cartoes()[indice].querySelector('.card__abrir') as HTMLButtonElement).click();
+
+    abrir(0);
+    fixture.detectChanges();
+    expect(facade.alunosDaTurma).toHaveBeenLastCalledWith(TURMA_ATIVA.id);
+
+    dom().querySelector('app-modal .botao-fechar')?.dispatchEvent(new Event('click'));
+    fixture.detectChanges();
+
+    abrir(1);
+    fixture.detectChanges();
+
+    expect(facade.alunosDaTurma).toHaveBeenLastCalledWith(TURMA_INATIVA.id);
+    expect(facade.docentesDaTurma).toHaveBeenLastCalledWith(TURMA_INATIVA.id);
   });
 
   it('editar um card abre de fato o dialog nativo por trás do modal', () => {
@@ -127,7 +171,7 @@ describe('TurmaIndexComponent: integração no DOM', () => {
     expect(botaoStatus(cartoes()[1]).textContent?.trim()).toBe('TURMA.BOTOES.REATIVAR');
   });
 
-  it('inativação recusada com 422 exibe a frase do servidor no alerta de página', () => {
+  it('inativação recusada com 422 sem codigo utilizável exibe a chave genérica no alerta de página', () => {
     facade.inativar = vi.fn(() =>
       throwError(() => ({
         status: 422,
@@ -142,8 +186,75 @@ describe('TurmaIndexComponent: integração no DOM', () => {
     botaoStatus(cartoes()[0]).click();
     fixture.detectChanges();
 
+    botaoConfirmar().click();
+    fixture.detectChanges();
+
     expect(dom().querySelector('.alerta-pagina .caixa-mensagem')?.textContent).toContain(
-      'A turma possui 12 alunos matriculados.',
+      'MENSAGEM.ERRO_REGRA_NEGOCIO_TURMA',
     );
+  });
+
+  it('inativação recusada com 422 com codigo e params interpola os dois valores distintos no alerta de página', () => {
+    facade.inativar = vi.fn(() =>
+      throwError(() => ({
+        status: 422,
+        error: {
+          codigo: 'TURMA_CAPACIDADE_ATINGIDA',
+          params: { capacidade: 30, alunosAtivos: 25 },
+          mensagem: 'A turma atingiu a capacidade máxima.',
+        },
+      })),
+    );
+    montar();
+    const translate = TestBed.inject(TranslateService);
+    translate.setTranslation('pt-BR', {
+      ERRO_NEGOCIO: {
+        TURMA_CAPACIDADE_ATINGIDA:
+          'A turma atingiu a capacidade máxima. Capacidade: {{capacidade}}; alunos ativos: {{alunosAtivos}}.',
+      },
+    });
+    translate.use('pt-BR');
+
+    botaoStatus(cartoes()[0]).click();
+    fixture.detectChanges();
+
+    botaoConfirmar().click();
+    fixture.detectChanges();
+
+    const texto = dom().querySelector('.alerta-pagina .caixa-mensagem')?.textContent ?? '';
+    expect(texto).toContain('Capacidade: 30');
+    expect(texto).toContain('alunos ativos: 25');
+  });
+
+  it('edição recusada com 422 com codigo e params interpola os dois valores distintos no alerta do modal', () => {
+    facade.editar = vi.fn(() =>
+      throwError(() => ({
+        status: 422,
+        error: {
+          codigo: 'TURMA_CAPACIDADE_ATINGIDA',
+          params: { capacidade: 40, alunosAtivos: 12 },
+          mensagem: 'A turma atingiu a capacidade máxima.',
+        },
+      })),
+    );
+    montar();
+    const translate = TestBed.inject(TranslateService);
+    translate.setTranslation('pt-BR', {
+      ERRO_NEGOCIO: {
+        TURMA_CAPACIDADE_ATINGIDA:
+          'A turma atingiu a capacidade máxima. Capacidade: {{capacidade}}; alunos ativos: {{alunosAtivos}}.',
+      },
+    });
+    translate.use('pt-BR');
+
+    botaoEditar(cartoes()[0]).click();
+    fixture.detectChanges();
+
+    formularioModal().dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+    fixture.detectChanges();
+
+    const texto = modal().querySelector('.caixa-mensagem')?.textContent ?? '';
+    expect(texto).toContain('Capacidade: 40');
+    expect(texto).toContain('alunos ativos: 12');
   });
 });

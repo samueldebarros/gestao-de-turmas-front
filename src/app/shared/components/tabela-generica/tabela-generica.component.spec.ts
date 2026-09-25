@@ -230,14 +230,35 @@ describe('TabelaGenerica', () => {
       expect(eventos).toEqual([{ acaoId: 'editar', item: segunda }]);
     });
 
-    it('caracterização: o clique é ligado no host do botão, então a moldura em volta também dispara', () => {
+    it('caracterização: desabilitada bloqueia o clique no host e no botão interno; falsa deixa emitir', () => {
       const eventos: EventoAcaoTabela<LinhaTeste>[] = [];
       componente.acaoClicada.subscribe((evento) => eventos.push(evento));
-      montar([{ chave: 'nome', titulo: 'COLUNA.NOME' }], [criarLinha()], [EDITAR]);
+      const bloqueada: AcaoTabela = { ...EDITAR, id: 'bloqueada', desabilitada: () => true };
+      const liberada: AcaoTabela = { ...EDITAR, id: 'liberada', desabilitada: () => false };
+      montar([{ chave: 'nome', titulo: 'COLUNA.NOME' }], [criarLinha()], [bloqueada, liberada]);
 
-      dom().querySelector<HTMLElement>('.celula-acoes app-botao > div')!.click();
+      const botoes = dom().querySelectorAll('.celula-acoes app-botao');
+      botoes[0].querySelector<HTMLElement>('div')!.click();
+      botoes[0].querySelector<HTMLButtonElement>('button')!.click();
+      botoes[1].querySelector<HTMLButtonElement>('button')!.click();
 
-      expect(eventos).toHaveLength(1);
+      expect(eventos).toEqual([{ acaoId: 'liberada', item: LINHA }]);
+    });
+
+    it('a desabilitada decide por linha, não pela tabela', () => {
+      const acaoComCondicao: AcaoTabela = {
+        ...EDITAR,
+        desabilitada: (item) => item.ativo === false,
+      };
+      montar(
+        [{ chave: 'nome', titulo: 'COLUNA.NOME' }],
+        [criarLinha({ ativo: true }), criarLinha({ id: 2, ativo: false })],
+        [acaoComCondicao],
+      );
+
+      const botoes = dom().querySelectorAll<HTMLButtonElement>('.celula-acoes button');
+      expect(botoes[0].disabled).toBe(false);
+      expect(botoes[1].disabled).toBe(true);
     });
   });
 

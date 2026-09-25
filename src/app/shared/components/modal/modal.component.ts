@@ -20,6 +20,7 @@ import {
 export class Modal implements OnChanges, AfterViewInit {
   @Input() titulo: string = '';
   @Input() visivel: boolean = false;
+  @Input() largura: 'padrao' | 'ampla' = 'padrao';
   @Output() visivelChange = new EventEmitter<boolean>();
 
   @ViewChild('Dialog') dialog!: ElementRef<HTMLDialogElement>;

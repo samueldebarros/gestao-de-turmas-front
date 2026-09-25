@@ -179,4 +179,110 @@ describe('TurmaFacadeService: as três intenções de mutação', () => {
 
     expect(proximaBusca().pagina).toBe('1');
   });
+
+  it('alunosDaTurma emite carregando e depois ok com os itens da resposta', () => {
+    const emitidos: string[] = [];
+    inscricoes.add(facade.alunosDaTurma(7).subscribe((estado) => emitidos.push(estado.status)));
+
+    http.expectOne(`${URL_TURMAS}/7/alunos`).flush([{ id: 1, matricula: '2026001', nome: 'Ana' }]);
+
+    expect(emitidos).toEqual(['carregando', 'ok']);
+  });
+
+  it('docentesDaTurma emite carregando e depois ok com os itens da resposta', () => {
+    const emitidos: string[] = [];
+    inscricoes.add(facade.docentesDaTurma(7).subscribe((estado) => emitidos.push(estado.status)));
+
+    http.expectOne(`${URL_TURMAS}/7/docentes`).flush([]);
+
+    expect(emitidos).toEqual(['carregando', 'ok']);
+  });
+
+  it('docentesDaTurma converte a falha em estado de erro', () => {
+    const emitidos: string[] = [];
+    inscricoes.add(facade.docentesDaTurma(7).subscribe((estado) => emitidos.push(estado.status)));
+
+    http
+      .expectOne(`${URL_TURMAS}/7/docentes`)
+      .flush('falhou', { status: 500, statusText: 'Server Error' });
+
+    expect(emitidos).toEqual(['carregando', 'erro']);
+  });
+
+  it('matricularAluno envia o DTO via POST e recarrega a lista de fundo', () => {
+    inscricoes.add(facade.matricularAluno(7, { alunoId: 2 }).subscribe());
+
+    const requisicao = http.expectOne(`${URL_TURMAS}/7/alunos`);
+    expect(requisicao.request.method).toBe('POST');
+    expect(requisicao.request.body).toEqual({ alunoId: 2 });
+    requisicao.flush(null);
+
+    expect(proximaBusca().pagina).toBe('1');
+  });
+
+  it('cancelarMatricula usa PATCH na rota do aluno e recarrega a lista de fundo', () => {
+    inscricoes.add(facade.cancelarMatricula(7, 5).subscribe());
+
+    const requisicao = http.expectOne(`${URL_TURMAS}/7/alunos/5/cancelar`);
+    expect(requisicao.request.method).toBe('PATCH');
+    requisicao.flush(null);
+
+    expect(proximaBusca().pagina).toBe('1');
+  });
+
+  it('a mutação reemite as cargas do painel, que refazem a requisição', () => {
+    const emitidos: string[] = [];
+    inscricoes.add(facade.alunosDaTurma(7).subscribe((estado) => emitidos.push(estado.status)));
+    http.expectOne(`${URL_TURMAS}/7/alunos`).flush([]);
+
+    inscricoes.add(facade.cancelarMatricula(7, 5).subscribe());
+    http.expectOne(`${URL_TURMAS}/7/alunos/5/cancelar`).flush(null);
+
+    http.expectOne(`${URL_TURMAS}/7/alunos`).flush([]);
+    expect(emitidos).toEqual(['carregando', 'ok', 'carregando', 'ok']);
+    proximaBusca();
+  });
+
+  it('vincularDocente envia o DTO via POST na rota de docentes da turma', () => {
+    inscricoes.add(facade.vincularDocente(7, { docenteId: 4 }).subscribe());
+
+    const requisicao = http.expectOne(`${URL_TURMAS}/7/docentes`);
+    expect(requisicao.request.method).toBe('POST');
+    expect(requisicao.request.body).toEqual({ docenteId: 4 });
+    requisicao.flush(null);
+
+    expect(proximaBusca().pagina).toBe('1');
+  });
+
+  it('desvincularDisciplina usa DELETE na rota da disciplina', () => {
+    inscricoes.add(facade.desvincularDisciplina(7, 11).subscribe());
+
+    const requisicao = http.expectOne(`${URL_TURMAS}/7/disciplinas/11`);
+    expect(requisicao.request.method).toBe('DELETE');
+    requisicao.flush(null);
+
+    expect(proximaBusca().pagina).toBe('1');
+  });
+
+  it('alunosDisponiveis repassa a lista do servidor sem envelope de estado', () => {
+    const recebidos: unknown[] = [];
+    inscricoes.add(facade.alunosDisponiveis(7).subscribe((lista) => recebidos.push(lista)));
+
+    http
+      .expectOne(`${URL_TURMAS}/7/alunos-disponiveis`)
+      .flush([{ id: 2, matricula: '2026002', nome: 'Bruno' }]);
+
+    expect(recebidos).toEqual([[{ id: 2, matricula: '2026002', nome: 'Bruno' }]]);
+  });
+
+  it('alunosDaTurma converte a falha em estado de erro, sem derrubar o fluxo', () => {
+    const emitidos: string[] = [];
+    inscricoes.add(facade.alunosDaTurma(7).subscribe((estado) => emitidos.push(estado.status)));
+
+    http
+      .expectOne(`${URL_TURMAS}/7/alunos`)
+      .flush('falhou', { status: 500, statusText: 'Server Error' });
+
+    expect(emitidos).toEqual(['carregando', 'erro']);
+  });
 });

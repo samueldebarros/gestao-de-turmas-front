@@ -4,6 +4,7 @@
     [tipo]="alerta().tipo"
     [texto]="alerta().texto"
     [detalhes]="alerta().detalhes ?? []"
+    [params]="alerta().params"
     (visivelChange)="fecharAlerta()"
   ></app-mensagem>
   <header class="wizard__cabecalho">
@@ -25,11 +26,23 @@
         <app-passo-informacoes [formGroup]="informacoesGroup"></app-passo-informacoes>
       }
       @case (1) {
-        <app-passo-disciplinas
-          [grupos]="(disciplinas$ | async) ?? []"
-          [selecionados]="alocacoes.value"
-          (selecionadosChange)="setAlocacoes($event)"
-        ></app-passo-disciplinas>
+        @if (disciplinas$ | async; as estadoDisciplinas) {
+          @switch (estadoDisciplinas.status) {
+            @case ('carregando') {
+              <p>{{ 'TURMA.CADASTRO.CARREGANDO_DISCIPLINAS' | translate }}</p>
+            }
+            @case ('erro') {
+              <p>{{ 'TURMA.CADASTRO.ERRO_DISCIPLINAS' | translate }}</p>
+            }
+            @case ('ok') {
+              <app-passo-disciplinas
+                [grupos]="estadoDisciplinas.itens"
+                [selecionados]="alocacoes.value"
+                (selecionadosChange)="setAlocacoes($event)"
+              ></app-passo-disciplinas>
+            }
+          }
+        }
       }
       @case (2) {
         @if (importarCsvLigado()) {

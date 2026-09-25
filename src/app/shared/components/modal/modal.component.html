@@ -1,5 +1,9 @@
-<dialog #Dialog class="modal-container" (cancel)="fecharModal()">
-  
+<dialog
+  #Dialog
+  class="modal-container"
+  [class.modal-container--ampla]="largura === 'ampla'"
+  (cancel)="fecharModal()"
+>
   <div class="modal-cabecalho">
     <h3>{{ titulo }}</h3>
     <button type="button" class="botao-fechar" aria-label="Fechar" (click)="fecharModal()">
@@ -10,5 +14,4 @@
   <div class="modal-corpo">
     <ng-content></ng-content>
   </div>
-
 </dialog>
