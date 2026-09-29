@@ -1,4 +1,5 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, Signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { AuthService } from '../services/auth.service';
 import { BehaviorSubject, catchError, finalize, map, Observable, of, shareReplay, tap } from 'rxjs';
 import { UsuarioAutenticadoInterface } from '../../shared/interfaces/entities/usuario-autenticado.interface';
@@ -13,6 +14,7 @@ export class AuthFacadeService {
 
   readonly usuarioLogado$ = this._usuario$.asObservable();
   readonly papel$ = this._usuario$.pipe(map((u) => u?.role ?? null));
+  readonly papel: Signal<PapelUsuario | null> = toSignal(this.papel$, { requireSync: true });
   readonly estaLogado$ = this._usuario$.pipe(map((u) => u !== null));
 
   private renovacao$: Observable<UsuarioAutenticadoInterface> | null = null;
