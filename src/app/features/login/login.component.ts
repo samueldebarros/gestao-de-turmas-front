@@ -8,6 +8,7 @@ import {
 } from '@angular/forms';
 import { AuthFacadeService } from '../../core/facades/auth-facade.service';
 import { Router } from '@angular/router';
+import { telaInicial } from '../../core/acesso/acesso.util';
 import { AlertaState } from '../../shared/interfaces/ui/alerta-state.interface';
 import { LoginDTO } from '../../shared/interfaces/dto/login-dto.interface';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -63,7 +64,7 @@ export class LoginComponent {
       .login(credenciais)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: () => this.router.navigate(['/alunos']),
+        next: (usuario) => this.router.navigateByUrl(telaInicial(usuario.role)),
         error: (erro: unknown) => {
           this.carregando.set(false);
           this.alerta.set(
