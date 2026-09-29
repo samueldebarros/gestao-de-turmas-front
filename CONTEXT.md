@@ -22,7 +22,7 @@ app.config.ts                     provideRouter + provideHttpClient (withFetch +
                                     storage e restaurarSessao) + provideTranslateService (loader HTTP, pt-BR).
 app.routes.ts                     Lazy loading REAL, 5 domínios via loadChildren + login e sem-permissao via
                                     loadComponent. TODA rota de domínio passa por canMatch: [autenticadoGuard,
-                                    papelGuard(...)]. '' → 'login'; '**' → ''.
+                                    acessoGuard(...)]. '' → 'login'; '**' → ''.
 
 core/
   services/    aluno.service.ts        HTTP puro do domínio Aluno (CRUD + inativar/reativar + importar).
@@ -35,7 +35,9 @@ core/
                feriado.service.ts      BrasilAPI via HttpBackend — pula os interceptors de propósito.
                localidade.service.ts   IBGE, para a árvore de localidades.
   guards/      autenticado.guard.ts    canMatch de sessão.
-               papel.guard.ts          Fábrica papelGuard(...papéis) → 403 manda p/ /sem-permissao.
+               acesso.guard.ts         Fábrica acessoGuard(permissao) → 403 manda p/ /sem-permissao.
+  acesso/      acesso.util.ts          Mapa de permissões (MAPA_ACESSO), pode(), telaInicial() e ITENS_MENU.
+               permissao.type.ts       União das permissões (Permissao) usada pelo mapa e pelo acessoGuard.
   interceptors/ credentials.interceptor.ts  Só marca withCredentials quando a URL começa com environment.apiUrl.
                auth-error.interceptor.ts   401 → refresh → retry → /login; 403 → /sem-permissao.
   facades/     aluno-facade.service.ts BehaviorSubject de estado de filtro/página + resultado$ derivado (switchMap). Métodos de intenção.
@@ -99,7 +101,7 @@ shared/                           SÓ o genuinamente reutilizável (Dumb compone
   models/                         EntidadeBaseModel, AlunoModel — classes concretas, NÃO instanciadas em runtime (dívida D6).
   enums/        sexo.enum.ts (MASCULINO=1, FEMININO=2, OUTRO=3) · direcao-ordenacao.enum.ts (Asc=1, Desc=2) ·
                   ordenacao-aluno.enum.ts · turno.enum.ts. Todos numéricos.
-  types/        papel-usuario.type.ts   União de papéis, usada pelo papelGuard.
+  types/        papel-usuario.type.ts   União de papéis, usada pelo acessoGuard.
   pipes/        cpf-cnpj · cpf-cnpj-mascarado · sexo-format · error-message  (pipes retornam CHAVE i18n,
                   não texto traduzido).
   validators/   cpf-cnpj.validator.ts (Módulo 11) · idade.validator.ts · texto.validator.ts. Os três com spec.
