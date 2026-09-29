@@ -9,24 +9,28 @@
 </div>
 
 <div class="container">
-  <div class="acoes-topo">
-    <app-botao variante="secundario" (acaoBotao)="abrirModal()">{{
-      'ALUNO.BOTOES.ADICIONAR_ALUNO' | translate
-    }}</app-botao>
-    @if (importarCsvLigado()) {
-      <app-botao variante="secundario" (acaoBotao)="abrirImportar()">{{
-        'IMPORTAR_ALUNOS.BOTAO' | translate
+  @if (podeGerirAlunos()) {
+    <div class="acoes-topo">
+      <app-botao variante="secundario" (acaoBotao)="abrirModal()">{{
+        'ALUNO.BOTOES.ADICIONAR_ALUNO' | translate
       }}</app-botao>
-    }
-  </div>
+      @if (importarCsvLigado()) {
+        <app-botao variante="secundario" (acaoBotao)="abrirImportar()">{{
+          'IMPORTAR_ALUNOS.BOTAO' | translate
+        }}</app-botao>
+      }
+    </div>
+  }
 
-  <app-autocomplete
-    [label]="'ALUNO.BUSCA.LABEL' | translate"
-    [placeholder]="'ALUNO.BUSCA.PLACEHOLDER' | translate"
-    [buscar]="buscarAluno"
-    [rotulo]="rotuloAluno"
-    (selecionado)="abrirModalEdicao($event)"
-  ></app-autocomplete>
+  @if (podeGerirAlunos()) {
+    <app-autocomplete
+      [label]="'ALUNO.BUSCA.LABEL' | translate"
+      [placeholder]="'ALUNO.BUSCA.PLACEHOLDER' | translate"
+      [buscar]="buscarAluno"
+      [rotulo]="rotuloAluno"
+      (selecionado)="abrirModalEdicao($event)"
+    ></app-autocomplete>
+  }
 
   <app-filtro-lista
     [filtros]="filtrosAluno"
@@ -37,7 +41,7 @@
     <app-tabela-generica
       [dados]="r.itens"
       [colunas]="colunas"
-      [acoes]="acoesTabela"
+      [acoes]="acoesVisiveis()"
       [ordenacaoAtual]="ordenacaoAtual$ | async"
       (acaoClicada)="definirAcao($event)"
       (ordenarPor)="ordenar($event)"
@@ -135,7 +139,7 @@
     </form>
   </app-modal>
 
-  @if (importarCsvLigado()) {
+  @if (podeGerirAlunos() && importarCsvLigado()) {
     <app-modal
       [titulo]="'IMPORTAR_ALUNOS.TITULO' | translate"
       [visivel]="importarAberto()"

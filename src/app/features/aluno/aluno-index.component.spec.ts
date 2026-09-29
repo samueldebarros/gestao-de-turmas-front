@@ -1,13 +1,18 @@
+import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, of, Subject, throwError } from 'rxjs';
 import { AlunoFacadeService } from '../../core/facades/aluno-facade.service';
+import { AuthFacadeService } from '../../core/facades/auth-facade.service';
 import { FeriadoFacadeService } from '../../core/facades/feriado-facade.service';
 import { SexoEnum } from '../../shared/enums/sexo.enum';
 import { OrdenacaoAlunoEnum } from '../../shared/enums/ordenacao-aluno.enum';
+import { PapelUsuario } from '../../shared/types/papel-usuario.type';
 import { AlunoInterface } from '../../shared/interfaces/entities/aluno.interface';
 import { FiltroListaInterface } from '../../shared/interfaces/ui/filtro-lista.interface';
 import { AlunoIndex } from './aluno-index.component';
+
+const authFacadeFake = { papel: signal<PapelUsuario | null>('Coordenador') };
 
 const criarAluno = (parcial: Partial<AlunoInterface> = {}): AlunoInterface => ({
   id: 7,
@@ -67,6 +72,7 @@ describe('AlunoIndex: orquestração do cadastro', () => {
       providers: [
         { provide: AlunoFacadeService, useValue: facadeFake },
         { provide: FeriadoFacadeService, useValue: { feriadosAnoAtual$: of([]) } },
+        { provide: AuthFacadeService, useValue: authFacadeFake },
       ],
     });
     TestBed.overrideTemplate(AlunoIndex, '');
@@ -606,6 +612,7 @@ describe('AlunoIndex: orquestração do cadastro', () => {
         providers: [
           { provide: AlunoFacadeService, useValue: facadeFake },
           { provide: FeriadoFacadeService, useValue: { feriadosAnoAtual$: of([]) } },
+          { provide: AuthFacadeService, useValue: authFacadeFake },
         ],
       });
       const traducao = TestBed.inject(TranslateService);

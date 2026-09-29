@@ -3,8 +3,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { of } from 'rxjs';
 import { AlunoFacadeService } from '../../core/facades/aluno-facade.service';
+import { AuthFacadeService } from '../../core/facades/auth-facade.service';
 import { FeriadoFacadeService } from '../../core/facades/feriado-facade.service';
 import { FeatureFlagsService } from '../../core/services/feature-flags.service';
+import { PapelUsuario } from '../../shared/types/papel-usuario.type';
 import { AlunoIndex } from './aluno-index.component';
 
 const PAGINA_VAZIA = { itens: [], paginaAtual: 1, totalPaginas: 0, totalResultados: 0 };
@@ -28,6 +30,10 @@ describe('AlunoIndex: flag importarCsv', () => {
         },
         { provide: FeriadoFacadeService, useValue: { feriadosAnoAtual$: of([]) } },
         { provide: FeatureFlagsService, useValue: { importarCsv: signal(importarCsv) } },
+        {
+          provide: AuthFacadeService,
+          useValue: { papel: signal<PapelUsuario | null>('Coordenador') },
+        },
       ],
     });
 

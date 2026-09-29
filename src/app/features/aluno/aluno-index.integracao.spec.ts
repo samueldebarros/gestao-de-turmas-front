@@ -1,10 +1,14 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
+import { of } from 'rxjs';
 import { environment } from '../../../environments/environments';
+import { AuthFacadeService } from '../../core/facades/auth-facade.service';
 import { SexoEnum } from '../../shared/enums/sexo.enum';
+import { PapelUsuario } from '../../shared/types/papel-usuario.type';
 import { AlunoIndex } from './aluno-index.component';
 
 const URL_ALUNOS = `${environment.apiUrl}/alunos`;
@@ -73,7 +77,14 @@ describe('AlunoIndex: cadastro ponta a ponta', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        {
+          provide: AuthFacadeService,
+          useValue: { papel: signal<PapelUsuario | null>('Coordenador'), estaLogado$: of(true) },
+        },
+      ],
     });
     fixture = TestBed.createComponent(AlunoIndex);
     http = TestBed.inject(HttpTestingController);
