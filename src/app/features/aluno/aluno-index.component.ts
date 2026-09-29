@@ -56,6 +56,8 @@ import { ImportarAlunosComponent } from '../../shared/components/importar-alunos
 import { ImportacaoResultado } from '../../shared/interfaces/dto/importacao-alunos.interface.js';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { alertaDeErroHttp } from '../../shared/utils/tratar-erro-http.util';
+import { AuthFacadeService } from '../../core/facades/auth-facade.service';
+import { pode } from '../../core/acesso/acesso.util';
 
 type AcaoPendenteAluno = { tipo: 'nenhuma' } | { tipo: 'inativar'; aluno: AlunoInterface };
 
@@ -96,8 +98,12 @@ export class AlunoIndex implements OnInit {
   private readonly datePipe = inject(DatePipe);
   private readonly translate = inject(TranslateService);
   private readonly featureFlags = inject(FeatureFlagsService);
+  private readonly auth = inject(AuthFacadeService);
 
   protected readonly importarCsvLigado = this.featureFlags.importarCsv;
+
+  public readonly podeGerirAlunos = computed(() => pode(this.auth.papel(), 'alunos.gerir'));
+  public readonly acoesVisiveis = computed(() => (this.podeGerirAlunos() ? this.acoesTabela : []));
 
   public colunas: TabelaColuna[] = [
     { chave: 'id', titulo: 'TABELA.COLUNAS.ALUNO.CODIGO' },

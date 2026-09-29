@@ -95,33 +95,29 @@
             ],
             "coverageReporters": ["text-summary", "html", "lcovonly"],
             "coverageThresholds": {
-              "statements": 77.98,
-              "branches": 85.51,
-              "functions": 75.25,
-              "lines": 78.1
+              "statements": 79.1,
+              "branches": 86.59,
+              "functions": 76.59,
+              "lines": 79.28
             }
           },
           "configurations": {
             "escopo": {
               "coverage": true,
               "coverageInclude": [
-                "src/app/core/facades/docente-facade.service.ts",
-                "src/app/shared/utils/tratar-erro-http.util.ts",
-                "src/app/shared/utils/mensagem-regra-negocio.util.ts",
-                "src/app/shared/components/confirmacao.component/**/*.ts",
-                "src/app/shared/components/tabela-generica/**/*.ts",
-                "src/app/shared/components/mensagem.component/**/*.ts",
-                "src/app/features/turma/turma-index.component.ts",
-                "src/app/features/turma/turma-detalhe.component/**/*.ts",
-                "src/app/features/turma/turma-cadastro.component/**/*.ts",
-                "src/app/features/aluno/aluno-index.component.ts",
-                "src/app/features/docente/docente-index.component.ts"
+                "src/app/core/acesso/**/*.ts",
+                "src/app/core/guards/acesso.guard.ts",
+                "src/app/core/facades/auth-facade.service.ts",
+                "src/app/shared/components/nav-bar.component/**/*.ts",
+                "src/app/features/login/**/*.ts",
+                "src/app/features/sem-permissao.component/**/*.ts",
+                "src/app/features/aluno/aluno-index.component.ts"
               ],
               "coverageThresholds": {
-                "statements": 98.13,
-                "branches": 94.78,
-                "functions": 95.43,
-                "lines": 98.02
+                "statements": 92,
+                "branches": 93.91,
+                "functions": 84.52,
+                "lines": 91.57
               }
             }
           }

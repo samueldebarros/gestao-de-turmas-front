@@ -2,22 +2,8 @@
   <h3>Gestão de Turmas</h3>
 
   <nav class="navbar-links">
-    @if (papel$ | async; as papel) {
-      @if (papel === 'Admin' || papel === 'Coordenador' || papel === 'Docente') {
-        <a routerLink="/alunos" routerLinkActive="link-ativo">{{ 'NAVBAR.ALUNOS' | translate }}</a>
-      }
-      @if (papel === 'Admin' || papel === 'Coordenador') {
-        <a routerLink="/docentes" routerLinkActive="link-ativo">{{
-          'NAVBAR.DOCENTES' | translate
-        }}</a>
-        <a routerLink="/dashboard" routerLinkActive="link-ativo">{{
-          'NAVBAR.DASHBOARD' | translate
-        }}</a>
-        <a routerLink="/turmas" routerLinkActive="link-ativo">{{ 'NAVBAR.TURMAS' | translate }}</a>
-        <a routerLink="/tree-view" routerLinkActive="link-ativo">{{
-          'NAVBAR.TREE_VIEW' | translate
-        }}</a>
-      }
+    @for (item of itensMenu(); track item.url) {
+      <a [routerLink]="item.url" routerLinkActive="link-ativo">{{ item.rotulo | translate }}</a>
     }
   </nav>
 

@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { throwError } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { AuthFacadeService } from '../../core/facades/auth-facade.service';
 import { LoginComponent } from './login.component';
 
@@ -8,15 +8,17 @@ describe('LoginComponent', () => {
   let fixture: ComponentFixture<LoginComponent>;
 
   const montar = (authFacade: { login: ReturnType<typeof vi.fn> } = { login: vi.fn() }) => {
+    const router = { navigate: vi.fn(), navigateByUrl: vi.fn() };
     TestBed.configureTestingModule({
       imports: [LoginComponent],
       providers: [
         { provide: AuthFacadeService, useValue: authFacade },
-        { provide: Router, useValue: { navigate: vi.fn() } },
+        { provide: Router, useValue: router },
       ],
     });
     fixture = TestBed.createComponent(LoginComponent);
     fixture.detectChanges();
+    return router;
   };
 
   const inputEmail = (): HTMLInputElement =>
@@ -90,5 +92,32 @@ describe('LoginComponent', () => {
     fixture.detectChanges();
 
     expect(textoDoAlerta()).toBe('LOGIN.ERRO_CREDENCIAIS');
+  });
+
+  it('Admin navega para /turmas após o login', () => {
+    const router = montar({ login: vi.fn(() => of({ role: 'Admin' })) });
+
+    preencherCredenciais();
+    fixture.componentInstance.entrar();
+
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/turmas');
+  });
+
+  it('Coordenador navega para /turmas após o login', () => {
+    const router = montar({ login: vi.fn(() => of({ role: 'Coordenador' })) });
+
+    preencherCredenciais();
+    fixture.componentInstance.entrar();
+
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/turmas');
+  });
+
+  it('Docente navega para /alunos após o login', () => {
+    const router = montar({ login: vi.fn(() => of({ role: 'Docente' })) });
+
+    preencherCredenciais();
+    fixture.componentInstance.entrar();
+
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/alunos');
   });
 });
